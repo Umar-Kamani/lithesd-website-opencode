@@ -10,7 +10,10 @@ const nextConfig: NextConfig = {
     localPatterns: [{ pathname: "/api/media/file/**" }],
   },
   outputFileTracingIncludes: {
-    "/api/seed": ["./node_modules/drizzle-kit/**/*"],
+    "/api/seed": [
+      "./node_modules/drizzle-kit/**/*",
+      "./node_modules/drizzle-orm/**/*",
+    ],
   },
   turbopack: {
     root: path.resolve(dirname),
