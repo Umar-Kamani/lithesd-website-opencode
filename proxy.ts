@@ -8,7 +8,12 @@ import { NextResponse, type NextRequest } from "next/server";
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname === "/fr" || pathname.startsWith("/fr/")) {
+  if (
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/api") ||
+    pathname === "/fr" ||
+    pathname.startsWith("/fr/")
+  ) {
     return NextResponse.next();
   }
 
@@ -23,5 +28,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  matcher: ["/((?!api|admin|_next|_vercel|.*\\..*).*)"],
 };
