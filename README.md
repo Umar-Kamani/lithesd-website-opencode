@@ -66,6 +66,7 @@ public/
   vendors/               Vendor logos
   lithe-*.png            Brand assets
 docs/                    Source references (design system + company profile)
+presentation/            PowerPoint deck + generator (see presentation/README.md)
 ```
 
 ## Editing content
@@ -91,3 +92,16 @@ Deploys as-is to **Vercel** (recommended) or **Netlify**.
 
 Update `site.url` in `lib/site.ts` to the production domain before launch so canonical URLs,
 `sitemap.xml` and `robots.txt` point to the right place.
+
+## Presentation
+
+`presentation/` contains a 21-slide, 16:9 PowerPoint deck built from the same design
+system as the site — available as both `.pptx` (editable) and `.pdf` (share/print).
+Rebuild it with:
+
+```bash
+cd presentation && npm install && node build-deck.mjs
+```
+
+See [`presentation/README.md`](presentation/README.md) for the slide outline and how to
+edit content.

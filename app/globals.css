@@ -1,73 +1,82 @@
 @import "tailwindcss";
 
 /* ============================================================
-   Lithe SD — Design System
-   Derived from docs/DESIGN.md (Ameba style reference)
-   Hybrid light/dark: midnight command-center bands + product paper.
+   Lithe SD — Huly-inspired design system
+   Structure, type and geometry from Huly; colour from Lithe SD.
    ============================================================ */
 
 @theme {
-  /* ---------- Colors ---------- */
-  --color-midnight-ink: #00052e;
-  --color-midnight-deep: #00021c;
-  --color-violet-wash: #06105a;
-  --color-signal-blue: #0428cb;
-  --color-signal-blue-600: #0320a3;
-  --color-signal-blue-bright: #2246ff;
-  --color-arc-cyan: #34fcff;
-  --color-halo-violet: #afb4db;
-  --color-carbon: #222222;
-  --color-slate-body: #4f5166;
-  --color-fog: #6b6b83;
-  --color-mist: #8185a0;
-  --color-silver-border: #dbdcdf;
-  --color-paper: #ffffff;
-  --color-paper-muted: #f5f6f9;
+  /* ---------- Surfaces ---------- */
+  --color-void: #05070f;
+  --color-obsidian: #0a0d17;
+  --color-charcoal: #11141f;
+  --color-charcoal-2: #161a27;
+  --color-slate-edge: #242a3a;
+  --color-iron: #6b7280;
+  --color-smoke: #95979e;
+  --color-ash: #a9a9aa;
+  --color-frost: #d1d1d1;
+  --color-linen: #f3f4f7;
+  --color-snow: #ffffff;
+
+  /* ---------- Lithe brand ---------- */
+  --color-iris: #1e6dff;
+  --color-iris-bright: #4a8bff;
+  --color-iris-deep: #005ca5;
+  --color-brand-slate: #44629a;
+  --color-brand-ink: #1d4354;
+  --color-ember: #f6772f;
+  --color-ember-soft: #ffaa81;
+
+  /* ---------- Text ---------- */
+  --color-on-dark: #ffffff;
+  --color-on-light: #0a0d17;
+  --color-body-dark: #a9a9aa;
+  --color-body-light: #3a3f4b;
 
   /* ---------- Fonts ---------- */
-  --font-display: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+  --font-display: var(--font-sora), ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo,
-    Monaco, Consolas, monospace;
 
-  /* ---------- Type scale (fluid) ---------- */
+  /* ---------- Type scale ---------- */
   --text-micro: 11px;
   --text-micro--line-height: 1.4;
-  --text-micro--letter-spacing: 0.09em;
-  --text-caption: 14px;
+  --text-micro--letter-spacing: 0.12em;
+  --text-caption: 12px;
   --text-caption--line-height: 1.5;
-  --text-body-sm: 16px;
+  --text-body-sm: 14px;
   --text-body-sm--line-height: 1.55;
-  --text-body: 18px;
+  --text-body: 16px;
   --text-body--line-height: 1.6;
   --text-lead: clamp(1.0625rem, 0.6vw + 0.9rem, 1.25rem);
-  --text-lead--line-height: 1.6;
-  --text-subheading: clamp(1.35rem, 1.5vw + 1rem, 1.6875rem);
-  --text-subheading--line-height: 1.35;
-  --text-subheading--letter-spacing: -0.015em;
-  --text-heading-sm: clamp(1.55rem, 2.2vw + 1rem, 2.1875rem);
-  --text-heading-sm--line-height: 1.2;
-  --text-heading-sm--letter-spacing: -0.014em;
-  --text-heading: clamp(1.9rem, 3vw + 1rem, 2.5rem);
-  --text-heading--line-height: 1.16;
-  --text-heading--letter-spacing: -0.016em;
-  --text-heading-lg: clamp(2.25rem, 4vw + 1rem, 3.375rem);
-  --text-heading-lg--line-height: 1.1;
-  --text-heading-lg--letter-spacing: -0.019em;
-  --text-display: clamp(2.6rem, 5.6vw + 1rem, 3.6875rem);
-  --text-display--line-height: 1.04;
-  --text-display--letter-spacing: -0.019em;
+  --text-lead--line-height: 1.55;
+  --text-heading-sm: clamp(1.25rem, 1.2vw + 1rem, 1.5rem);
+  --text-heading-sm--line-height: 1.25;
+  --text-heading-sm--letter-spacing: -0.02em;
+  --text-heading: clamp(1.6rem, 2.4vw + 1rem, 2.25rem);
+  --text-heading--line-height: 1.12;
+  --text-heading--letter-spacing: -0.03em;
+  --text-display-sm: clamp(2rem, 3.6vw + 1rem, 3rem);
+  --text-display-sm--line-height: 1.02;
+  --text-display-sm--letter-spacing: -0.04em;
+  --text-display: clamp(2.9rem, 6.6vw + 1rem, 5rem);
+  --text-display--line-height: 0.94;
+  --text-display--letter-spacing: -0.05em;
 
   /* ---------- Radii ---------- */
-  --radius-tag: 4px;
-  --radius-image: 4px;
-  --radius-card: 8px;
-  --radius-button: 8px;
+  --radius-input: 4px;
+  --radius-card: 12px;
+  --radius-panel: 30px;
+  --radius-pill: 9999px;
 
   /* ---------- Container ---------- */
   --container-page: 1200px;
+
+  /* ---------- Shadows ---------- */
+  --shadow-card: 0 6px 25px rgba(0, 0, 0, 0.5);
+  --shadow-float: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
 
 @layer base {
@@ -77,13 +86,13 @@
   }
 
   body {
-    background-color: var(--color-midnight-ink);
-    color: var(--color-paper);
+    background-color: var(--color-void);
+    color: var(--color-on-dark);
     font-family: var(--font-sans);
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
   }
 
   h1,
@@ -91,19 +100,19 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    font-weight: 300;
-    letter-spacing: -0.015em;
+    font-weight: 500;
+    letter-spacing: -0.03em;
   }
 
   ::selection {
-    background: var(--color-signal-blue);
+    background: var(--color-iris);
     color: #fff;
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-arc-cyan);
+    outline: 2px solid var(--color-iris-bright);
     outline-offset: 3px;
-    border-radius: 2px;
+    border-radius: 4px;
   }
 }
 
@@ -111,54 +120,83 @@
    Utilities
    ============================================================ */
 
-/* Subtle technical grid used on dark command-center bands */
-.bg-grid-dark {
-  background-image: linear-gradient(
-      to right,
-      rgba(175, 180, 219, 0.06) 1px,
-      transparent 1px
-    ),
-    linear-gradient(to bottom, rgba(175, 180, 219, 0.06) 1px, transparent 1px);
-  background-size: 56px 56px;
+.text-gradient-warm {
+  background: linear-gradient(92deg, #ffffff 0%, #dbe4ff 52%, #ffaa81 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-.bg-grid-light {
-  background-image: linear-gradient(
-      to right,
-      rgba(4, 40, 203, 0.05) 1px,
-      transparent 1px
-    ),
-    linear-gradient(to bottom, rgba(4, 40, 203, 0.05) 1px, transparent 1px);
-  background-size: 56px 56px;
+.text-gradient-brand {
+  background: linear-gradient(92deg, var(--color-iris-bright), var(--color-ember));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-/* Atmospheric radial wash behind focal elements */
-.hero-glow {
+/* Soft brand glows */
+.glow-iris {
   background: radial-gradient(
-    closest-side at 50% 45%,
-    rgba(6, 16, 90, 0.95) 0%,
-    rgba(6, 16, 90, 0.55) 38%,
-    rgba(0, 5, 46, 0) 72%
+    closest-side,
+    rgba(30, 109, 255, 0.42),
+    rgba(30, 109, 255, 0) 72%
   );
 }
 
-.text-shadow-glow {
-  text-shadow: 0 0 40px rgba(52, 252, 255, 0.35);
+.glow-ember {
+  background: radial-gradient(
+    closest-side,
+    rgba(246, 119, 47, 0.32),
+    rgba(246, 119, 47, 0) 72%
+  );
 }
 
-/* Section gradient transition (dark -> light) */
-.gradient-transition {
+/* Subtle technical grid */
+.grid-dark {
+  background-image: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.045) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.grid-light {
+  background-image: linear-gradient(
+      to right,
+      rgba(5, 7, 15, 0.05) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, rgba(5, 7, 15, 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* Hairline gradient rules */
+.rule-gradient {
   background: linear-gradient(
-    180deg,
-    var(--color-midnight-ink) 0%,
-    #0a0f52 26%,
-    #3a3273 52%,
-    #b7b3d6 78%,
-    #ffffff 100%
+    90deg,
+    rgba(30, 109, 255, 0.7),
+    rgba(246, 119, 47, 0.55) 55%,
+    rgba(255, 255, 255, 0)
   );
 }
 
-/* ---------- Motion ---------- */
+/* Scroll reveal (progressive enhancement) */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Marquee */
 @keyframes marquee {
   from {
     transform: translateX(0);
@@ -177,83 +215,37 @@
   }
 }
 
-@keyframes float-slow {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-12px);
-  }
-}
-
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.85);
-    opacity: 0.85;
-  }
-  70% {
-    transform: scale(1.9);
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes shimmer {
-  from {
-    background-position: -200% 0;
-  }
-  to {
-    background-position: 200% 0;
-  }
-}
-
 .animate-marquee {
-  animation: marquee 42s linear infinite;
+  animation: marquee 46s linear infinite;
 }
 
 .animate-marquee-slow {
-  animation: marquee 70s linear infinite;
+  animation: marquee 72s linear infinite;
 }
 
 .animate-marquee-reverse {
   animation: marquee-reverse 60s linear infinite;
 }
 
-.animate-marquee-reverse-slow {
-  animation: marquee-reverse 85s linear infinite;
+.marquee-group:hover .animate-marquee,
+.marquee-group:hover .animate-marquee-slow,
+.marquee-group:hover .animate-marquee-reverse {
+  animation-play-state: paused;
+}
+
+/* Gentle float for hero cards */
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .animate-float {
-  animation: float-slow 7s ease-in-out infinite;
-}
-
-.animate-pulse-ring {
-  animation: pulse-ring 2.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
-}
-
-/* Scroll reveal (progressive enhancement — only hidden when JS is active) */
-.js .reveal {
-  opacity: 0;
-  transform: translateY(26px);
-  transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
-}
-
-.js .reveal.is-visible {
-  opacity: 1;
-  transform: none;
-}
-
-/* Marquee pause + reduced motion */
-.marquee-group:hover .animate-marquee,
-.marquee-group:hover .animate-marquee-slow,
-.marquee-group:hover .animate-marquee-reverse,
-.marquee-group:hover .animate-marquee-reverse-slow {
-  animation-play-state: paused;
+  animation: float-slow 8s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -264,9 +256,7 @@
   .animate-marquee,
   .animate-marquee-slow,
   .animate-marquee-reverse,
-  .animate-marquee-reverse-slow,
-  .animate-float,
-  .animate-pulse-ring {
+  .animate-float {
     animation: none !important;
   }
 
@@ -274,9 +264,5 @@
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
-  }}
-
-/* Prevent horizontal overflow from marquees / glows */
-body {
-  overflow-x: hidden;
+  }
 }

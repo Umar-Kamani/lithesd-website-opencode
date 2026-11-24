@@ -1,60 +1,70 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { href as localeHref, type Locale } from "@/lib/i18n";
 
-type Variant = "primary" | "outline" | "ghost" | "light";
-type Size = "md" | "lg";
+type Variant = "primary" | "ghost" | "light" | "outline" | "link";
 
-const VARIANTS: Record<Variant, string> = {
+const variants: Record<Variant, string> = {
   primary:
-    "bg-signal-blue text-white hover:bg-signal-blue-600 focus-visible:outline-arc-cyan",
-  outline:
-    "border border-silver-border text-midnight-ink hover:border-signal-blue hover:text-signal-blue",
+    "bg-iris text-white hover:bg-iris-bright focus-visible:outline-white",
   ghost:
-    "border border-white/25 text-white hover:border-white/60 hover:bg-white/5",
+    "border border-white/20 text-white hover:border-white hover:bg-white hover:text-void",
   light:
-    "bg-white text-midnight-ink hover:bg-halo-violet/40 border border-transparent",
-};
-
-const SIZES: Record<Size, string> = {
-  md: "h-11 px-5 text-[13px]",
-  lg: "h-12 px-6 text-sm",
+    "bg-white text-void hover:bg-frost",
+  outline:
+    "border border-void/15 text-void hover:border-void/40 hover:bg-void/[0.03]",
+  link:
+    "text-white/80 hover:text-white px-0",
 };
 
 export function Button({
-  href,
+  locale,
+  to,
+  href: rawHref,
+  external,
   variant = "primary",
   size = "md",
   className,
   children,
-  external,
   type,
   onClick,
   ariaLabel,
 }: {
+  locale: Locale;
+  to?: string;
   href?: string;
-  variant?: Variant;
-  size?: Size;
-  className?: string;
-  children: ReactNode;
   external?: boolean;
+  variant?: Variant;
+  size?: "sm" | "md" | "lg";
+  className?: string;
+  children: React.ReactNode;
   type?: "button" | "submit";
   onClick?: () => void;
   ariaLabel?: string;
 }) {
   const classes = cn(
-    "group/btn inline-flex items-center justify-center gap-2 rounded-button font-display font-normal tracking-[0.01em] transition-colors duration-200 ease-out",
-    SIZES[size],
-    VARIANTS[variant],
+    "group/btn inline-flex items-center justify-center gap-2 rounded-pill font-sans font-medium tracking-[-0.01em] transition-colors duration-200",
+    size === "sm" && "h-9 px-4 text-[13px]",
+    size === "md" && "h-11 px-5 text-sm",
+    size === "lg" && "h-12 px-6 text-[15px]",
+    variants[variant],
     className,
   );
 
-  if (href) {
-    const isExternal = external ?? /^https?:\/\//.test(href);
+  if (to) {
+    return (
+      <Link href={localeHref(locale, to)} className={classes} aria-label={ariaLabel}>
+        {children}
+      </Link>
+    );
+  }
+
+  if (rawHref) {
+    const isExternal = external ?? /^https?:\/\//.test(rawHref);
     if (isExternal) {
       return (
         <a
-          href={href}
+          href={rawHref}
           target="_blank"
           rel="noopener noreferrer"
           className={classes}
@@ -65,7 +75,7 @@ export function Button({
       );
     }
     return (
-      <Link href={href} className={classes} aria-label={ariaLabel}>
+      <Link href={rawHref} className={classes} aria-label={ariaLabel}>
         {children}
       </Link>
     );

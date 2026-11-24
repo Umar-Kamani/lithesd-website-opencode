@@ -1,53 +1,43 @@
-import type { ElementType, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export type SectionTone = "dark" | "deep" | "light" | "muted";
+export type Tone = "void" | "obsidian" | "charcoal" | "white" | "linen";
 
-const TONES: Record<SectionTone, string> = {
-  dark: "bg-midnight-ink text-white",
-  deep: "bg-midnight-deep text-white",
-  light: "bg-paper text-midnight-ink",
-  muted: "bg-paper-muted text-midnight-ink",
+const tones: Record<Tone, string> = {
+  void: "bg-void text-white",
+  obsidian: "bg-obsidian text-white",
+  charcoal: "bg-charcoal text-white",
+  white: "bg-white text-void",
+  linen: "bg-linen text-void",
 };
 
 export function Section({
-  as: Tag = "section",
-  tone = "light",
+  tone = "white",
   className,
   innerClassName,
   container = true,
-  children,
   id,
+  children,
 }: {
-  as?: ElementType;
-  tone?: SectionTone;
+  tone?: Tone;
   className?: string;
   innerClassName?: string;
   container?: boolean;
-  children: ReactNode;
   id?: string;
+  children: ReactNode;
 }) {
   return (
-    <Tag
+    <section
       id={id}
-      className={cn(
-        "relative py-16 sm:py-20 lg:py-24",
-        TONES[tone],
-        className,
-      )}
+      className={cn("relative py-20 sm:py-24 lg:py-28", tones[tone], className)}
     >
       {container ? (
-        <div
-          className={cn(
-            "mx-auto w-full max-w-page px-5 sm:px-8 lg:px-10",
-            innerClassName,
-          )}
-        >
+        <div className={cn("mx-auto w-full max-w-page px-5 sm:px-8 lg:px-10", innerClassName)}>
           {children}
         </div>
       ) : (
         children
       )}
-    </Tag>
+    </section>
   );
 }

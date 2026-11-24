@@ -1,91 +1,145 @@
-import { ArrowRight } from "lucide-react";
-import { Button } from "./button";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Container } from "./container";
-import { Eyebrow } from "./eyebrow";
-import { ParticleSphere } from "./particle-sphere";
+import { Button } from "./button";
+import { ThreadCanvas } from "./thread-canvas";
+import { BrandLogo } from "./brand-logo";
+import { brands } from "@/lib/brands";
+import { l, type Locale } from "@/lib/i18n";
 
-function FloatCard({
-  label,
-  value,
-  dot = "cyan",
-  className,
-}: {
-  label: string;
-  value: string;
-  dot?: "cyan" | "blue" | "amber" | "green";
-  className?: string;
-}) {
-  const dots: Record<string, string> = {
-    cyan: "bg-arc-cyan",
-    blue: "bg-signal-blue-bright",
-    amber: "bg-amber-400",
-    green: "bg-emerald-400",
-  };
+const panelBrands = ["sangfor", "fujitsu", "accops"]
+  .map((slug) => brands.find((brand) => brand.slug === slug))
+  .filter(Boolean);
+
+export function HomeHero({ locale }: { locale: Locale }) {
   return (
-    <div
-      className={`w-[210px] rounded-card border border-white/15 bg-midnight-ink/90 p-4 backdrop-blur-sm ${className ?? ""}`}
-    >
-      <div className="flex items-center gap-2">
-        <span className={`h-2 w-2 rounded-full ${dots[dot]}`} />
-        <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-fog">
-          {label}
-        </span>
-      </div>
-      <p className="mt-2 text-sm text-white">{value}</p>
-    </div>
-  );
-}
+    <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-void pb-20 pt-36 sm:pt-40 lg:pb-24 lg:pt-44">
+      <div className="pointer-events-none absolute inset-0 grid-dark opacity-40" />
+      <div className="pointer-events-none absolute -left-40 top-10 h-[620px] w-[620px] glow-iris opacity-70" />
+      <div className="pointer-events-none absolute -right-32 bottom-0 h-[520px] w-[520px] glow-ember opacity-50" />
 
-export function HomeHero() {
-  return (
-    <section className="relative flex min-h-[92svh] items-center overflow-hidden bg-midnight-ink pb-24 pt-32 text-white sm:pt-36">
-      <div className="pointer-events-none absolute inset-0 bg-grid-dark opacity-40" />
-      <div className="pointer-events-none absolute inset-0 hero-glow" />
-
-      {/* Particle sphere */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <div className="h-[min(94vw,760px)] w-[min(94vw,760px)] opacity-90">
-          <ParticleSphere />
-        </div>
-      </div>
-
-      {/* Floating data cards */}
-      <div className="pointer-events-none absolute left-[4%] top-[24%] hidden animate-float xl:block">
-        <FloatCard label="Deal Registration" value="Margin protected" dot="cyan" />
-      </div>
-      <div className="pointer-events-none absolute right-[4%] top-[32%] hidden [animation-delay:-2.5s] animate-float xl:block">
-        <FloatCard label="Channel Partners" value="100+ and growing" dot="green" />
-      </div>
-      <div className="pointer-events-none absolute bottom-[16%] right-[8%] hidden [animation-delay:-1.2s] animate-float xl:block">
-        <FloatCard label="Strategic Regions" value="IOC · Africa · Middle East" dot="blue" />
+      {/* The Thread */}
+      <div className="pointer-events-none absolute inset-x-0 top-[18%] h-[70%] opacity-90">
+        <ThreadCanvas />
       </div>
 
       <Container className="relative">
-        <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <Eyebrow tone="dark">
-            Value-Added Distributor · IOC · East Africa · Middle East
-          </Eyebrow>
-          <h1 className="mt-6 text-display font-light text-white">
-            A more flexible
-            <br className="hidden sm:block" /> approach to technology
-          </h1>
-          <p className="mt-6 max-w-xl text-lead text-halo-violet/85">
-            Lithe SD partners with System Integrators across the full sales,
-            design, implementation and support lifecycle — so you can deliver
-            measurable outcomes, with confidence.
-          </p>
-          <div className="mt-9 flex flex-wrap justify-center gap-3">
-            <Button href="/contact" size="lg">
-              Become a Partner
-              <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/btn:translate-x-0.5" />
-            </Button>
-            <Button href="/solutions" variant="ghost" size="lg">
-              Explore Solutions
-            </Button>
+        <div className="grid items-center gap-14 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="flex max-w-2xl flex-col items-start">
+            <span className="inline-flex items-center gap-2.5 font-sans text-[11px] font-medium uppercase tracking-[0.16em] text-smoke">
+              <span className="h-px w-8 bg-gradient-to-r from-iris to-ember" />
+              {l(
+                locale,
+                "Value-added distributor · IOC · East Africa · Middle East",
+                "Distributeur à valeur ajoutée · COI · Afrique de l'Est · Moyen-Orient",
+              )}
+            </span>
+
+            <h1 className="mt-7 font-display text-display font-medium text-white">
+              {l(locale, "A more flexible approach to technology", "Une approche plus flexible de la technologie")}
+            </h1>
+
+            <p className="mt-7 max-w-xl text-lead text-ash">
+              {l(
+                locale,
+                "Lithe SD partners with System Integrators across the full sales, design, implementation and support lifecycle — so you can deliver measurable outcomes with confidence.",
+                "Lithe SD accompagne les intégrateurs sur tout le cycle de vente, de conception, de mise en œuvre et de support — pour des résultats mesurables en toute confiance.",
+              )}
+            </p>
+
+            <div className="mt-9 flex flex-wrap gap-3">
+              <Button locale={locale} to="/brands" size="lg">
+                {l(locale, "Explore brands", "Découvrir les marques")}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-0.5" />
+              </Button>
+              <Button locale={locale} to="/contact" variant="ghost" size="lg">
+                {l(locale, "Talk to us", "Parlons-en")}
+              </Button>
+            </div>
+
+            <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3">
+              {[
+                { value: "24", en: "brands", fr: "marques" },
+                { value: "100+", en: "channel partners", fr: "partenaires" },
+                { value: "20+", en: "countries", fr: "pays" },
+              ].map((stat) => (
+                <div key={stat.value} className="flex items-baseline gap-2">
+                  <span className="font-display text-2xl font-medium text-white">
+                    {stat.value}
+                  </span>
+                  <span className="text-xs uppercase tracking-[0.12em] text-iron">
+                    {l(locale, stat.en, stat.fr)}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-          <p className="mt-8 font-mono text-micro uppercase tracking-[0.14em] text-fog">
-            A member of the Lithe Group of Companies
-          </p>
+
+          {/* Catalogue panel */}
+          <div className="relative hidden lg:block">
+            <div className="animate-float rounded-panel border border-white/12 bg-charcoal/80 p-1.5 shadow-card backdrop-blur-xl">
+              <div className="rounded-[26px] border border-white/8 bg-obsidian/90 p-6">
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-smoke">
+                    <span className="h-1.5 w-1.5 rounded-full bg-iris-bright" />
+                    {l(locale, "Live catalogue", "Catalogue en ligne")}
+                  </span>
+                  <span className="rounded-full border border-white/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-iron">
+                    Lithe SD
+                  </span>
+                </div>
+
+                <div className="mt-6 grid grid-cols-3 gap-3">
+                  {[
+                    { value: "24", en: "Brands", fr: "Marques" },
+                    { value: "72", en: "Products", fr: "Produits" },
+                    { value: "6", en: "Pillars", fr: "Piliers" },
+                  ].map((m) => (
+                    <div key={m.en} className="rounded-card border border-white/8 bg-white/[0.03] p-3">
+                      <p className="font-display text-2xl font-medium text-white">{m.value}</p>
+                      <p className="mt-0.5 text-[10px] uppercase tracking-[0.12em] text-iron">
+                        {l(locale, m.en, m.fr)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-5 flex flex-col divide-y divide-white/8">
+                  {panelBrands.map((brand) =>
+                    brand ? (
+                      <div key={brand.slug} className="flex items-center gap-3 py-3">
+                        <span className="flex h-10 w-20 items-center justify-center rounded-card bg-white px-2">
+                          <BrandLogo
+                            name={brand.name}
+                            logo={brand.logo}
+                            imageClassName="max-h-5 max-w-full"
+                          />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[13px] font-medium text-white">
+                            {brand.name}
+                          </p>
+                          <p className="truncate text-[11px] text-iron">
+                            {l(locale, brand.tagline.en, brand.tagline.fr)}
+                          </p>
+                        </div>
+                        <ArrowUpRight className="h-4 w-4 text-iron" />
+                      </div>
+                    ) : null,
+                  )}
+                </div>
+
+                <div className="mt-4 flex items-center justify-between rounded-card border border-white/8 bg-white/[0.02] px-4 py-3">
+                  <span className="text-[11px] text-ash">
+                    {l(locale, "72 products, one partner", "72 produits, un partenaire")}
+                  </span>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-iris text-white">
+                    <ArrowRight className="h-3 w-3" />
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full border border-white/10" />
+          </div>
         </div>
       </Container>
     </section>

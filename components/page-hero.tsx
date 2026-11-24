@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { Container } from "./container";
-import { Eyebrow } from "./eyebrow";
 
 export function PageHero({
   eyebrow,
@@ -14,19 +13,19 @@ export function PageHero({
   children?: ReactNode;
 }) {
   return (
-    <section className="relative overflow-hidden border-b border-white/10 bg-midnight-ink pb-16 pt-32 text-white sm:pb-20 sm:pt-36 lg:pb-24 lg:pt-44">
-      <div className="pointer-events-none absolute inset-0 bg-grid-dark opacity-40" />
-      <div className="pointer-events-none absolute -top-24 left-1/2 h-[520px] w-[820px] -translate-x-1/2 hero-glow" />
+    <section className="relative overflow-hidden border-b border-white/8 bg-void pb-16 pt-36 sm:pb-20 sm:pt-40 lg:pb-24 lg:pt-44">
+      <div className="pointer-events-none absolute inset-0 grid-dark opacity-40" />
+      <div className="pointer-events-none absolute -left-32 top-0 h-[520px] w-[520px] glow-iris opacity-70" />
+      <div className="pointer-events-none absolute -right-24 bottom-0 h-[360px] w-[360px] glow-ember opacity-40" />
       <Container className="relative">
-        <div className="flex flex-col gap-5">
-          <Eyebrow tone="dark">{eyebrow}</Eyebrow>
-          <h1 className="max-w-4xl text-display font-light text-white">
-            {title}
-          </h1>
-          {intro ? (
-            <p className="max-w-2xl text-lead text-halo-violet/85">{intro}</p>
-          ) : null}
-          {children ? <div className="pt-4">{children}</div> : null}
+        <div className="flex max-w-4xl flex-col items-start gap-5">
+          <span className="inline-flex items-center gap-2.5 font-sans text-[11px] font-medium uppercase tracking-[0.16em] text-smoke">
+            <span className="h-px w-8 bg-gradient-to-r from-iris to-ember" />
+            {eyebrow}
+          </span>
+          <h1 className="text-display-sm font-medium text-white">{title}</h1>
+          {intro ? <p className="max-w-2xl text-lead text-ash">{intro}</p> : null}
+          {children ? <div className="pt-3">{children}</div> : null}
         </div>
       </Container>
     </section>

@@ -6,18 +6,20 @@ export function SectionHeading({
   eyebrow,
   title,
   intro,
-  tone = "light",
+  dark = false,
   align = "left",
   className,
   titleClassName,
+  size = "md",
 }: {
   eyebrow?: string;
   title: ReactNode;
   intro?: ReactNode;
-  tone?: "light" | "dark";
+  dark?: boolean;
   align?: "left" | "center";
   className?: string;
   titleClassName?: string;
+  size?: "sm" | "md" | "lg";
 }) {
   return (
     <div
@@ -27,11 +29,14 @@ export function SectionHeading({
         className,
       )}
     >
-      {eyebrow ? <Eyebrow tone={tone}>{eyebrow}</Eyebrow> : null}
+      {eyebrow ? <Eyebrow dark={dark}>{eyebrow}</Eyebrow> : null}
       <h2
         className={cn(
-          "max-w-3xl text-heading font-light",
-          tone === "dark" ? "text-white" : "text-midnight-ink",
+          "max-w-3xl font-display font-medium",
+          size === "sm" && "text-heading-sm",
+          size === "md" && "text-heading",
+          size === "lg" && "text-display-sm",
+          dark ? "text-white" : "text-void",
           titleClassName,
         )}
       >
@@ -41,7 +46,7 @@ export function SectionHeading({
         <p
           className={cn(
             "max-w-2xl text-lead",
-            tone === "dark" ? "text-halo-violet" : "text-slate-body",
+            dark ? "text-ash" : "text-body-light",
           )}
         >
           {intro}

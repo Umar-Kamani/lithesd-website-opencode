@@ -1,622 +1,467 @@
 import type { IconName } from "./icons";
 
-/* ------------------------------------------------------------------
-   Stats
------------------------------------------------------------------- */
-export type Stat = {
-  value: number;
-  prefix?: string;
-  suffix?: string;
-  label: string;
-  isYear?: boolean;
-};
+export type Bi = { en: string; fr: string };
 
-export const stats: Stat[] = [
-  { value: 2014, label: "Founded", isYear: true },
-  { value: 1200, suffix: "+", label: "Customers" },
-  { value: 100, suffix: "+", label: "Channel Partners" },
-  { value: 100, suffix: "+", label: "Projects Executed" },
-  { value: 20, suffix: "+", label: "Countries" },
-  { value: 3, label: "Strategic Regions" },
+export const stats: { value: string; label: Bi }[] = [
+  { value: "2014", label: { en: "Founded", fr: "Fondée en" } },
+  { value: "1,200+", label: { en: "Customers", fr: "Clients" } },
+  { value: "100+", label: { en: "Channel partners", fr: "Partenaires" } },
+  { value: "100+", label: { en: "Projects delivered", fr: "Projets livrés" } },
+  { value: "20+", label: { en: "Countries", fr: "Pays" } },
+  { value: "3", label: { en: "Strategic regions", fr: "Régions" } },
 ];
 
-/* ------------------------------------------------------------------
-   Solution pillars
------------------------------------------------------------------- */
 export type Pillar = {
   id: string;
-  title: string;
-  summary: string;
+  title: Bi;
+  summary: Bi;
   icon: IconName;
-  capabilities: string[];
+  capabilities: Bi[];
 };
 
 export const pillars: Pillar[] = [
   {
     id: "cybersecurity",
-    title: "Cybersecurity",
     icon: "shield-check",
-    summary:
-      "Defence-in-depth across identity, network, endpoint and cloud — from prevention through to resilience and recovery.",
+    title: { en: "Cybersecurity", fr: "Cybersécurité" },
+    summary: {
+      en: "Defence in depth across identity, network, endpoint and cloud — from prevention through to resilience and recovery.",
+      fr: "Une défense en profondeur de l'identité, du réseau, des postes et du cloud — de la prévention à la résilience et à la reprise.",
+    },
     capabilities: [
-      "Identity Security",
-      "Operations & Monitoring",
-      "Network, Endpoint & Ransomware Protection",
-      "WAF, ZTNA & API Security",
-      "Cyber Resilience & Recovery",
+      { en: "Identity security", fr: "Sécurité des identités" },
+      { en: "Operations & monitoring", fr: "Opérations & supervision" },
+      { en: "Network, endpoint & ransomware", fr: "Réseau, postes & rançongiciels" },
+      { en: "WAF, ZTNA & API security", fr: "WAF, ZTNA & sécurité des API" },
+      { en: "Cyber resilience & recovery", fr: "Résilience & reprise" },
     ],
   },
   {
     id: "infrastructure-cloud",
-    title: "Enterprise Infrastructure & Cloud",
     icon: "server",
-    summary:
-      "Modern, resilient foundations — hyperconverged compute, private and hybrid cloud, and frictionless multi-cloud integration.",
+    title: { en: "Enterprise infrastructure & cloud", fr: "Infrastructure & cloud" },
+    summary: {
+      en: "Modern, resilient foundations — hyperconverged compute, private and hybrid cloud, and frictionless multi-cloud integration.",
+      fr: "Des fondations modernes et résilientes — calcul hyperconvergé, cloud privé et hybride, intégration multi-cloud.",
+    },
     capabilities: [
-      "Hyperconverged Infrastructure",
-      "High Availability & Disaster Recovery",
-      "Containerisation, SDI & VDI",
-      "Private & Hybrid Cloud",
-      "Multi-Cloud Migration and Integration",
+      { en: "Hyperconverged infrastructure", fr: "Infrastructure hyperconvergée" },
+      { en: "High availability & disaster recovery", fr: "Haute disponibilité & PRA" },
+      { en: "Containerisation, SDI & VDI", fr: "Conteneurs, SDI & VDI" },
+      { en: "Private & hybrid cloud", fr: "Cloud privé & hybride" },
+      { en: "Multi-cloud migration", fr: "Migration multi-cloud" },
     ],
   },
   {
     id: "business-tools",
-    title: "Business Tools",
     icon: "briefcase",
-    summary:
-      "The collaboration, telephony and data-sovereignty platforms that keep distributed teams productive and compliant.",
+    title: { en: "Business tools", fr: "Outils métier" },
+    summary: {
+      en: "The collaboration, telephony and data-sovereignty platforms that keep distributed teams productive and compliant.",
+      fr: "Les plateformes de collaboration, de téléphonie et de souveraineté des données qui rendent les équipes productives et conformes.",
+    },
     capabilities: [
-      "Enterprise Collaboration Platforms",
-      "Telephony",
-      "Data Sovereignty",
+      { en: "Enterprise collaboration", fr: "Collaboration d'entreprise" },
+      { en: "Telephony", fr: "Téléphonie" },
+      { en: "Data sovereignty", fr: "Souveraineté des données" },
     ],
   },
   {
-    id: "monitoring-observability",
-    title: "Asset Management, Monitoring & Observability",
+    id: "observability",
     icon: "activity",
-    summary:
-      "Unified visibility across networks, infrastructure and services — with ITSM, ITAM and performance management built in.",
+    title: { en: "Asset management, monitoring & observability", fr: "Gestion des actifs, supervision & observabilité" },
+    summary: {
+      en: "Unified visibility across networks, infrastructure and services — with ITSM, ITAM and performance management built in.",
+      fr: "Une visibilité unifiée sur les réseaux, l'infrastructure et les services — avec ITSM, ITAM et gestion des performances.",
+    },
     capabilities: [
-      "Unified Observability Platform",
-      "ITSM & ITAM",
-      "Hybrid Infrastructure Monitoring",
-      "Network Performance Monitoring & Configuration",
-      "Compliance Management",
+      { en: "Unified observability", fr: "Observabilité unifiée" },
+      { en: "ITSM & ITAM", fr: "ITSM & ITAM" },
+      { en: "Hybrid infrastructure monitoring", fr: "Supervision hybride" },
+      { en: "Network performance", fr: "Performance réseau" },
+      { en: "Compliance management", fr: "Gestion de la conformité" },
     ],
   },
   {
     id: "ai-bi",
-    title: "AI & BI",
     icon: "brain-circuit",
-    summary:
-      "Turn data into decisions with AI analytics, low-code platforms and intelligent video and footfall analytics.",
+    title: { en: "AI & business intelligence", fr: "IA & business intelligence" },
+    summary: {
+      en: "Turn data into decisions with AI analytics, low-code platforms and intelligent video and footfall analytics.",
+      fr: "Transformez les données en décisions avec l'analytique IA, les plateformes low-code et l'analyse vidéo intelligente.",
+    },
     capabilities: [
-      "AI Analytics and Bespoke Development",
-      "Low Code / No Code Platforms",
-      "CCTV & Footfall Analytics",
+      { en: "AI analytics & bespoke development", fr: "Analytique IA & développement sur mesure" },
+      { en: "Low code / no code", fr: "Low code / no code" },
+      { en: "CCTV & footfall analytics", fr: "Vidéosurveillance & analyse de flux" },
     ],
   },
   {
     id: "data-protection",
-    title: "Data Protection & Backup",
     icon: "database-backup",
-    summary:
-      "Protect what matters with resilient backup, storage and insider-risk controls that satisfy the strictest compliance mandates.",
+    title: { en: "Data protection & backup", fr: "Protection des données & sauvegarde" },
+    summary: {
+      en: "Protect what matters with resilient backup, storage and insider-risk controls that satisfy the strictest mandates.",
+      fr: "Protégez l'essentiel avec une sauvegarde résiliente, du stockage et des contrôles des risques internes.",
+    },
     capabilities: [
-      "Data Backup",
-      "Storage Solutions",
-      "User Activity Monitoring",
-      "Data Loss Protection",
+      { en: "Data backup", fr: "Sauvegarde des données" },
+      { en: "Storage solutions", fr: "Solutions de stockage" },
+      { en: "User activity monitoring", fr: "Surveillance de l'activité" },
+      { en: "Data loss prevention", fr: "Prévention des fuites" },
     ],
   },
 ];
 
-/* ------------------------------------------------------------------
-   Professional services
------------------------------------------------------------------- */
 export type Service = {
-  title: string;
-  description: string;
+  id: string;
+  title: Bi;
+  summary: Bi;
   icon: IconName;
 };
 
 export const services: Service[] = [
   {
-    title: "Incident Response",
+    id: "incident-response",
     icon: "siren",
-    description:
-      "Rapid containment and recovery when it matters most, guided by certified responders.",
+    title: { en: "Incident response", fr: "Réponse aux incidents" },
+    summary: {
+      en: "Rapid containment and recovery when it matters most, guided by certified responders.",
+      fr: "Confinement et reprise rapides, guidés par des intervenants certifiés.",
+    },
   },
   {
-    title: "Cyber Forensics",
+    id: "cyber-forensics",
     icon: "fingerprint",
-    description:
-      "Deep investigation that establishes root cause, scope and evidence you can act on.",
+    title: { en: "Cyber forensics", fr: "Investigation numérique" },
+    summary: {
+      en: "Deep investigation that establishes root cause, scope and evidence you can act on.",
+      fr: "Une investigation approfondie qui établit la cause, l'ampleur et les preuves exploitables.",
+    },
   },
   {
-    title: "Threat Hunting",
+    id: "threat-hunting",
     icon: "crosshair",
-    description:
-      "Proactive detection of threats that evade automated tooling before they cause impact.",
+    title: { en: "Threat hunting", fr: "Chasse aux menaces" },
+    summary: {
+      en: "Proactive detection of threats that evade automated tooling before they cause impact.",
+      fr: "Détection proactive des menaces qui échappent aux outils automatisés.",
+    },
   },
   {
-    title: "Vulnerability Assessment",
+    id: "vulnerability-assessment",
     icon: "scan-search",
-    description:
-      "A prioritised roadmap that hardens your infrastructure against emerging risk.",
+    title: { en: "Vulnerability assessment", fr: "Évaluation des vulnérabilités" },
+    summary: {
+      en: "A prioritised roadmap that hardens your infrastructure against emerging risk.",
+      fr: "Une feuille de route priorisée qui renforce l'infrastructure face aux risques.",
+    },
   },
   {
-    title: "Deployment & Implementation",
+    id: "deployment",
     icon: "package-open",
-    description:
-      "Swift, low-disruption rollouts that get technology delivering value fast.",
+    title: { en: "Deployment & implementation", fr: "Déploiement & mise en œuvre" },
+    summary: {
+      en: "Swift, low-disruption rollouts that get technology delivering value fast.",
+      fr: "Des déploiements rapides et sans perturbation qui apportent de la valeur vite.",
+    },
   },
   {
-    title: "Compliance Management",
+    id: "compliance",
     icon: "clipboard-check",
-    description:
-      "Streamlined adherence to industry standards, minimising risk and operational friction.",
+    title: { en: "Compliance management", fr: "Gestion de la conformité" },
+    summary: {
+      en: "Streamlined adherence to industry standards, minimising risk and operational friction.",
+      fr: "Une conformité simplifiée aux normes du secteur, avec moins de risques et de friction.",
+    },
   },
   {
-    title: "ISO Consultancy",
+    id: "iso",
     icon: "badge-check",
-    description:
-      "Navigate standards and certification with a partner who has walked the path before.",
+    title: { en: "ISO consultancy", fr: "Conseil ISO" },
+    summary: {
+      en: "Navigate standards and certification with a partner who has walked the path before.",
+      fr: "Naviguez les normes et la certification avec un partenaire expérimenté.",
+    },
   },
   {
-    title: "Security & IT Audits",
+    id: "audits",
     icon: "file-search",
-    description:
-      "Meticulous assessment that uncovers gaps and fortifies your defences.",
+    title: { en: "Security & IT audits", fr: "Audits sécurité & IT" },
+    summary: {
+      en: "Meticulous assessment that uncovers gaps and fortifies your defences.",
+      fr: "Une évaluation méticuleuse qui révèle les écarts et renforce vos défenses.",
+    },
   },
 ];
 
-/* ------------------------------------------------------------------
-   Values
------------------------------------------------------------------- */
-export type Value = {
-  title: string;
-  description: string;
-  icon: IconName;
-};
-
-export const values: Value[] = [
+export const values: { title: Bi; summary: Bi; icon: IconName }[] = [
   {
-    title: "Integrity",
     icon: "shield-check",
-    description:
-      "We prioritise trust, ethical standards and transparent relationships in all interactions and decisions.",
+    title: { en: "Integrity", fr: "Intégrité" },
+    summary: {
+      en: "We prioritise trust, ethical standards and transparent relationships in all interactions and decisions.",
+      fr: "Nous privilégions la confiance, l'éthique et la transparence dans toutes nos interactions.",
+    },
   },
   {
-    title: "Responsibility",
     icon: "leaf",
-    description:
-      "We take ownership of our clients' needs, environmental impact and employee growth with unwavering commitment.",
+    title: { en: "Responsibility", fr: "Responsabilité" },
+    summary: {
+      en: "We take ownership of our clients' needs, environmental impact and employee growth with unwavering commitment.",
+      fr: "Nous assumons les besoins de nos clients, notre impact environnemental et la croissance de nos équipes.",
+    },
   },
   {
-    title: "Excellence",
     icon: "gem",
-    description:
-      "We strive for unparalleled quality, setting industry standards and delivering optimal outcomes for clients.",
+    title: { en: "Excellence", fr: "Excellence" },
+    summary: {
+      en: "We strive for unparalleled quality, setting industry standards and delivering optimal outcomes.",
+      fr: "Nous visons une qualité sans équivalent, en établissant les standards du secteur.",
+    },
   },
   {
-    title: "Empowerment",
     icon: "users",
-    description:
-      "We foster personal and professional growth, providing opportunities for our team to excel and lead.",
+    title: { en: "Empowerment", fr: "Autonomisation" },
+    summary: {
+      en: "We foster personal and professional growth, providing opportunities for our team to excel and lead.",
+      fr: "Nous favorisons la croissance personnelle et professionnelle de nos équipes.",
+    },
   },
 ];
 
-/* ------------------------------------------------------------------
-   Value addition (what makes Lithe SD different)
------------------------------------------------------------------- */
-export type ValueAdd = { title: string; description: string; icon: IconName };
-
-export const valueAdd: ValueAdd[] = [
+export const valueAdd: { title: Bi; summary: Bi; icon: IconName }[] = [
   {
-    title: "LithePROTECT™ Partner Program",
     icon: "shield-check",
-    description:
-      "Vendor-independent deal registration, comprehensive training and lucrative incentives — empowering partners to win.",
+    title: { en: "LithePROTECT™ partner program", fr: "Programme partenaire LithePROTECT™" },
+    summary: {
+      en: "Vendor-independent deal registration, comprehensive training and lucrative incentives.",
+      fr: "Enregistrement d'affaires indépendant des éditeurs, formation complète et incitations attractives.",
+    },
   },
   {
-    title: "Technical Expertise",
     icon: "wrench",
-    description:
-      "A team with unmatched technical knowledge, solving complex issues and optimising system performance effectively.",
+    title: { en: "Technical expertise", fr: "Expertise technique" },
+    summary: {
+      en: "A team with unmatched technical knowledge, solving complex issues and optimising performance.",
+      fr: "Une équipe à l'expertise technique reconnue, qui résout les problèmes complexes.",
+    },
   },
   {
-    title: "Partner Enablement",
     icon: "graduation-cap",
-    description:
-      "Extensive training and marketing support that equips partners with the right skills to serve their customers.",
+    title: { en: "Partner enablement", fr: "Enablement partenaire" },
+    summary: {
+      en: "Extensive training and marketing support that equips partners with the right skills.",
+      fr: "Formation et soutien marketing complets pour doter les partenaires des bonnes compétences.",
+    },
   },
   {
-    title: "Product & Market Specialist",
     icon: "compass",
-    description:
-      "In-depth insight that keeps partners ahead in rapidly evolving technology markets.",
+    title: { en: "Product & market specialist", fr: "Spécialiste produits & marchés" },
+    summary: {
+      en: "In-depth insight that keeps partners ahead in rapidly evolving technology markets.",
+      fr: "Une vision approfondie qui garde les partenaires en avance sur des marchés en évolution.",
+    },
   },
   {
-    title: "Presales Support",
     icon: "headset",
-    description:
-      "Comprehensive presales assistance so partners make informed decisions and maximise their technology investments.",
+    title: { en: "Presales support", fr: "Support avant-vente" },
+    summary: {
+      en: "Comprehensive presales assistance so partners make informed decisions.",
+      fr: "Une assistance avant-vente complète pour des décisions éclairées.",
+    },
   },
 ];
 
-/* ------------------------------------------------------------------
-   Why partner with Lithe SD
------------------------------------------------------------------- */
-export const whyPartner: string[] = [
-  "Expand their technology portfolio and add value to existing offerings",
-  "Access new, innovative technologies and specialised technical expertise",
-  "Accelerate project delivery with deployment services and expert support",
-  "Increase professional services revenue through high-margin engagements",
-  "Develop managed services offerings for predictable, recurring revenue",
-  "Improve customer retention through value-added, outcome-driven solutions",
-];
-
-/* ------------------------------------------------------------------
-   Channel partner pain points
------------------------------------------------------------------- */
-export const painPoints: string[] = [
-  "Pressure to expand your solution portfolio without proportionally scaling headcount",
-  "Difficulty accessing the right technologies at competitive margins",
-  "Customers demanding end-to-end project accountability and measurable outcomes",
-  "The need to build recurring managed services revenues alongside project work",
-  "Complex multi-vendor implementations with tight delivery deadlines",
-  "Evolving cybersecurity threats that your customers need solved now",
-];
-
-/* ------------------------------------------------------------------
-   Comparison — traditional distributor vs Lithe SD
------------------------------------------------------------------- */
-export const comparison: { traditional: string; lithe: string }[] = [
-  {
-    traditional: "Product fulfilment only",
-    lithe: "Full lifecycle support: Pre-Sales → Implementation → Post-Sales",
-  },
-  {
-    traditional: "Transactional, order-driven relationships",
-    lithe: "Strategic, long-term partnership model",
-  },
-  {
-    traditional: "Minimal post-sale technical support",
-    lithe: "Dedicated technical and managed services support",
-  },
-  {
-    traditional: "One-size-fits-all product approach",
-    lithe: "Tailored to your SI's strengths and customer base",
-  },
-  {
-    traditional: "Limited in-house technical depth",
-    lithe: "Certified technical experts across all solution pillars",
-  },
-];
-
-/* ------------------------------------------------------------------
-   Support lifecycle
------------------------------------------------------------------- */
-export type LifecycleStage = {
-  stage: string;
+export type Stage = {
+  title: Bi;
   icon: IconName;
-  points: string[];
+  points: Bi[];
 };
 
-export const lifecycle: LifecycleStage[] = [
+export const lifecycle: Stage[] = [
   {
-    stage: "Pre-Sales",
     icon: "presentation",
+    title: { en: "Pre-sales", fr: "Avant-vente" },
     points: [
-      "Technical consultation and needs analysis",
-      "Solution architecture and Bill of Materials (BoM) development",
-      "Vendor engagement and proof-of-concept support",
-      "Competitive positioning and proposal support",
+      { en: "Technical consultation and needs analysis", fr: "Consultation technique et analyse des besoins" },
+      { en: "Solution architecture and BoM development", fr: "Architecture de solution et nomenclature" },
+      { en: "Vendor engagement and proof-of-concept support", fr: "Engagement éditeur et support de POC" },
+      { en: "Competitive positioning and proposal support", fr: "Positionnement concurrentiel et propositions" },
     ],
   },
   {
-    stage: "Sales",
     icon: "handshake",
+    title: { en: "Sales", fr: "Ventes" },
     points: [
-      "Competitive and flexible commercial pricing",
-      "Deal registration and margin protection",
-      "Commercial structuring and financing options",
+      { en: "Competitive and flexible commercial pricing", fr: "Tarification compétitive et flexible" },
+      { en: "Deal registration and margin protection", fr: "Enregistrement d'affaires et protection des marges" },
+      { en: "Commercial structuring and financing options", fr: "Structuration commerciale et financement" },
     ],
   },
   {
-    stage: "Implementation",
     icon: "wrench",
+    title: { en: "Implementation", fr: "Mise en œuvre" },
     points: [
-      "Deployment and integration support",
-      "Quality assurance and technical testing",
-      "Technical escalation and certified expert access",
+      { en: "Deployment and integration support", fr: "Support au déploiement et à l'intégration" },
+      { en: "Quality assurance and technical testing", fr: "Assurance qualité et tests techniques" },
+      { en: "Technical escalation and certified expert access", fr: "Escalade technique et experts certifiés" },
     ],
   },
   {
-    stage: "Post-Sales",
     icon: "life-buoy",
+    title: { en: "Post-sales", fr: "Après-vente" },
     points: [
-      "Ongoing Level 2/3 technical support",
-      "Training and knowledge transfer",
-      "Managed services enablement and practice development",
-      "Product lifecycle management and roadmap updates",
+      { en: "Ongoing Level 2/3 technical support", fr: "Support technique N2/N3 continu" },
+      { en: "Training and knowledge transfer", fr: "Formation et transfert de connaissances" },
+      { en: "Managed services enablement", fr: "Enablement des services managés" },
+      { en: "Product lifecycle and roadmap updates", fr: "Cycle de vie produit et feuilles de route" },
     ],
   },
 ];
 
-/* ------------------------------------------------------------------
-   LithePROTECT™
------------------------------------------------------------------- */
-export const litheProtect = [
+export const comparison: { traditional: Bi; lithe: Bi }[] = [
   {
-    title: "Joint Business Planning",
-    icon: "target" as IconName,
-    description:
-      "Align strategies and goals with Lithe SD's market insight and expertise for informed decision-making.",
+    traditional: { en: "Product fulfilment only", fr: "Simple fourniture de produits" },
+    lithe: { en: "Full lifecycle support: pre-sales → implementation → post-sales", fr: "Support complet : avant-vente → mise en œuvre → après-vente" },
   },
   {
-    title: "Vendor-Independent Deal Registration",
-    icon: "shield-check" as IconName,
-    description:
-      "Guaranteed vendor-independent deal registration — fairness and equal opportunity for every partner.",
+    traditional: { en: "Transactional, order-driven relationships", fr: "Relations transactionnelles centrées sur la commande" },
+    lithe: { en: "Strategic, long-term partnership model", fr: "Modèle de partenariat stratégique et durable" },
   },
   {
-    title: "Dedicated Channel Support",
-    icon: "headset" as IconName,
-    description:
-      "Personalised support spanning pre-sales assistance, technical support and marketing collaboration.",
-  },
-];
-
-/* ------------------------------------------------------------------
-   Vendor onboarding journey
------------------------------------------------------------------- */
-export type OnboardingStep = {
-  title: string;
-  description: string;
-  icon: IconName;
-};
-
-export const onboarding: OnboardingStep[] = [
-  {
-    title: "Technology Vetting & Strategic Fit",
-    icon: "shield-check",
-    description:
-      "Ensure the technology aligns with market demands and evaluate the vendor roadmap.",
+    traditional: { en: "Minimal post-sale technical support", fr: "Support technique après-vente minimal" },
+    lithe: { en: "Dedicated technical and managed services support", fr: "Support technique et services managés dédiés" },
   },
   {
-    title: "Proof of Concept & Technical Validation",
-    icon: "flask",
-    description:
-      "Validate real-world performance and compatibility in region.",
+    traditional: { en: "One-size-fits-all product approach", fr: "Approche produit standardisée" },
+    lithe: { en: "Tailored to your SI's strengths and customer base", fr: "Adapté aux forces et aux clients de votre intégrateur" },
   },
   {
-    title: "Commercial & Partnership Evaluation",
-    icon: "handshake",
-    description:
-      "Confirm commercial viability and long-term partner alignment.",
-  },
-  {
-    title: "Internal Enablement & Resource Building",
-    icon: "users",
-    description:
-      "Prepare Lithe SD to sell, deploy and support the solution end-to-end.",
-  },
-  {
-    title: "Go to Market",
-    icon: "rocket",
-    description:
-      "Activate the channel with pricing, enablement and demand generation.",
+    traditional: { en: "Limited in-house technical depth", fr: "Profondeur technique interne limitée" },
+    lithe: { en: "Certified technical experts across all solution pillars", fr: "Experts certifiés sur tous les piliers de solutions" },
   },
 ];
 
-/* ------------------------------------------------------------------
-   Why choose us
------------------------------------------------------------------- */
-export type WhyChoose = {
-  title: string;
-  description: string;
-  icon: IconName;
-};
+export const whyPartner: Bi[] = [
+  { en: "Expand your technology portfolio and add value to existing offerings", fr: "Élargissez votre portefeuille technologique et valorisez votre offre" },
+  { en: "Access new, innovative technologies and specialised technical expertise", fr: "Accédez à des technologies innovantes et à une expertise spécialisée" },
+  { en: "Accelerate project delivery with deployment services and expert support", fr: "Accélérez vos projets grâce aux services de déploiement et d'expertise" },
+  { en: "Increase professional services revenue through high-margin engagements", fr: "Augmentez vos revenus de services à forte marge" },
+  { en: "Develop managed services offerings for predictable, recurring revenue", fr: "Développez des services managés à revenus récurrents" },
+  { en: "Improve customer retention through outcome-driven solutions", fr: "Améliorez la fidélité client grâce à des solutions orientées résultats" },
+];
 
-export const whyChoose: WhyChoose[] = [
+export const whyChoose: { title: Bi; summary: Bi; icon: IconName }[] = [
   {
-    title: "Award-Winning Distributor",
     icon: "trophy",
-    description:
-      "Globally recognised by international technology vendors for our commitment to excellence and continuous growth. A trusted name across the IOC, Africa and Middle East.",
+    title: { en: "Award-winning distributor", fr: "Distributeur primé" },
+    summary: {
+      en: "Globally recognised by international technology vendors for our commitment to excellence and continuous growth.",
+      fr: "Reconnu mondialement par les éditeurs pour notre engagement envers l'excellence et la croissance.",
+    },
   },
   {
-    title: "Unparalleled Technology Solutions",
     icon: "sparkles",
-    description:
-      "The gateway to top-tier, innovative and disruptive technology — partnering with industry leaders to empower business success with precision and innovation.",
+    title: { en: "Unparalleled technology solutions", fr: "Solutions technologiques sans équivalent" },
+    summary: {
+      en: "The gateway to top-tier, innovative and disruptive technology — empowering business success with precision.",
+      fr: "La porte d'entrée vers des technologies de pointe, innovantes et disruptives.",
+    },
   },
   {
-    title: "100% Channel-Driven Distribution",
     icon: "share-2",
-    description:
-      "We go to market exclusively through our partner network — strengthening partnerships, protecting margins and fostering mutual growth.",
+    title: { en: "100% channel-driven distribution", fr: "Distribution 100 % via le canal" },
+    summary: {
+      en: "We go to market exclusively through our partner network — strengthening partnerships and protecting margins.",
+      fr: "Nous allons au marché exclusivement via notre réseau de partenaires.",
+    },
   },
 ];
 
-/* ------------------------------------------------------------------
-   Customer verticals
------------------------------------------------------------------- */
-export type Vertical = { title: string; icon: IconName };
-
-export const verticals: Vertical[] = [
-  { title: "Government", icon: "landmark" },
-  { title: "Hospitality", icon: "hotel" },
-  { title: "Education", icon: "graduation-cap" },
-  { title: "Logistics", icon: "truck" },
-  { title: "Telecoms", icon: "radio-tower" },
-  { title: "Real Estate", icon: "building" },
-  { title: "Banking", icon: "banknote" },
-  { title: "Healthcare", icon: "heart-pulse" },
-  { title: "Construction", icon: "hard-hat" },
-  { title: "Datacenters", icon: "server" },
-  { title: "Retail", icon: "shopping-bag" },
-  { title: "Security", icon: "lock" },
-  { title: "Mining", icon: "pickaxe" },
-  { title: "Manufacturing", icon: "factory" },
-  { title: "ISPs", icon: "network" },
+export const verticals: { title: Bi; icon: IconName }[] = [
+  { icon: "landmark", title: { en: "Government", fr: "Gouvernement" } },
+  { icon: "hotel", title: { en: "Hospitality", fr: "Hôtellerie" } },
+  { icon: "graduation-cap", title: { en: "Education", fr: "Éducation" } },
+  { icon: "truck", title: { en: "Logistics", fr: "Logistique" } },
+  { icon: "radio-tower", title: { en: "Telecoms", fr: "Télécoms" } },
+  { icon: "building", title: { en: "Real estate", fr: "Immobilier" } },
+  { icon: "banknote", title: { en: "Banking", fr: "Banque" } },
+  { icon: "heart-pulse", title: { en: "Healthcare", fr: "Santé" } },
+  { icon: "hard-hat", title: { en: "Construction", fr: "Construction" } },
+  { icon: "server", title: { en: "Datacenters", fr: "Datacenters" } },
+  { icon: "shopping-bag", title: { en: "Retail", fr: "Commerce" } },
+  { icon: "lock", title: { en: "Security", fr: "Sécurité" } },
+  { icon: "pickaxe", title: { en: "Mining", fr: "Mines" } },
+  { icon: "factory", title: { en: "Manufacturing", fr: "Industrie" } },
+  { icon: "network", title: { en: "ISPs", fr: "FAI" } },
 ];
 
-/* ------------------------------------------------------------------
-   Vendors
------------------------------------------------------------------- */
-export type Vendor = { name: string; logo?: string; pillar: string };
-
-export const vendors: Vendor[] = [
-  // Cybersecurity
-  { name: "Sangfor", logo: "/vendors/sangfor.png", pillar: "cybersecurity" },
-  { name: "Arcon", logo: "/vendors/arcon.png", pillar: "cybersecurity" },
-  {
-    name: "WatchGuard",
-    logo: "/vendors/watchguard.png",
-    pillar: "cybersecurity",
-  },
-  { name: "Seceon", logo: "/vendors/seceon.png", pillar: "cybersecurity" },
-  {
-    name: "MonitorApp",
-    logo: "/vendors/monitorapp.png",
-    pillar: "cybersecurity",
-  },
-  // Enterprise Infrastructure & Cloud
-  {
-    name: "KIOXIA",
-    logo: "/vendors/kioxia.svg",
-    pillar: "infrastructure-cloud",
-  },
-  {
-    name: "Western Digital",
-    logo: "/vendors/western-digital.svg",
-    pillar: "infrastructure-cloud",
-  },
-  { name: "Fusion", logo: "/vendors/fusion.svg", pillar: "infrastructure-cloud" },
-  { name: "QSAN", logo: "/vendors/qsan.png", pillar: "infrastructure-cloud" },
-  { name: "Samsung", logo: "/vendors/samsung.png", pillar: "infrastructure-cloud" },
-  // Business Tools
-  { name: "Sangoma", logo: "/vendors/sangoma.png", pillar: "business-tools" },
-  { name: "IceWarp", logo: "/vendors/icewarp.png", pillar: "business-tools" },
-  { name: "Axigen", pillar: "business-tools" },
-  // Asset Management, Monitoring & Observability
-  {
-    name: "Motadata",
-    logo: "/vendors/motadata.png",
-    pillar: "monitoring-observability",
-  },
-  {
-    name: "Scalefusion",
-    logo: "/vendors/scalefusion.svg",
-    pillar: "monitoring-observability",
-  },
-  // AI & BI
-  { name: "Trassir", logo: "/vendors/trassir.png", pillar: "ai-bi" },
-  { name: "vCount", logo: "/vendors/vcount.png", pillar: "ai-bi" },
-  { name: "Updapt", logo: "/vendors/updapt.png", pillar: "ai-bi" },
-  // Data Protection & Backup
-  { name: "Keepit", logo: "/vendors/keepit.png", pillar: "data-protection" },
-  { name: "Teramind", logo: "/vendors/teramind.png", pillar: "data-protection" },
-  {
-    name: "Backup Everything",
-    logo: "/vendors/backup-everything.png",
-    pillar: "data-protection",
-  },
-];
-
-/* ------------------------------------------------------------------
-   Customers (rendered as a wordmark wall)
------------------------------------------------------------------- */
 export const customers: string[] = [
-  "Emtel",
-  "MCB",
-  "Sanlam",
-  "Orange",
-  "MauBank",
-  "SICOM Group",
-  "Sunlife",
-  "Gamma",
-  "IBL",
-  "DBS",
-  "Seypec",
-  "Ocorian",
-  "AML",
-  "Cargo Handling",
-  "Intermart",
-  "Metro Express",
-  "Landscape Mauritius",
-  "QuantiLAB",
-  "Lottotech",
-  "Capital",
-  "Credentia",
-  "Odity",
-  "The Hub Karen",
-  "Duty Free",
-  "Sika",
-  "Text Book Centre",
-  "La Sentinelle",
-  "DTOS",
-  "Mauri Facilities",
+  "Emtel", "MCB", "Sanlam", "Orange", "MauBank", "SICOM Group", "Sunlife",
+  "Gamma", "IBL", "DBS", "Seypec", "Ocorian", "AML", "Cargo Handling",
+  "Intermart", "Metro Express", "Landscape Mauritius", "QuantiLAB",
+  "Lottotech", "Capital", "Credentia", "Odity", "The Hub Karen", "Duty Free",
+  "Sika", "Text Book Centre", "La Sentinelle", "DTOS", "Mauri Facilities",
   "State Investment Corporation",
-  "Mutual Aid",
 ];
 
-/* ------------------------------------------------------------------
-   Offices
------------------------------------------------------------------- */
-export type Office = {
-  city: string;
-  role: string;
-  address: string;
-  phone: string;
-  phoneHref: string;
-};
-
-export const offices: Office[] = [
-  {
-    city: "Mauritius",
-    role: "IOC Office",
-    address: "02, Osman Avenue, Quatre Bornes – 72249, Republic of Mauritius",
-    phone: "+230 467 2006",
-    phoneHref: "tel:+2304672006",
-  },
-  {
-    city: "Kenya",
-    role: "East Africa Office",
-    address: "Suite 3, 20 Westlands Road, Nairobi, Kenya",
-    phone: "+254 727 162 875",
-    phoneHref: "tel:+254727162875",
-  },
-  {
-    city: "Dubai",
-    role: "Middle East Office",
-    address: "Suite 801-04, Al Serkal Building 2, Port Saeed, Deira, Dubai, UAE",
-    phone: "+971 56 211 7015",
-    phoneHref: "tel:+971562117015",
-  },
-];
-
-/* ------------------------------------------------------------------
-   Misc
------------------------------------------------------------------- */
 export const about = {
-  vision:
-    "We aim to revolutionise the IT solutions distribution landscape by delivering unmatched value to our partners and end-customers. We strive to be the catalyst for digital transformation across the IOC, Africa and Middle East regions — empowering System Integrators and businesses to thrive in the dynamic world of technology.",
-  mission:
-    "To be the leading provider of innovative IT solutions, empowering System Integrators and businesses in the IOC, Africa and Middle East regions to achieve their strategic objectives through our tailored approach, comprehensive support and unwavering commitment to excellence.",
-  process:
-    "A streamlined, partner-centric process ensuring successful delivery of IT solutions — from initial consultation and solution design through to implementation, training and ongoing support.",
   intro: [
-    "Lithe Solutions Distributor Ltd (Lithe SD) is a Solutions Value-Added Distributor operating in the IOC, Africa and Middle East regions, and a proud member of the Lithe Group of Companies.",
-    "We go beyond traditional distribution. We partner with System Integrators throughout the entire sales, design, implementation and support lifecycle — ensuring successful, measurable customer outcomes.",
-    "Our expertise spans enterprise infrastructure, private and hybrid cloud, cybersecurity, infrastructure monitoring and observability, and professional services. We understand that every System Integrator has unique strengths, and we tailor our engagement to complement and amplify yours.",
-    "With deep regional knowledge and a growing network of over 100 channel partners, Lithe SD has become the trusted distributor of choice for businesses and System Integrators seeking reliable, innovative technology solutions.",
+    {
+      en: "Lithe Solutions Distributor Ltd (Lithe SD) is a Solutions Value-Added Distributor operating in the IOC, Africa and Middle East regions, and a proud member of the Lithe Group of Companies.",
+      fr: "Lithe Solutions Distributor Ltd (Lithe SD) est un distributeur à valeur ajoutée de solutions opérant dans la COI, en Afrique et au Moyen-Orient, et membre du Lithe Group of Companies.",
+    },
+    {
+      en: "We go beyond traditional distribution. We partner with System Integrators throughout the entire sales, design, implementation and support lifecycle — ensuring successful, measurable customer outcomes.",
+      fr: "Nous allons au-delà de la distribution traditionnelle. Nous accompagnons les intégrateurs sur tout le cycle de vente, de conception, de mise en œuvre et de support.",
+    },
+    {
+      en: "Our expertise spans enterprise infrastructure, private and hybrid cloud, cybersecurity, infrastructure monitoring and observability, and professional services.",
+      fr: "Notre expertise couvre l'infrastructure d'entreprise, le cloud privé et hybride, la cybersécurité, la supervision et l'observabilité, ainsi que les services professionnels.",
+    },
+    {
+      en: "With deep regional knowledge and a growing network of over 100 channel partners, Lithe SD has become the trusted distributor of choice for businesses and System Integrators seeking reliable, innovative technology solutions.",
+      fr: "Grâce à une connaissance approfondie de la région et à un réseau de plus de 100 partenaires, Lithe SD est devenue le distributeur de confiance des entreprises et des intégrateurs.",
+    },
   ],
+  vision: {
+    en: "We aim to revolutionise the IT solutions distribution landscape by delivering unmatched value to our partners and end-customers. We strive to be the catalyst for digital transformation across the IOC, Africa and Middle East regions.",
+    fr: "Nous voulons révolutionner la distribution de solutions IT en apportant une valeur inégalée à nos partenaires et à leurs clients. Nous sommes le catalyseur de la transformation digitale dans la COI, en Afrique et au Moyen-Orient.",
+  },
+  mission: {
+    en: "To be the leading provider of innovative IT solutions, empowering System Integrators and businesses to achieve their strategic objectives through our tailored approach, comprehensive support and unwavering commitment to excellence.",
+    fr: "Être le fournisseur de référence de solutions IT innovantes, en aidant les intégrateurs et les entreprises à atteindre leurs objectifs grâce à une approche sur mesure et un support complet.",
+  },
+  process: {
+    en: "A streamlined, partner-centric process ensuring successful delivery of IT solutions — from initial consultation and solution design through to implementation, training and ongoing support.",
+    fr: "Un processus simplifié et centré sur le partenaire, de la consultation initiale et la conception à la mise en œuvre, la formation et le support continu.",
+  },
 };
 
-export const regionNames = ["IOC", "East Africa", "Middle East"];
+export const litheProtect: { title: Bi; summary: Bi; icon: IconName }[] = [
+  {
+    icon: "target",
+    title: { en: "Joint business planning", fr: "Planification conjointe" },
+    summary: {
+      en: "Align strategies and goals with Lithe SD's market insight and expertise for informed decision-making.",
+      fr: "Alignez vos stratégies et objectifs sur l'expertise marché de Lithe SD.",
+    },
+  },
+  {
+    icon: "shield-check",
+    title: { en: "Vendor-independent deal registration", fr: "Enregistrement d'affaires indépendant" },
+    summary: {
+      en: "Guaranteed vendor-independent deal registration — fairness and equal opportunity for every partner.",
+      fr: "Un enregistrement d'affaires indépendant des éditeurs, équitable pour chaque partenaire.",
+    },
+  },
+  {
+    icon: "headset",
+    title: { en: "Dedicated channel support", fr: "Support canal dédié" },
+    summary: {
+      en: "Personalised support spanning pre-sales assistance, technical support and marketing collaboration.",
+      fr: "Un support personnalisé : avant-vente, technique et collaboration marketing.",
+    },
+  },
+];

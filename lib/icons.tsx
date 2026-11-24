@@ -1,5 +1,7 @@
 import {
   Activity,
+  ArrowRight,
+  ArrowUpRight,
   BadgeCheck,
   Banknote,
   Blocks,
@@ -9,14 +11,18 @@ import {
   Briefcase,
   Building2,
   CalendarClock,
+  Check,
+  ChevronDown,
   ClipboardCheck,
   Cloud,
   Compass,
   Crosshair,
   Database,
   DatabaseBackup,
+  Download,
   Factory,
   FileSearch,
+  FileText,
   Fingerprint,
   FlaskConical,
   Gauge,
@@ -33,10 +39,14 @@ import {
   Leaf,
   LifeBuoy,
   Lock,
+  Mail,
   MapPin,
+  Menu,
   Network,
   PackageOpen,
+  Phone,
   Pickaxe,
+  Play,
   Presentation,
   Radar,
   RadioTower,
@@ -44,6 +54,7 @@ import {
   ScanSearch,
   Server,
   Share2,
+  Shield,
   ShieldAlert,
   ShieldCheck,
   ShoppingBag,
@@ -56,11 +67,15 @@ import {
   Users,
   Wallet,
   Wrench,
+  X,
+  Clock,
   type LucideIcon,
 } from "lucide-react";
 
 export const icons = {
   activity: Activity,
+  "arrow-right": ArrowRight,
+  "arrow-up-right": ArrowUpRight,
   "badge-check": BadgeCheck,
   banknote: Banknote,
   blocks: Blocks,
@@ -70,14 +85,18 @@ export const icons = {
   briefcase: Briefcase,
   building: Building2,
   calendar: CalendarClock,
+  check: Check,
+  "chevron-down": ChevronDown,
   "clipboard-check": ClipboardCheck,
   cloud: Cloud,
   compass: Compass,
   crosshair: Crosshair,
   database: Database,
   "database-backup": DatabaseBackup,
+  download: Download,
   factory: Factory,
   "file-search": FileSearch,
+  "file-text": FileText,
   fingerprint: Fingerprint,
   flask: FlaskConical,
   gauge: Gauge,
@@ -94,10 +113,14 @@ export const icons = {
   leaf: Leaf,
   "life-buoy": LifeBuoy,
   lock: Lock,
+  mail: Mail,
   "map-pin": MapPin,
+  menu: Menu,
   network: Network,
   "package-open": PackageOpen,
+  phone: Phone,
   pickaxe: Pickaxe,
+  play: Play,
   presentation: Presentation,
   radar: Radar,
   "radio-tower": RadioTower,
@@ -105,6 +128,7 @@ export const icons = {
   "scan-search": ScanSearch,
   server: Server,
   "share-2": Share2,
+  shield: Shield,
   "shield-alert": ShieldAlert,
   "shield-check": ShieldCheck,
   "shopping-bag": ShoppingBag,
@@ -117,6 +141,8 @@ export const icons = {
   users: Users,
   wallet: Wallet,
   wrench: Wrench,
+  x: X,
+  clock: Clock,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof icons;
@@ -124,10 +150,12 @@ export type IconName = keyof typeof icons;
 export function Icon({
   name,
   className,
+  strokeWidth = 1.75,
 }: {
   name: IconName;
   className?: string;
+  strokeWidth?: number;
 }) {
   const Cmp = icons[name];
-  return <Cmp className={className} aria-hidden="true" />;
+  return <Cmp className={className} strokeWidth={strokeWidth} aria-hidden="true" />;
 }

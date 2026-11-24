@@ -1,102 +1,47 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-import { stats, type Stat } from "@/lib/content";
 import { cn } from "@/lib/utils";
-
-function Counter({ stat }: { stat: Stat }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const [display, setDisplay] = useState(stat.isYear ? stat.value : 0);
-
-  useEffect(() => {
-    if (stat.isYear) return;
-    const el = ref.current;
-    if (!el) return;
-
-    let raf = 0;
-    let started = false;
-    const reduce = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting || started) return;
-        started = true;
-        if (reduce) {
-          setDisplay(stat.value);
-          observer.disconnect();
-          return;
-        }
-        const duration = 1500;
-        const start = performance.now();
-        const tick = (now: number) => {
-          const progress = Math.min((now - start) / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          setDisplay(Math.round(stat.value * eased));
-          if (progress < 1) raf = requestAnimationFrame(tick);
-        };
-        raf = requestAnimationFrame(tick);
-        observer.disconnect();
-      },
-      { threshold: 0.4 },
-    );
-
-    observer.observe(el);
-    return () => {
-      observer.disconnect();
-      cancelAnimationFrame(raf);
-    };
-  }, [stat.value, stat.isYear]);
-
-  return (
-    <span ref={ref}>
-      {stat.prefix}
-      {stat.isYear ? display : display.toLocaleString("en-US")}
-      {stat.suffix}
-    </span>
-  );
-}
+import { stats } from "@/lib/content";
+import { l, type Locale } from "@/lib/i18n";
 
 export function StatBand({
+  locale,
   tone = "light",
   className,
 }: {
+  locale: Locale;
   tone?: "light" | "dark";
   className?: string;
 }) {
   return (
     <div
       className={cn(
-        "grid grid-cols-2 gap-px overflow-hidden rounded-card sm:grid-cols-3 lg:grid-cols-6",
-        tone === "light"
-          ? "border border-silver-border bg-silver-border"
-          : "border border-white/10 bg-white/10",
+        "grid grid-cols-2 overflow-hidden rounded-panel border sm:grid-cols-3",
+        tone === "light" ? "border-void/10 bg-void/10" : "border-white/10 bg-white/10",
         className,
       )}
     >
       {stats.map((stat) => (
         <div
-          key={stat.label}
+          key={stat.value}
           className={cn(
-            "flex flex-col items-start gap-2 px-5 py-6",
-            tone === "light" ? "bg-white" : "bg-midnight-ink",
+            "flex flex-col gap-2 p-5",
+            tone === "light" ? "bg-white" : "bg-obsidian",
           )}
         >
           <span
             className={cn(
-              "font-display text-[clamp(1.9rem,3vw,2.6rem)] font-light leading-none",
-              tone === "light" ? "text-midnight-ink" : "text-white",
+              "font-display text-[clamp(1.6rem,2.4vw,2.1rem)] font-medium leading-none tracking-[-0.03em]",
+              tone === "light" ? "text-void" : "text-white",
             )}
           >
-            <Counter stat={stat} />
+            {stat.value}
           </span>
           <span
             className={cn(
-              "font-mono text-micro uppercase",
-              tone === "light" ? "text-fog" : "text-halo-violet/70",
+              "text-[10px] uppercase tracking-[0.12em]",
+              tone === "light" ? "text-iron" : "text-smoke",
             )}
           >
-            {stat.label}
+            {l(locale, stat.label.en, stat.label.fr)}
           </span>
         </div>
       ))}

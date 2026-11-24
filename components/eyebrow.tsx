@@ -3,27 +3,22 @@ import { cn } from "@/lib/utils";
 
 export function Eyebrow({
   children,
-  tone = "light",
+  dark = false,
   className,
 }: {
   children: ReactNode;
-  tone?: "light" | "dark";
+  dark?: boolean;
   className?: string;
 }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-2.5 font-mono text-micro font-normal uppercase",
-        tone === "dark" ? "text-halo-violet" : "text-signal-blue",
+        "inline-flex items-center gap-2.5 font-sans text-[11px] font-medium uppercase tracking-[0.14em]",
+        dark ? "text-smoke" : "text-iron",
         className,
       )}
     >
-      <span
-        className={cn(
-          "h-px w-7",
-          tone === "dark" ? "bg-arc-cyan/70" : "bg-signal-blue/50",
-        )}
-      />
+      <span className="h-px w-7 bg-gradient-to-r from-iris to-ember" />
       {children}
     </span>
   );
