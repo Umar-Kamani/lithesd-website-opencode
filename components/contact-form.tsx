@@ -12,10 +12,42 @@ const labelClass = "text-[10px] uppercase tracking-[0.12em] text-iron";
 
 export function ContactForm({ locale }: { locale: Locale }) {
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmitted(true);
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    setSending(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          name: data.get("name"),
+          email: data.get("email"),
+          company: data.get("company"),
+          region: data.get("region"),
+          interest: data.get("interest"),
+          message: data.get("message"),
+          consent: data.get("consent") === "on",
+          source: "contact",
+          page: typeof window !== "undefined" ? window.location.pathname : "",
+        }),
+      });
+      const json = (await response.json()) as { ok?: boolean; error?: string };
+      if (!response.ok || !json.ok) {
+        throw new Error(json.error || l(locale, "Something went wrong.", "Une erreur est survenue."));
+      }
+      form.reset();
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : l(locale, "Something went wrong.", "Une erreur est survenue."));
+    } finally {
+      setSending(false);
+    }
   }
 
   const regions = ["IOC", l(locale, "East Africa", "Afrique de l'Est"), l(locale, "Middle East", "Moyen-Orient"), l(locale, "Elsewhere", "Autre")];
@@ -40,15 +72,11 @@ export function ContactForm({ locale }: { locale: Locale }) {
         <p className="max-w-md text-sm leading-relaxed text-body-light">
           {l(
             locale,
-            "This form is being connected to our lead system. In the meantime, please reach us directly at ",
-            "Ce formulaire est en cours de connexion à notre système de gestion des leads. En attendant, contactez-nous à ",
+            "Your enquiry has been received. Our team will be in touch shortly. You can also reach us at ",
+            "Votre demande a bien été reçue. Notre équipe vous contactera rapidement. Vous pouvez aussi nous écrire à ",
           )}
           <a href={`mailto:${site.email}`} className="font-medium text-iris hover:underline">
             {site.email}
-          </a>
-          {l(locale, " or call ", " ou appelez le ")}
-          <a href={site.phoneHref} className="font-medium text-iris hover:underline">
-            {site.phone}
           </a>
           .
         </p>
@@ -111,8 +139,22 @@ export function ContactForm({ locale }: { locale: Locale }) {
         </span>
       </label>
 
-      <Button locale={locale} type="submit" size="lg" className="w-full sm:w-auto sm:self-start">
-        {l(locale, "Send message", "Envoyer le message")}
+      {error ? (
+        <p role="alert" className="rounded-input border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </p>
+      ) : null}
+
+      <Button
+        locale={locale}
+        type="submit"
+        size="lg"
+        className="w-full sm:w-auto sm:self-start"
+        disabled={sending}
+      >
+        {sending
+          ? l(locale, "Sending…", "Envoi…")
+          : l(locale, "Send message", "Envoyer le message")}
         <ArrowRight className="h-4 w-4" />
       </Button>
     </form>

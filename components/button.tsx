@@ -29,6 +29,7 @@ export function Button({
   type,
   onClick,
   ariaLabel,
+  disabled,
 }: {
   locale: Locale;
   to?: string;
@@ -41,6 +42,7 @@ export function Button({
   type?: "button" | "submit";
   onClick?: () => void;
   ariaLabel?: string;
+  disabled?: boolean;
 }) {
   const classes = cn(
     "group/btn inline-flex items-center justify-center gap-2 rounded-pill font-sans font-medium tracking-[-0.01em] transition-colors duration-200",
@@ -85,8 +87,9 @@ export function Button({
     <button
       type={type ?? "button"}
       onClick={onClick}
-      className={classes}
+      className={cn(classes, disabled && "pointer-events-none opacity-60")}
       aria-label={ariaLabel}
+      disabled={disabled}
     >
       {children}
     </button>
