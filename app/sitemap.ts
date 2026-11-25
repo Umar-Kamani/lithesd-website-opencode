@@ -3,6 +3,8 @@ import { getBrands } from "@/lib/cms";
 import { getBlogPosts, getCaseStudies } from "@/lib/cms-content";
 import { siteUrl } from "@/lib/site";
 
+export const revalidate = 300;
+
 const pages = [
   { path: "", priority: 1 },
   { path: "/about", priority: 0.8 },
