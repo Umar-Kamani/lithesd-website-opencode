@@ -11,14 +11,18 @@ bands, a single electric accent, hairline borders and editorial light-weight typ
 
 ## Stack
 
-| Area      | Choice                                              |
-| --------- | --------------------------------------------------- |
-| Framework | Next.js 16 (App Router, React 19)                   |
-| Language  | TypeScript                                          |
-| Styling   | Tailwind CSS v4 (`@theme` design tokens)            |
-| Fonts     | Inter + IBM Plex Mono (self-hosted via `next/font`) |
-| Icons     | lucide-react                                        |
-| Motion    | Canvas particle sphere + scroll reveals (CSS/IO)    |
+| Area      | Choice                                                       |
+| --------- | ------------------------------------------------------------ |
+| Framework | Next.js 16 (App Router, React 19)                            |
+| Language  | TypeScript                                                   |
+| Styling   | Tailwind CSS v4 (`@theme` design tokens)                     |
+| CMS       | Payload 3 embedded in the app (`/admin`)                     |
+| Database  | Neon Postgres on Vercel (`@payloadcms/db-postgres`)          |
+| Storage   | Vercel Blob for media and brochures                          |
+| Email     | Nodemailer adapter with SMTP profiles managed in the CMS     |
+| Fonts     | Sora + Inter (self-hosted via `next/font`)                   |
+| Icons     | lucide-react                                                 |
+| Motion    | The Thread canvas hero, scroll reveals, native view transitions |
 
 ## Requirements
 
@@ -49,29 +53,68 @@ npm run dev      # http://localhost:3000
 ## Project structure
 
 ```
-app/                     Routes (App Router)
-  layout.tsx             Fonts, metadata, header/footer, JSON-LD
-  globals.css            Design tokens + base styles
-  page.tsx               Home
-  about/ solutions/ vendors/ partners/ customers/ contact/
-  not-found.tsx          404
-  sitemap.ts robots.ts   SEO
-  opengraph-image.tsx    Generated social share image
-components/               Reusable UI (header, footer, hero, grids, …)
+app/
+  (frontend)/[locale]/       Public site (English at root, French under /fr)
+    page.tsx                 Home
+    brands/                  Brand index, brand pages, product pages
+    insights/                Blog index, article pages, RSS feed
+    case-studies/            Case study index and detail pages
+    solutions/ services/ partners/ customers/ resources/ events/ contact/
+    template.tsx             Route-level view transition
+  (payload)/                 Payload admin and API routes
+  api/leads/                 Lead capture endpoint
+  api/brochure-download/     Gated brochure delivery
+  api/seed/                  Idempotent catalogue + editorial seed
+  globals.css                Design tokens, prose styles, transitions
+  sitemap.ts robots.ts       SEO
+collections/                 Payload collections (brands, products, editorial, leads)
+globals/                     Site settings + email/SMTP settings
+components/                  Reusable UI (header, footer, cards, browser, prose)
 lib/
-  site.ts                Site config, nav, contact, legal links
-  content.ts             All page content (solutions, vendors, offices, …)
-  icons.tsx              Icon name → lucide component map
-public/
-  vendors/               Vendor logos
-  lithe-*.png            Brand assets
-docs/                    Source references (design system + company profile)
-presentation/            PowerPoint deck + generator (see presentation/README.md)
+  cms.ts                     Catalogue access with static fallback
+  cms-content.ts             Case studies, posts, reading time, date formatting
+  brands.ts                  24-brand catalogue source data
+  seed-content.ts            Sample case studies and blog posts
+  site.ts                    Site config, nav, contact, legal links
+  content.ts                 Static page content (solutions, pillars, offices)
+payload.config.ts            Payload config (DB, storage, i18n, email)
 ```
 
-## Editing content
+## Content management
 
-- **Copy, stats, solutions, vendors, offices, customers** → `lib/content.ts`
+Everything customer-facing is managed in the CMS at **`/admin`**:
+
+| Group    | Collections                                                    |
+| -------- | -------------------------------------------------------------- |
+| Catalogue | Brands, Products, Brochures, Videos, Events                   |
+| Content   | Case studies, Blog posts, Topics                               |
+| Library   | Media                                                          |
+| Leads     | Enquiries and gated downloads                                  |
+
+- **Case studies** and **blog posts** can be attributed to multiple brands and products, a
+  pillar, an industry (case studies) and topics. Those relationships drive the related-content
+  sections on brand and product pages.
+- Roles: **Admin** (everything), **Editor** (content and leads), **Viewer** (read only).
+- Drafts and scheduled publishing are enabled on editorial content.
+- The site revalidates every 5 minutes, so publishing appears without a redeploy.
+- English is the default locale; French fields can be filled in per document.
+
+### Seeding
+
+The seed endpoint populates the 24 brands, 72 products, site settings and sample editorial
+content. It is idempotent and batched:
+
+```bash
+curl "https://<host>/api/seed?secret=$SEED_SECRET&offset=0&limit=6"
+```
+
+Repeat with increasing `offset` until `next` is `null`. Pass `content=0` to skip editorial
+seeding on the first batch. Rotate or remove `SEED_SECRET` before launch.
+
+## Editing static content
+
+- **Brand catalogue source (fallback)** → `lib/brands.ts`
+- **Solutions, pillars, offices, static page copy** → `lib/content.ts`
 - **Company details, navigation, contact info, legal links** → `lib/site.ts`
 - **Colors, type scale, spacing, radii** → the `@theme` block in `app/globals.css`
 

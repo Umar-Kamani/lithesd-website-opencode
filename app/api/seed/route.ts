@@ -1,7 +1,10 @@
 import { getPayload } from "payload";
+import type { Payload } from "payload";
 import { pushDevSchema } from "@payloadcms/drizzle";
 import config from "@payload-config";
 import { brands } from "@/lib/brands";
+import { lexical } from "@/lib/lexical";
+import { caseStudySeeds, postSeeds, topicSeeds } from "@/lib/seed-content";
 import { offices, site } from "@/lib/site";
 
 export const runtime = "nodejs";
@@ -184,6 +187,10 @@ export async function GET(request: Request) {
         } as Record<string, unknown>,
       });
     }
+
+    if (params.get("content") === "1") {
+      await seedEditorialContent(payload);
+    }
   }
 
   const next = offset + limit;
@@ -196,4 +203,164 @@ export async function GET(request: Request) {
     brandsCreated,
     productsCreated,
   });
+}
+
+/**
+ * Seeds topics plus the sample case studies and blog posts.
+ * Idempotent: existing documents are left untouched.
+ */
+async function seedEditorialContent(payload: Payload) {
+  const topicIdBySlug = new Map<string, string | number>();
+
+  for (const topic of topicSeeds) {
+    const existing = await payload.find({
+      collection: "topics",
+      where: { slug: { equals: topic.slug } },
+      limit: 1,
+      depth: 0,
+    });
+    if (existing.docs[0]) {
+      topicIdBySlug.set(topic.slug, existing.docs[0].id);
+      continue;
+    }
+    const created = await payload.create({
+      collection: "topics",
+      locale: "en",
+      data: { name: topic.en, slug: topic.slug } as Record<string, unknown>,
+    });
+    await payload.update({
+      collection: "topics",
+      id: created.id,
+      locale: "fr",
+      data: { name: topic.fr } as Record<string, unknown>,
+    });
+    topicIdBySlug.set(topic.slug, created.id);
+  }
+
+  const brandDocs = await payload.find({
+    collection: "brands",
+    limit: 200,
+    depth: 0,
+    pagination: false,
+  });
+  const brandIdBySlug = new Map<string, string | number>();
+  const brandSlugById = new Map<string, string>();
+  for (const doc of brandDocs.docs) {
+    brandIdBySlug.set(String(doc.slug), doc.id);
+    brandSlugById.set(String(doc.id), String(doc.slug));
+  }
+
+  const productDocs = await payload.find({
+    collection: "products",
+    limit: 600,
+    depth: 0,
+    pagination: false,
+  });
+  const productIdByKey = new Map<string, string | number>();
+  for (const doc of productDocs.docs) {
+    const brandSlug = brandSlugById.get(String(doc.brand));
+    if (brandSlug) {
+      productIdByKey.set(`${brandSlug}/${doc.slug}`, doc.id);
+    }
+  }
+
+  type Id = string | number;
+  const brandIds = (slugs: string[]): Id[] =>
+    slugs.map((slug) => brandIdBySlug.get(slug)).filter((id): id is Id => id !== undefined);
+  const productIds = (refs: { brand: string; slug: string }[]): Id[] =>
+    refs
+      .map((ref) => productIdByKey.get(`${ref.brand}/${ref.slug}`))
+      .filter((id): id is Id => id !== undefined);
+  const topicIds = (slugs: string[]): Id[] =>
+    slugs.map((slug) => topicIdBySlug.get(slug)).filter((id): id is Id => id !== undefined);
+
+  for (const seed of caseStudySeeds) {
+    const data = {
+      title: seed.title,
+      slug: seed.slug,
+      excerpt: seed.excerpt,
+      customerName: seed.customerName,
+      industry: seed.industry,
+      pillar: seed.pillar,
+      topics: topicIds(seed.topics),
+      brands: brandIds(seed.brands),
+      products: productIds(seed.products),
+      publishedAt: seed.publishedAt,
+      featured: seed.featured,
+      challenge: lexical(seed.challenge),
+      solution: lexical(seed.solution),
+      results: seed.results,
+      quote: seed.quote,
+      quoteAuthor: seed.quoteAuthor,
+      quoteRole: seed.quoteRole,
+      _status: "published",
+    };
+
+    const existing = await payload.find({
+      collection: "case-studies",
+      where: { slug: { equals: seed.slug } },
+      limit: 1,
+      depth: 0,
+    });
+    if (existing.docs[0]) {
+      if (existing.docs[0]._status !== "published") {
+        await payload.update({
+          collection: "case-studies",
+          id: existing.docs[0].id,
+          locale: "en",
+          data: data as Record<string, unknown>,
+        });
+      }
+      continue;
+    }
+
+    await payload.create({
+      collection: "case-studies",
+      locale: "en",
+      data: data as Record<string, unknown>,
+    });
+  }
+
+  for (const seed of postSeeds) {
+    const data = {
+      title: seed.title,
+      slug: seed.slug,
+      excerpt: seed.excerpt,
+      body: lexical(seed.body),
+      authorName: seed.authorName,
+      authorRole: seed.authorRole,
+      publishedAt: seed.publishedAt,
+      featured: seed.featured,
+      pillar: seed.pillar,
+      topics: topicIds(seed.topics),
+      brands: brandIds(seed.brands),
+      products: productIds(seed.products),
+      tags: seed.tags.map((tag) => ({ tag })),
+      _status: "published",
+    };
+
+    const existing = await payload.find({
+      collection: "blog-posts",
+      where: { slug: { equals: seed.slug } },
+      limit: 1,
+      depth: 0,
+    });
+    if (existing.docs[0]) {
+      if (existing.docs[0]._status !== "published") {
+        await payload.update({
+          collection: "blog-posts",
+          id: existing.docs[0].id,
+          locale: "en",
+          data: data as Record<string, unknown>,
+        });
+      }
+      continue;
+    }
+
+    await payload.create({
+      collection: "blog-posts",
+      locale: "en",
+      data: data as Record<string, unknown>,
+    });
+  }
 }

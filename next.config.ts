@@ -8,6 +8,9 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig: NextConfig = {
   images: {
     localPatterns: [{ pathname: "/api/media/file/**" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "**.public.blob.vercel-storage.com" },
+    ],
   },
   outputFileTracingIncludes: {
     "/api/seed": [

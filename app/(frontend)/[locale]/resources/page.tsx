@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Download, FileText, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Download, FileText, ShieldCheck } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { Section } from "@/components/section";
 import { SectionHeading } from "@/components/section-heading";
@@ -8,7 +9,7 @@ import { BrochureSlot, VideoSlot } from "@/components/placeholders";
 import { CtaBand } from "@/components/cta-band";
 import { getBrochures } from "@/lib/cms";
 import { BrochureCard } from "@/components/brochure-card";
-import { isLocale, l, type Locale } from "@/lib/i18n";
+import { href as localeHref, isLocale, l, type Locale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/metadata";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -136,6 +137,60 @@ export default async function ResourcesPage({ params }: { params: Promise<{ loca
             })}
           </div>
         </div>
+      </Section>
+
+      <Section tone="white">
+        <Reveal>
+          <SectionHeading
+            eyebrow={l(locale, "Editorial", "Éditorial")}
+            title={l(locale, "Read before you shortlist", "À lire avant de présélectionner")}
+            intro={l(
+              locale,
+              "Case studies show what changed in the field. Insights explain the design decisions behind it.",
+              "Les études de cas montrent ce qui a changé sur le terrain. Les analyses expliquent les choix de conception.",
+            )}
+          />
+        </Reveal>
+        <Reveal delay={120} className="mt-10 grid gap-5 md:grid-cols-2">
+          {[
+            {
+              to: "/case-studies",
+              eyebrow: l(locale, "Case studies", "Études de cas"),
+              title: l(locale, "Deployments, constraints and measured outcomes", "Déploiements, contraintes et résultats mesurés"),
+              body: l(
+                locale,
+                "Filter by industry or brand to find an environment close to your own.",
+                "Filtrez par secteur ou marque pour trouver un environnement proche du vôtre.",
+              ),
+            },
+            {
+              to: "/insights",
+              eyebrow: l(locale, "Insights", "Analyses"),
+              title: l(locale, "Architecture guidance from the practice teams", "Conseils d'architecture des équipes"),
+              body: l(
+                locale,
+                "Threat analysis, platform comparisons and practical playbooks.",
+                "Analyse des menaces, comparaisons de plateformes et méthodes concrètes.",
+              ),
+            },
+          ].map((item) => (
+            <Link
+              key={item.to}
+              href={localeHref(locale, item.to)}
+              className="group flex flex-col rounded-card border border-void/10 bg-white p-7 transition-colors hover:border-iris/40"
+            >
+              <span className="text-[10px] uppercase tracking-[0.14em] text-iris">
+                {item.eyebrow}
+              </span>
+              <h3 className="mt-3 text-heading-sm font-medium text-void">{item.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-body-light">{item.body}</p>
+              <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-iris">
+                {l(locale, "Explore", "Explorer")}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </Link>
+          ))}
+        </Reveal>
       </Section>
 
       <CtaBand

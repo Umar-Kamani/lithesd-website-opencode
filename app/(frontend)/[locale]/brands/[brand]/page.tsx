@@ -6,12 +6,18 @@ import { BrandLogo } from "@/components/brand-logo";
 import { ProductCard } from "@/components/product-card";
 import { BrochureSlot, VideoSlot } from "@/components/placeholders";
 import { BrochureCard } from "@/components/brochure-card";
+import { RelatedContent } from "@/components/related-content";
 import { Section } from "@/components/section";
 import { SectionHeading } from "@/components/section-heading";
 import { Reveal } from "@/components/reveal";
 import { CtaBand } from "@/components/cta-band";
 import { Button } from "@/components/button";
 import { getBrand, getBrands } from "@/lib/cms";
+import {
+  getRelatedCaseStudies,
+  getRelatedPosts,
+} from "@/lib/cms-content";
+import { blogPostCard, caseStudyCard } from "@/lib/content-view";
 import { pillars } from "@/lib/content";
 import { href as localeHref, isLocale, l, locales, type Locale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/metadata";
@@ -51,6 +57,15 @@ export default async function BrandPage({
   const pillar = pillars.find((p) => p.id === brand.pillar);
   const all = await getBrands();
   const others = all.filter((b) => b.slug !== brand.slug && b.pillar === brand.pillar).slice(0, 3);
+
+  const [relatedStudies, relatedPosts] = await Promise.all([
+    getRelatedCaseStudies(locale, brand.slug, undefined, 2),
+    getRelatedPosts(locale, brand.slug, undefined, 2),
+  ]);
+  const relatedContent = [
+    ...relatedStudies.map((study) => caseStudyCard(study, locale)),
+    ...relatedPosts.map((post) => blogPostCard(post, locale)),
+  ];
 
   return (
     <>
@@ -164,6 +179,19 @@ export default async function BrandPage({
           <VideoSlot locale={locale} />
         </Reveal>
       </Section>
+
+      <RelatedContent
+        locale={locale}
+        eyebrow={brand.name}
+        title={l(locale, "Case studies & insights", "Études de cas et analyses")}
+        intro={l(
+          locale,
+          "Deployments and analysis attributed to this brand.",
+          "Déploiements et analyses associés à cette marque.",
+        )}
+        items={relatedContent}
+        tone="white"
+      />
 
       {others.length > 0 ? (
         <Section tone="void">

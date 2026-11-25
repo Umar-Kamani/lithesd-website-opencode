@@ -11,9 +11,12 @@ import { BrandMarquee } from "@/components/brand-marquee";
 import { BrandCard } from "@/components/brand-card";
 import { CtaBand } from "@/components/cta-band";
 import { Button } from "@/components/button";
+import { ContentCard } from "@/components/content-card";
 import { Icon } from "@/lib/icons";
 import { about, whyChoose } from "@/lib/content";
 import { getBrands } from "@/lib/cms";
+import { getBlogPosts, getCaseStudies } from "@/lib/cms-content";
+import { blogPostCard, caseStudyCard } from "@/lib/content-view";
 import { isLocale, l, type Locale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -46,6 +49,12 @@ export default async function HomePage({
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : "en";
   const allBrands = await getBrands();
+  const [posts, studies] = await Promise.all([
+    getBlogPosts(locale),
+    getCaseStudies(locale),
+  ]);
+  const featuredStudy = studies.find((study) => study.featured) ?? studies[0] ?? null;
+  const latestPosts = posts.slice(0, 3);
   const featured = ["sangfor", "fujitsu", "asus", "watchguard", "seceon", "kioxia", "accops", "keepit"]
     .map((slug) => allBrands.find((brand) => brand.slug === slug))
     .filter((brand): brand is (typeof allBrands)[number] => Boolean(brand));
@@ -227,6 +236,51 @@ export default async function HomePage({
           </div>
         </Reveal>
       </Section>
+
+      {featuredStudy ? (
+        <Section tone="white">
+          <Reveal>
+            <SectionHeading
+              eyebrow={l(locale, "Case studies", "Études de cas")}
+              title={l(locale, "Outcomes, not slideware", "Des résultats, pas des slides")}
+              intro={l(
+                locale,
+                "A closer look at deployments in the region — the constraints, the design and the measured result.",
+                "Un regard approfondi sur des déploiements dans la région — contraintes, conception et résultats mesurés.",
+              )}
+              titleClassName="max-w-2xl"
+            />
+          </Reveal>
+          <Reveal delay={120} className="mt-10 grid gap-5">
+            <ContentCard item={caseStudyCard(featuredStudy, locale)} locale={locale} featured />
+          </Reveal>
+        </Section>
+      ) : null}
+
+      {latestPosts.length > 0 ? (
+        <Section tone="linen">
+          <Reveal className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+            <SectionHeading
+              eyebrow={l(locale, "Insights", "Analyses")}
+              title={l(locale, "Field notes from our practice teams", "Notes de terrain de nos équipes")}
+              intro={l(
+                locale,
+                "Architecture guidance and threat analysis, written by the people who deploy the portfolio.",
+                "Conseils d'architecture et analyse des menaces, par ceux qui déploient le portefeuille.",
+              )}
+            />
+            <Button locale={locale} to="/insights" variant="ghost" className="shrink-0">
+              {l(locale, "All insights", "Toutes les analyses")}
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Reveal>
+          <Reveal delay={120} className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {latestPosts.map((post) => (
+              <ContentCard key={post.id} item={blogPostCard(post, locale)} locale={locale} />
+            ))}
+          </Reveal>
+        </Section>
+      ) : null}
 
       <CtaBand locale={locale} />
     </>

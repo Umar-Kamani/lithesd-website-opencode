@@ -1,4 +1,4 @@
-import type { Access, CollectionConfig } from "payload";
+import type { Access, CollectionConfig, Field } from "payload";
 
 type Role = "admin" | "editor" | "viewer";
 const roleOf = (req: { user?: unknown }): Role | undefined =>
@@ -227,4 +227,132 @@ export const Leads: CollectionConfig = {
   ],
 };
 
-export const collections = [Users, Media, Brands, Products, Brochures, Videos, Events, BannerMessages, Leads];
+export const INDUSTRY_OPTIONS = [
+  { label: "Government", value: "government" },
+  { label: "Hospitality", value: "hospitality" },
+  { label: "Education", value: "education" },
+  { label: "Logistics", value: "logistics" },
+  { label: "Telecoms", value: "telecoms" },
+  { label: "Real estate", value: "real-estate" },
+  { label: "Banking", value: "banking" },
+  { label: "Healthcare", value: "healthcare" },
+  { label: "Construction", value: "construction" },
+  { label: "Datacenters", value: "datacenters" },
+  { label: "Retail", value: "retail" },
+  { label: "Security", value: "security" },
+  { label: "Mining", value: "mining" },
+  { label: "Manufacturing", value: "manufacturing" },
+  { label: "ISPs", value: "isps" },
+];
+
+const seoFields: Field[] = [
+  {
+    name: "seo",
+    type: "group",
+    label: "SEO",
+    fields: [
+      { name: "metaTitle", type: "text", localized: true },
+      { name: "metaDescription", type: "textarea", localized: true },
+      { name: "ogImage", type: "upload", relationTo: "media" },
+    ],
+  },
+];
+
+export const Topics: CollectionConfig = {
+  slug: "topics",
+  admin: { group: "Content", useAsTitle: "name", defaultColumns: ["name", "slug"] },
+  access: { read: publicRead, ...contentWrite },
+  fields: [
+    { name: "name", type: "text", required: true, localized: true },
+    { name: "slug", type: "text", required: true, unique: true, index: true },
+    { name: "description", type: "textarea", localized: true },
+  ],
+};
+
+export const CaseStudies: CollectionConfig = {
+  slug: "case-studies",
+  labels: { singular: "Case study", plural: "Case studies" },
+  admin: {
+    group: "Content",
+    useAsTitle: "title",
+    defaultColumns: ["title", "customerName", "industry", "publishedAt"],
+  },
+  versions: { drafts: true },
+  access: { read: publicRead, ...contentWrite },
+  fields: [
+    { name: "title", type: "text", required: true, localized: true },
+    { name: "slug", type: "text", required: true, unique: true, index: true },
+    { name: "excerpt", type: "textarea", localized: true },
+    { name: "coverImage", type: "upload", relationTo: "media" },
+    { name: "customerName", type: "text", label: "Customer" },
+    { name: "industry", type: "select", options: INDUSTRY_OPTIONS },
+    { name: "pillar", type: "select", options: PILLAR_OPTIONS },
+    { name: "topics", type: "relationship", relationTo: "topics", hasMany: true },
+    { name: "brands", type: "relationship", relationTo: "brands", hasMany: true },
+    { name: "products", type: "relationship", relationTo: "products", hasMany: true },
+    { name: "publishedAt", type: "date" },
+    { name: "featured", type: "checkbox", defaultValue: false },
+    { name: "challenge", type: "richText", localized: true },
+    { name: "solution", type: "richText", localized: true },
+    {
+      name: "results",
+      type: "array",
+      fields: [
+        { name: "label", type: "text", required: true, localized: true },
+        { name: "value", type: "text", required: true },
+      ],
+    },
+    { name: "quote", type: "textarea", localized: true },
+    { name: "quoteAuthor", type: "text" },
+    { name: "quoteRole", type: "text" },
+    ...seoFields,
+  ],
+};
+
+export const BlogPosts: CollectionConfig = {
+  slug: "blog-posts",
+  labels: { singular: "Blog post", plural: "Blog posts" },
+  admin: {
+    group: "Content",
+    useAsTitle: "title",
+    defaultColumns: ["title", "authorName", "publishedAt", "featured"],
+  },
+  versions: { drafts: true },
+  access: { read: publicRead, ...contentWrite },
+  fields: [
+    { name: "title", type: "text", required: true, localized: true },
+    { name: "slug", type: "text", required: true, unique: true, index: true },
+    { name: "excerpt", type: "textarea", localized: true },
+    { name: "coverImage", type: "upload", relationTo: "media" },
+    { name: "body", type: "richText", localized: true, required: true },
+    { name: "authorName", type: "text", required: true },
+    { name: "authorRole", type: "text" },
+    { name: "publishedAt", type: "date" },
+    { name: "featured", type: "checkbox", defaultValue: false },
+    { name: "pillar", type: "select", options: PILLAR_OPTIONS },
+    { name: "topics", type: "relationship", relationTo: "topics", hasMany: true },
+    { name: "brands", type: "relationship", relationTo: "brands", hasMany: true },
+    { name: "products", type: "relationship", relationTo: "products", hasMany: true },
+    {
+      name: "tags",
+      type: "array",
+      fields: [{ name: "tag", type: "text", required: true }],
+    },
+    ...seoFields,
+  ],
+};
+
+export const collections = [
+  Users,
+  Media,
+  Brands,
+  Products,
+  Brochures,
+  Videos,
+  Events,
+  BannerMessages,
+  Topics,
+  CaseStudies,
+  BlogPosts,
+  Leads,
+];

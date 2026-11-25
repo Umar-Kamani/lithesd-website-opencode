@@ -16,6 +16,8 @@ const company = [
 const explore = [
   { path: "/solutions", en: "Solutions", fr: "Solutions" },
   { path: "/services", en: "Services", fr: "Services" },
+  { path: "/insights", en: "Insights", fr: "Analyses" },
+  { path: "/case-studies", en: "Case studies", fr: "Études de cas" },
   { path: "/resources", en: "Resources", fr: "Ressources" },
   { path: "/contact", en: "Contact", fr: "Contact" },
 ];

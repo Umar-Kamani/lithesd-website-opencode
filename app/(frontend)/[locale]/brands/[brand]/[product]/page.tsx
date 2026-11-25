@@ -12,6 +12,12 @@ import { Reveal } from "@/components/reveal";
 import { CtaBand } from "@/components/cta-band";
 import { Button } from "@/components/button";
 import { getBrands, getProduct } from "@/lib/cms";
+import {
+  getRelatedCaseStudies,
+  getRelatedPosts,
+} from "@/lib/cms-content";
+import { RelatedContent } from "@/components/related-content";
+import { blogPostCard, caseStudyCard } from "@/lib/content-view";
 import { href as localeHref, isLocale, l, locales, type Locale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -73,6 +79,15 @@ export default async function ProductPage({
   if (!brand || !product) notFound();
 
   const related = brand.products.filter((p) => p.slug !== product.slug);
+
+  const [relatedStudies, relatedPosts] = await Promise.all([
+    getRelatedCaseStudies(locale, brand.slug, product.slug, 2),
+    getRelatedPosts(locale, brand.slug, product.slug, 2),
+  ]);
+  const relatedContent = [
+    ...relatedStudies.map((study) => caseStudyCard(study, locale)),
+    ...relatedPosts.map((post) => blogPostCard(post, locale)),
+  ];
 
   return (
     <>
@@ -209,6 +224,19 @@ export default async function ProductPage({
           </Reveal>
         </Section>
       ) : null}
+
+      <RelatedContent
+        locale={locale}
+        eyebrow={product.name}
+        title={l(locale, "Related insights", "Analyses associées")}
+        intro={l(
+          locale,
+          "Case studies and analysis featuring this product.",
+          "Études de cas et analyses mettant en avant ce produit.",
+        )}
+        items={relatedContent}
+        tone="white"
+      />
 
       {related.length > 0 ? (
         <Section tone="void">

@@ -40,12 +40,14 @@ export const nav: NavItem[] = [
   { key: "solutions", path: "/solutions", en: "Solutions", fr: "Solutions" },
   { key: "services", path: "/services", en: "Services", fr: "Services" },
   { key: "brands", path: "/brands", en: "Brands", fr: "Marques" },
+  { key: "insights", path: "/insights", en: "Insights", fr: "Analyses" },
   { key: "partners", path: "/partners", en: "Partners", fr: "Partenaires" },
   { key: "resources", path: "/resources", en: "Resources", fr: "Ressources" },
 ];
 
 export const footerNav = [
   ...nav,
+  { key: "case-studies", path: "/case-studies", en: "Case studies", fr: "Études de cas" },
   { key: "customers", path: "/customers", en: "Customers", fr: "Clients" },
   { key: "events", path: "/events", en: "Events", fr: "Événements" },
   { key: "contact", path: "/contact", en: "Contact", fr: "Contact" },

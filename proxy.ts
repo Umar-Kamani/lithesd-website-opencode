@@ -28,5 +28,7 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|admin|_next|_vercel|.*\\..*).*)"],
+  matcher: [
+    "/((?!api|admin|_next|_vercel|.*\\.(?:png|jpe?g|gif|svg|ico|webp|avif|css|js|mjs|map|txt|woff2?|ttf|otf|pdf|mp4|webm|zip)$).*)",
+  ],
 };
