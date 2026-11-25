@@ -133,7 +133,7 @@ export default async function BrandPage({
         </div>
       </section>
 
-      <Section tone="white">
+      <Section tone="void">
         <Reveal>
           <SectionHeading
             eyebrow={l(locale, "Products", "Produits")}
@@ -143,18 +143,19 @@ export default async function BrandPage({
               "Explore the product families we distribute and support. Every product page includes brochures and an enquiry route.",
               "Découvrez les gammes que nous distribuons et soutenons. Chaque fiche produit inclut brochures et formulaire de contact.",
             )}
+            dark
           />
         </Reveal>
         <Reveal delay={120} className="mt-12">
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {brand.products.map((product) => (
-              <ProductCard key={product.slug} product={product} brandSlug={brand.slug} locale={locale} />
+              <ProductCard key={product.slug} product={product} brandSlug={brand.slug} locale={locale} tone="dark" />
             ))}
           </div>
         </Reveal>
       </Section>
 
-      <Section tone="linen" id="brochures">
+      <Section tone="obsidian" id="brochures">
         <Reveal>
           <SectionHeading
             eyebrow={l(locale, "Resources", "Ressources")}
@@ -164,6 +165,7 @@ export default async function BrandPage({
               "Branded brochures are being prepared and will be gated for download. Videos will be added as they are produced.",
               "Les brochures de marque sont en préparation et seront soumises à un formulaire. Les vidéos seront ajoutées au fur et à mesure.",
             )}
+            dark
           />
         </Reveal>
         <Reveal delay={120} className="mt-10 grid gap-5 lg:grid-cols-2">
@@ -174,9 +176,9 @@ export default async function BrandPage({
               ))}
             </div>
           ) : (
-            <BrochureSlot locale={locale} />
+            <BrochureSlot locale={locale} tone="dark" />
           )}
-          <VideoSlot locale={locale} />
+          <VideoSlot locale={locale} tone="dark" />
         </Reveal>
       </Section>
 
@@ -190,7 +192,7 @@ export default async function BrandPage({
           "Déploiements et analyses associés à cette marque.",
         )}
         items={relatedContent}
-        tone="white"
+        tone="void"
       />
 
       {others.length > 0 ? (

@@ -40,7 +40,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
         )}
       />
 
-      <Section tone="white">
+      <Section tone="void">
         <Reveal>
           <SectionHeading
             eyebrow={l(locale, "Professional services", "Services professionnels")}
@@ -50,10 +50,11 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
               "Eight services that let partners deliver more — with certified specialists behind every engagement.",
               "Huit services qui permettent aux partenaires d'en faire plus, avec des spécialistes certifiés.",
             )}
+            dark
           />
         </Reveal>
         <Reveal delay={120} className="mt-12">
-          <ServiceGrid locale={locale} />
+          <ServiceGrid locale={locale} tone="dark" />
         </Reveal>
       </Section>
 
@@ -78,7 +79,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
         </div>
       </Section>
 
-      <Section tone="linen">
+      <Section tone="obsidian">
         <Reveal>
           <SectionHeading
             eyebrow={l(locale, "Enablement", "Enablement")}
@@ -88,10 +89,11 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
               "Training, presales, market insight and a partner program designed to make your practice more capable and more profitable.",
               "Formation, avant-vente, vision marché et un programme partenaire conçu pour rendre votre pratique plus performante.",
             )}
+            dark
           />
         </Reveal>
         <Reveal delay={120} className="mt-12">
-          <ValueAdd locale={locale} />
+          <ValueAdd locale={locale} tone="dark" />
         </Reveal>
       </Section>
 

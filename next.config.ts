@@ -6,8 +6,14 @@ import { fileURLToPath } from "node:url";
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      { source: "/solutions", destination: "/partners", permanent: true },
+      { source: "/fr/solutions", destination: "/fr/partners", permanent: true },
+    ];
+  },
   images: {
-    localPatterns: [{ pathname: "/api/media/file/**" }],
+    localPatterns: [{ pathname: "/**" }],
     remotePatterns: [
       { protocol: "https", hostname: "**.public.blob.vercel-storage.com" },
     ],

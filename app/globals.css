@@ -25,8 +25,13 @@
   --color-iris-deep: #005ca5;
   --color-brand-slate: #44629a;
   --color-brand-ink: #1d4354;
-  --color-ember: #f6772f;
-  --color-ember-soft: #ffaa81;
+  --color-azure: #4a8bff;
+  --color-glacier: #a9c7ff;
+  /* Legacy aliases now resolve to blue. Warm is reserved for alerts. */
+  --color-ember: #4a8bff;
+  --color-ember-soft: #a9c7ff;
+  --color-alert: #f6772f;
+  --color-alert-soft: #ffb08a;
 
   /* ---------- Text ---------- */
   --color-on-dark: #ffffff;
@@ -121,7 +126,7 @@
    ============================================================ */
 
 .text-gradient-warm {
-  background: linear-gradient(92deg, #ffffff 0%, #dbe4ff 52%, #ffaa81 100%);
+  background: linear-gradient(92deg, #ffffff 0%, #dbe4ff 52%, #a9c7ff 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -146,8 +151,8 @@
 .glow-ember {
   background: radial-gradient(
     closest-side,
-    rgba(246, 119, 47, 0.32),
-    rgba(246, 119, 47, 0) 72%
+    rgba(74, 139, 255, 0.30),
+    rgba(74, 139, 255, 0) 72%
   );
 }
 
@@ -177,7 +182,7 @@
   background: linear-gradient(
     90deg,
     rgba(30, 109, 255, 0.7),
-    rgba(246, 119, 47, 0.55) 55%,
+    rgba(74, 139, 255, 0.55) 55%,
     rgba(255, 255, 255, 0)
   );
 }
@@ -243,7 +248,7 @@
 .article-prose {
   font-size: 1.0625rem;
   line-height: 1.75;
-  color: var(--color-body-light);
+  color: var(--color-ash);
 }
 
 .article-prose > * + * {
@@ -255,7 +260,7 @@
   font-size: clamp(1.4rem, 1.6vw + 1rem, 1.9rem);
   font-weight: 500;
   letter-spacing: -0.025em;
-  color: var(--color-void);
+  color: #ffffff;
 }
 
 .article-prose h3 {
@@ -263,7 +268,7 @@
   font-size: 1.25rem;
   font-weight: 500;
   letter-spacing: -0.02em;
-  color: var(--color-void);
+  color: #ffffff;
 }
 
 .article-prose p {
@@ -292,23 +297,23 @@
 }
 
 .article-prose li::marker {
-  color: var(--color-iris);
+  color: var(--color-iris-bright);
 }
 
 .article-prose a {
-  color: var(--color-iris);
+  color: var(--color-iris-bright);
   text-decoration: underline;
   text-underline-offset: 3px;
   transition: color 0.2s ease;
 }
 
 .article-prose a:hover {
-  color: var(--color-iris-deep);
+  color: #ffffff;
 }
 
 .article-prose strong {
   font-weight: 600;
-  color: var(--color-void);
+  color: #ffffff;
 }
 
 .article-prose blockquote {
@@ -319,11 +324,11 @@
   font-size: 1.2rem;
   line-height: 1.5;
   letter-spacing: -0.02em;
-  color: var(--color-void);
+  color: #ffffff;
 }
 
 .article-prose hr {
-  border-color: rgba(5, 7, 15, 0.12);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 /* Scroll reveal (progressive enhancement) */

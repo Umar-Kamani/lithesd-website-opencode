@@ -178,12 +178,12 @@ export default async function CaseStudyPage({
         </Section>
       ) : null}
 
-      <Section tone="white">
+      <Section tone="void">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-14">
           <div className="min-w-0">
             {study.challenge ? (
               <div>
-                <h2 className="text-heading-sm font-medium text-void">
+                <h2 className="text-heading-sm font-medium text-white">
                   {l(locale, "The challenge", "Le défi")}
                 </h2>
                 <div className="mt-5">
@@ -194,7 +194,7 @@ export default async function CaseStudyPage({
 
             {study.solution ? (
               <div className="mt-12">
-                <h2 className="text-heading-sm font-medium text-void">
+                <h2 className="text-heading-sm font-medium text-white">
                   {l(locale, "The solution", "La solution")}
                 </h2>
                 <div className="mt-5">
@@ -203,8 +203,8 @@ export default async function CaseStudyPage({
               </div>
             ) : null}
 
-            <div className="mt-12 border-t border-void/10 pt-8">
-              <p className="text-sm text-body-light">
+            <div className="mt-12 border-t border-white/10 pt-8">
+              <p className="text-sm text-ash">
                 {l(
                   locale,
                   "Facing a similar constraint? We can scope a comparable design for your environment.",
@@ -229,7 +229,7 @@ export default async function CaseStudyPage({
               products={study.products}
               topics={study.topics}
             />
-            <div className="rounded-card border border-void/10 bg-linen p-6">
+            <div className="rounded-card border border-white/10 bg-charcoal p-6">
               <p className="text-[10px] uppercase tracking-[0.16em] text-iron">
                 {l(locale, "At a glance", "En bref")}
               </p>
@@ -243,12 +243,12 @@ export default async function CaseStudyPage({
                   .map((row) => (
                     <div
                       key={row.label}
-                      className="flex items-start justify-between gap-4 border-b border-void/10 pb-2.5 last:border-0 last:pb-0"
+                      className="flex items-start justify-between gap-4 border-b border-white/10 pb-2.5 last:border-0 last:pb-0"
                     >
                       <dt className="text-[11px] uppercase tracking-[0.08em] text-iron">
                         {row.label}
                       </dt>
-                      <dd className="text-right text-xs text-void">{row.value}</dd>
+                      <dd className="text-right text-xs text-white">{row.value}</dd>
                     </div>
                   ))}
               </dl>
@@ -258,15 +258,15 @@ export default async function CaseStudyPage({
       </Section>
 
       {study.quote ? (
-        <Section tone="linen">
+        <Section tone="obsidian">
           <div className="mx-auto max-w-3xl text-center">
             <Quote className="mx-auto h-8 w-8 text-iris" />
-            <blockquote className="mt-6 font-display text-heading-sm font-medium leading-snug text-void">
+            <blockquote className="mt-6 font-display text-heading-sm font-medium leading-snug text-white">
               “{study.quote}”
             </blockquote>
             {study.quoteAuthor ? (
-              <p className="mt-5 text-sm text-body-light">
-                <span className="font-medium text-void">{study.quoteAuthor}</span>
+              <p className="mt-5 text-sm text-ash">
+                <span className="font-medium text-white">{study.quoteAuthor}</span>
                 {study.quoteRole ? <span> · {study.quoteRole}</span> : null}
               </p>
             ) : null}

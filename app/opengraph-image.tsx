@@ -49,7 +49,7 @@ export default function OpengraphImage() {
             color: "#6B7280",
           }}
         >
-          <span>24 brands · 100% channel driven</span>
+          <span>Specialist brands · 100% channel driven</span>
           <span style={{ color: "#4A8BFF" }}>lithesd.com</span>
         </div>
       </div>

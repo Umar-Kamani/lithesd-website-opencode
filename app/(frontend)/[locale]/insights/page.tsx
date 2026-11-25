@@ -101,16 +101,16 @@ export default async function InsightsPage({
       />
 
       {featured ? (
-        <Section tone="white" className="pb-0 sm:pb-0 lg:pb-0">
+        <Section tone="void" className="pb-0 sm:pb-0 lg:pb-0">
           <Reveal>
             <div className="grid gap-5">
-              <ContentCard item={blogPostCard(featured, locale)} locale={locale} featured />
+              <ContentCard item={blogPostCard(featured, locale)} locale={locale} tone="dark" featured />
             </div>
           </Reveal>
         </Section>
       ) : null}
 
-      <Section tone="white">
+      <Section tone="void">
         <Reveal>
           <SectionHeading
             eyebrow={l(locale, "All insights", "Toutes les analyses")}
@@ -132,6 +132,7 @@ export default async function InsightsPage({
                     "Nos équipes préparent les premiers articles. Ils apparaîtront ici dès leur publication.",
                   )
             }
+            dark
           />
         </Reveal>
         {items.length > 0 ? (

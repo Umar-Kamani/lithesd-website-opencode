@@ -19,8 +19,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title: l(locale, "Brands", "Marques"),
     description: l(
       locale,
-      "Explore the Lithe SD portfolio: 24 technology brands across cybersecurity, infrastructure, business tools, observability, AI and data protection.",
-      "Découvrez le portefeuille Lithe SD : 24 marques technologiques en cybersécurité, infrastructure, outils métier, observabilité, IA et protection des données.",
+      "Explore the Lithe SD portfolio: specialist technology brands across cybersecurity, infrastructure, business tools, observability, AI and data protection.",
+      "Découvrez le portefeuille Lithe SD : des marques technologiques spécialisées en cybersécurité, infrastructure, outils métier, observabilité, IA et protection des données.",
     ),
   });
 }
@@ -56,20 +56,21 @@ export default async function BrandsPage({ params }: { params: Promise<{ locale:
         )}
       />
 
-      <Section tone="white">
+      <Section tone="void">
         <Reveal>
           <SectionHeading
             eyebrow={l(locale, "The portfolio", "Le portefeuille")}
-            title={l(locale, "24 brands across six pillars", "24 marques réparties en six piliers")}
+            title={l(locale, "A specialist portfolio, across six pillars", "Un portefeuille spécialisé, réparti en six piliers")}
             intro={l(
               locale,
               "Filter by pillar to find the right technology, then explore products and brochures.",
               "Filtrez par pilier pour trouver la bonne technologie, puis explorez les produits et brochures.",
             )}
+            dark
           />
         </Reveal>
         <Reveal delay={120} className="mt-10">
-          <BrandBrowser locale={locale} items={items} filters={filters} />
+          <BrandBrowser locale={locale} items={items} filters={filters} tone="dark" />
         </Reveal>
       </Section>
 

@@ -178,14 +178,34 @@ export const getBrochures = cache(async (locale: Locale): Promise<BrochureRef[]>
 
 export type CmsEvent = {
   id: string;
+  slug: string;
   title: string;
   date: string;
+  startAt: string;
+  endAt: string;
+  timezone: string;
   type: string;
+  format: string;
   location: string;
+  venueName: string;
+  venueAddress: string;
+  virtualUrl: string;
+  coverImage: string | null;
   description: string;
+  agenda: { time: string; title: string; detail: string }[];
+  speakers: { name: string; role: string; photo: string | null }[];
+  registrationEnabled: boolean;
+  registrationDeadline: string;
+  confirmationMessage: string;
   videoUrl: string | null;
   images: string[];
 };
+
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 export const getEvents = cache(async (locale: Locale): Promise<CmsEvent[]> => {
   try {
@@ -196,6 +216,7 @@ export const getEvents = cache(async (locale: Locale): Promise<CmsEvent[]> => {
       locale,
       limit: 100,
       sort: "-date",
+      where: { _status: { equals: "published" } } as never,
     });
     return docs.map((raw) => {
       const doc = raw as Doc;
@@ -206,18 +227,89 @@ export const getEvents = cache(async (locale: Locale): Promise<CmsEvent[]> => {
             .map((row: Doc) => urlOf(row?.image))
             .filter((url): url is string => Boolean(url))
         : [];
+      const title = String(doc.title ?? "");
+      const agenda = Array.isArray(doc.agenda)
+        ? doc.agenda.map((row: Doc) => ({
+            time: String(row?.time ?? ""),
+            title: String(row?.title ?? ""),
+            detail: String(row?.detail ?? ""),
+          }))
+        : [];
+      const speakers = Array.isArray(doc.speakers)
+        ? doc.speakers.map((row: Doc) => ({
+            name: String(row?.name ?? ""),
+            role: String(row?.role ?? ""),
+            photo: urlOf(row?.photo),
+          }))
+        : [];
       return {
         id: String(doc.id),
-        title: String(doc.title ?? ""),
+        slug: String(doc.slug ?? slugify(title) ?? doc.id),
+        title,
         date: String(doc.date ?? ""),
+        startAt: String(doc.startAt ?? doc.date ?? ""),
+        endAt: String(doc.endAt ?? ""),
+        timezone: String(doc.timezone ?? "UTC"),
         type: String(doc.type ?? "participated"),
+        format: String(doc.format ?? "in-person"),
         location: String(doc.location ?? ""),
+        venueName: String(doc.venueName ?? ""),
+        venueAddress: String(doc.venueAddress ?? ""),
+        virtualUrl: String(doc.virtualUrl ?? ""),
+        coverImage: urlOf(doc.coverImage),
         description: String(doc.description ?? ""),
+        agenda,
+        speakers,
+        registrationEnabled: doc.registrationEnabled !== false,
+        registrationDeadline: String(doc.registrationDeadline ?? ""),
+        confirmationMessage: String(doc.confirmationMessage ?? ""),
         videoUrl: video && typeof video.url === "string" ? video.url : null,
         images,
       };
     });
   } catch {
     return [];
+  }
+});
+
+export type SiteOffice = {
+  city: string;
+  role: string;
+  phone: string;
+  email: string;
+};
+
+export type SiteSettings = {
+  email: string;
+  phone: string;
+  hours: string;
+  offices: SiteOffice[];
+};
+
+export const getSiteSettings = cache(async (locale: Locale): Promise<SiteSettings | null> => {
+  try {
+    const payload = await client();
+    const settings = (await payload.findGlobal({
+      slug: "site-settings",
+      locale,
+      depth: 0,
+    })) as Doc | null;
+    if (!settings) return null;
+    const offices = Array.isArray(settings.offices)
+      ? settings.offices.map((row: Doc) => ({
+          city: String(row?.city ?? ""),
+          role: String(row?.role ?? ""),
+          phone: String(row?.phone ?? ""),
+          email: String(row?.email ?? ""),
+        }))
+      : [];
+    return {
+      email: String(settings.email ?? "info@lithesd.com"),
+      phone: String(settings.phone ?? ""),
+      hours: String(settings.hours ?? ""),
+      offices,
+    };
+  } catch {
+    return null;
   }
 });

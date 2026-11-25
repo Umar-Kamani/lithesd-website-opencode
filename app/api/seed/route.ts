@@ -4,7 +4,7 @@ import { pushDevSchema } from "@payloadcms/drizzle";
 import config from "@payload-config";
 import { brands } from "@/lib/brands";
 import { lexical } from "@/lib/lexical";
-import { caseStudySeeds, postSeeds, topicSeeds } from "@/lib/seed-content";
+import { caseStudySeeds, eventSeed, policySeeds, postSeeds, topicSeeds } from "@/lib/seed-content";
 import { offices, site } from "@/lib/site";
 
 export const runtime = "nodejs";
@@ -171,7 +171,7 @@ export async function GET(request: Request) {
         locale: "en",
         data: {
           message:
-            "Now live: 24 brands across cybersecurity, cloud, infrastructure and data protection.",
+            "Now live: specialist brands across cybersecurity, cloud, infrastructure and data protection.",
           link: "/brands",
           active: true,
           order: 1,
@@ -183,7 +183,7 @@ export async function GET(request: Request) {
         locale: "fr",
         data: {
           message:
-            "Désormais en ligne : 24 marques en cybersécurité, cloud, infrastructure et protection des données.",
+            "Désormais en ligne : des marques spécialisées en cybersécurité, cloud, infrastructure et protection des données.",
         } as Record<string, unknown>,
       });
     }
@@ -361,6 +361,63 @@ async function seedEditorialContent(payload: Payload) {
       collection: "blog-posts",
       locale: "en",
       data: data as Record<string, unknown>,
+    });
+  }
+
+  for (const seed of policySeeds) {
+    const existing = await payload.find({
+      collection: "policies",
+      where: { slug: { equals: seed.slug } },
+      limit: 1,
+      depth: 0,
+    });
+    if (existing.docs[0]) continue;
+
+    await payload.create({
+      collection: "policies",
+      locale: "en",
+      data: {
+        title: seed.title,
+        slug: seed.slug,
+        summary: seed.summary,
+        body: seed.body,
+        category: seed.category,
+        order: seed.order,
+        effectiveDate: seed.effectiveDate,
+        showInFooter: true,
+        _status: "published",
+      } as Record<string, unknown>,
+    });
+  }
+
+  const existingEvent = await payload.find({
+    collection: "events",
+    where: { slug: { equals: eventSeed.slug } },
+    limit: 1,
+    depth: 0,
+  });
+  if (!existingEvent.docs[0]) {
+    await payload.create({
+      collection: "events",
+      locale: "en",
+      data: {
+        title: eventSeed.title,
+        slug: eventSeed.slug,
+        date: eventSeed.date,
+        startAt: eventSeed.startAt,
+        endAt: eventSeed.endAt,
+        timezone: eventSeed.timezone,
+        type: eventSeed.type,
+        format: eventSeed.format,
+        location: eventSeed.location,
+        venueName: eventSeed.venueName,
+        description: eventSeed.description,
+        agenda: eventSeed.agenda,
+        registrationEnabled: true,
+        registrationDeadline: eventSeed.registrationDeadline,
+        confirmationMessage: eventSeed.confirmationMessage,
+        _status: "published",
+      } as Record<string, unknown>,
     });
   }
 }

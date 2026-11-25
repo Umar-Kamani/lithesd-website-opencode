@@ -95,16 +95,16 @@ export default async function CaseStudiesPage({
       />
 
       {featured ? (
-        <Section tone="white" className="pb-0 sm:pb-0 lg:pb-0">
+        <Section tone="void" className="pb-0 sm:pb-0 lg:pb-0">
           <Reveal>
             <div className="grid gap-5">
-              <ContentCard item={caseStudyCard(featured, locale)} locale={locale} featured />
+              <ContentCard item={caseStudyCard(featured, locale)} locale={locale} tone="dark" featured />
             </div>
           </Reveal>
         </Section>
       ) : null}
 
-      <Section tone="white">
+      <Section tone="void">
         <Reveal>
           <SectionHeading
             eyebrow={l(locale, "The archive", "Les archives")}
@@ -126,6 +126,7 @@ export default async function CaseStudiesPage({
                     "Nous préparons les premiers récits. Ils apparaîtront ici dès validation par les clients.",
                   )
             }
+            dark
           />
         </Reveal>
         {items.length > 0 ? (

@@ -7,8 +7,8 @@ import { l, type Locale } from "@/lib/i18n";
 import { site } from "@/lib/site";
 
 const inputClass =
-  "w-full rounded-input border border-void/15 bg-white px-4 py-3 text-sm text-void placeholder:text-iron/60 outline-none transition-colors focus:border-iris";
-const labelClass = "text-[10px] uppercase tracking-[0.12em] text-iron";
+  "w-full rounded-input border border-white/12 bg-charcoal px-4 py-3 text-sm text-white placeholder:text-iron/70 outline-none transition-colors focus:border-iris-bright";
+const labelClass = "text-[10px] uppercase tracking-[0.12em] text-smoke";
 
 export function ContactForm({ locale }: { locale: Locale }) {
   const [submitted, setSubmitted] = useState(false);
@@ -62,25 +62,25 @@ export function ContactForm({ locale }: { locale: Locale }) {
 
   if (submitted) {
     return (
-      <div className="flex flex-col items-start gap-4 rounded-card border border-void/10 bg-white p-8">
+      <div className="flex flex-col items-start gap-4 rounded-card border border-white/10 bg-charcoal p-8">
         <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-iris text-white">
           <Check className="h-6 w-6" />
         </span>
-        <h3 className="text-heading-sm font-medium text-void">
+        <h3 className="text-heading-sm font-medium text-white">
           {l(locale, "Thank you", "Merci")}
         </h3>
-        <p className="max-w-md text-sm leading-relaxed text-body-light">
+        <p className="max-w-md text-sm leading-relaxed text-ash">
           {l(
             locale,
             "Your enquiry has been received. Our team will be in touch shortly. You can also reach us at ",
             "Votre demande a bien été reçue. Notre équipe vous contactera rapidement. Vous pouvez aussi nous écrire à ",
           )}
-          <a href={`mailto:${site.email}`} className="font-medium text-iris hover:underline">
+          <a href={`mailto:${site.email}`} className="font-medium text-iris-bright hover:underline">
             {site.email}
           </a>
           .
         </p>
-        <Button locale={locale} variant="outline" onClick={() => setSubmitted(false)}>
+        <Button locale={locale} variant="ghost" onClick={() => setSubmitted(false)}>
           {l(locale, "Send another message", "Envoyer un autre message")}
         </Button>
       </div>
@@ -90,7 +90,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-5 rounded-card border border-void/10 bg-white p-6 sm:p-8"
+      className="flex flex-col gap-5 rounded-card border border-white/10 bg-charcoal p-6 sm:p-8"
     >
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="flex flex-col gap-2">
@@ -128,8 +128,8 @@ export function ContactForm({ locale }: { locale: Locale }) {
         <textarea name="message" rows={5} className={`${inputClass} resize-y`} placeholder={l(locale, "Tell us about your project or partnership goals…", "Parlez-nous de votre projet ou de vos objectifs…")} />
       </label>
 
-      <label className="flex items-start gap-3 text-xs leading-relaxed text-body-light">
-        <input type="checkbox" name="consent" required className="mt-0.5 h-4 w-4 shrink-0 rounded border-void/20 accent-iris" />
+      <label className="flex items-start gap-3 text-xs leading-relaxed text-ash">
+        <input type="checkbox" name="consent" required className="mt-0.5 h-4 w-4 shrink-0 rounded border-white/20 accent-iris" />
         <span>
           {l(
             locale,
@@ -140,7 +140,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
       </label>
 
       {error ? (
-        <p role="alert" className="rounded-input border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p role="alert" className="rounded-input border border-alert/40 bg-alert/10 px-4 py-3 text-sm text-alert-soft">
           {error}
         </p>
       ) : null}

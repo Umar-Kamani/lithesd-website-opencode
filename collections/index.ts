@@ -15,6 +15,20 @@ const contentWrite = {
   delete: isEditor,
 } as const;
 
+const seoFields: Field[] = [
+  {
+    name: "seo",
+    type: "group",
+    label: "SEO",
+    fields: [
+      { name: "metaTitle", type: "text", localized: true },
+      { name: "metaDescription", type: "textarea", localized: true },
+      { name: "ogImage", type: "upload", relationTo: "media" },
+    ],
+  },
+];
+
+
 export const PILLAR_OPTIONS = [
   { label: "Cybersecurity", value: "cybersecurity" },
   { label: "Enterprise infrastructure & cloud", value: "infrastructure-cloud" },
@@ -146,10 +160,15 @@ export const Videos: CollectionConfig = {
 export const Events: CollectionConfig = {
   slug: "events",
   admin: { group: "Content", useAsTitle: "title", defaultColumns: ["title", "date", "type"] },
+  versions: { drafts: true },
   access: { read: publicRead, ...contentWrite },
   fields: [
     { name: "title", type: "text", required: true },
+    { name: "slug", type: "text", required: true, unique: true, index: true },
     { name: "date", type: "date", required: true },
+    { name: "startAt", type: "date" },
+    { name: "endAt", type: "date" },
+    { name: "timezone", type: "text", defaultValue: "UTC" },
     {
       name: "type",
       type: "select",
@@ -159,14 +178,42 @@ export const Events: CollectionConfig = {
         { label: "Organised", value: "organised" },
       ],
     },
+    {
+      name: "format",
+      type: "select",
+      defaultValue: "in-person",
+      options: [
+        { label: "In person", value: "in-person" },
+        { label: "Virtual", value: "virtual" },
+        { label: "Hybrid", value: "hybrid" },
+      ],
+    },
     { name: "location", type: "text" },
+    { name: "venueName", type: "text" },
+    { name: "venueAddress", type: "textarea" },
+    { name: "virtualUrl", type: "text" },
+    { name: "coverImage", type: "upload", relationTo: "media" },
     { name: "description", type: "textarea", localized: true },
+    { name: "agenda", type: "array", fields: [
+      { name: "time", type: "text" },
+      { name: "title", type: "text", required: true, localized: true },
+      { name: "detail", type: "textarea", localized: true },
+    ] },
+    { name: "speakers", type: "array", fields: [
+      { name: "name", type: "text", required: true },
+      { name: "role", type: "text" },
+      { name: "photo", type: "upload", relationTo: "media" },
+    ] },
+    { name: "registrationEnabled", type: "checkbox", defaultValue: true },
+    { name: "registrationDeadline", type: "date" },
+    { name: "confirmationMessage", type: "textarea", localized: true },
     { name: "video", type: "relationship", relationTo: "videos" },
     {
       name: "images",
       type: "array",
       fields: [{ name: "image", type: "upload", relationTo: "media", required: true }],
     },
+    ...seoFields,
   ],
 };
 
@@ -243,19 +290,6 @@ export const INDUSTRY_OPTIONS = [
   { label: "Mining", value: "mining" },
   { label: "Manufacturing", value: "manufacturing" },
   { label: "ISPs", value: "isps" },
-];
-
-const seoFields: Field[] = [
-  {
-    name: "seo",
-    type: "group",
-    label: "SEO",
-    fields: [
-      { name: "metaTitle", type: "text", localized: true },
-      { name: "metaDescription", type: "textarea", localized: true },
-      { name: "ogImage", type: "upload", relationTo: "media" },
-    ],
-  },
 ];
 
 export const Topics: CollectionConfig = {
@@ -342,6 +376,87 @@ export const BlogPosts: CollectionConfig = {
   ],
 };
 
+export const Policies: CollectionConfig = {
+  slug: "policies",
+  labels: { singular: "Policy", plural: "Policies" },
+  admin: {
+    group: "Content",
+    useAsTitle: "title",
+    defaultColumns: ["title", "category", "effectiveDate", "showInFooter"],
+    description: "Legal and policy pages. Published policies can appear automatically in the footer.",
+  },
+  versions: { drafts: true },
+  access: { read: publicRead, ...contentWrite },
+  fields: [
+    { name: "title", type: "text", required: true, localized: true },
+    { name: "slug", type: "text", required: true, unique: true, index: true },
+    { name: "summary", type: "textarea", localized: true },
+    { name: "body", type: "richText", localized: true },
+    { name: "effectiveDate", type: "date" },
+    {
+      name: "category",
+      type: "select",
+      defaultValue: "other",
+      options: [
+        { label: "Privacy", value: "privacy" },
+        { label: "Terms", value: "terms" },
+        { label: "Anti-corruption", value: "anti-corruption" },
+        { label: "Other", value: "other" },
+      ],
+    },
+    { name: "order", type: "number", defaultValue: 1 },
+    {
+      name: "showInFooter",
+      type: "checkbox",
+      defaultValue: true,
+      label: "Show in footer",
+      admin: { description: "Uncheck to keep this policy published but hidden from the footer." },
+    },
+    ...seoFields,
+  ],
+};
+
+export const EventRegistrations: CollectionConfig = {
+  slug: "event-registrations",
+  labels: { singular: "Event registration", plural: "Event registrations" },
+  admin: {
+    group: "Events",
+    useAsTitle: "email",
+    defaultColumns: ["name", "email", "event", "status", "createdAt"],
+    description: "Everyone who registered for an event. Export to CSV from the list view.",
+  },
+  access: {
+    read: isViewer,
+    create: () => false,
+    update: isEditor,
+    delete: isAdmin,
+  },
+  fields: [
+    { name: "event", type: "relationship", relationTo: "events", required: true },
+    { name: "name", type: "text", required: true },
+    { name: "email", type: "email", required: true, index: true },
+    { name: "company", type: "text" },
+    { name: "phone", type: "text" },
+    { name: "jobTitle", type: "text" },
+    { name: "notes", type: "textarea" },
+    { name: "consent", type: "checkbox", defaultValue: false },
+    {
+      name: "status",
+      type: "select",
+      defaultValue: "registered",
+      options: [
+        { label: "Registered", value: "registered" },
+        { label: "Confirmed", value: "confirmed" },
+        { label: "Attended", value: "attended" },
+        { label: "Cancelled", value: "cancelled" },
+      ],
+    },
+    { name: "source", type: "text", admin: { readOnly: true } },
+    { name: "ip", type: "text", admin: { readOnly: true } },
+    { name: "userAgent", type: "text", admin: { readOnly: true } },
+  ],
+};
+
 export const collections = [
   Users,
   Media,
@@ -350,9 +465,11 @@ export const collections = [
   Brochures,
   Videos,
   Events,
+  EventRegistrations,
   BannerMessages,
   Topics,
   CaseStudies,
   BlogPosts,
+  Policies,
   Leads,
 ];

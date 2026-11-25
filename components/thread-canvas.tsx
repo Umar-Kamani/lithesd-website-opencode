@@ -6,6 +6,10 @@ import { cn } from "@/lib/utils";
 /**
  * "The Thread" — a single luminous thread draws the Lithe cloud silhouette
  * and dissolves into flowing data. Unique to Lithe SD.
+ *
+ * Performance notes: geometry and gradients are built once per resize, the
+ * loop is capped at 30 fps, the canvas pauses when off-screen or hidden, and
+ * the travelling pulse uses a two-stroke glow instead of `shadowBlur`.
  */
 export function ThreadCanvas({ className }: { className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -17,129 +21,185 @@ export function ThreadCanvas({ className }: { className?: string }) {
     if (!ctx) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const SAMPLE = 180;
     let w = 0;
     let h = 0;
     let raf = 0;
+    let last = 0;
+    let visible = true;
+    let baseY: number[] = [];
+    let mainGrad: CanvasGradient | null = null;
+    let strandGrad: CanvasGradient | null = null;
 
-    const resize = () => {
-      const rect = canvas.getBoundingClientRect();
-      w = rect.width;
-      h = rect.height;
-      canvas.width = Math.floor(w * dpr);
-      canvas.height = Math.floor(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-
-    // Two soft humps echo the Lithe cloud mark.
     const hump = (x: number) => {
       const b1 = 0.3 * Math.exp(-Math.pow((x - 0.34) / 0.17, 2));
       const b2 = 0.21 * Math.exp(-Math.pow((x - 0.66) / 0.14, 2));
       return 0.62 - b1 - b2;
     };
 
+    const build = () => {
+      const rect = canvas.getBoundingClientRect();
+      w = rect.width;
+      h = rect.height;
+      if (!w || !h) return;
+
+      let dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      const maxPixels = 2_200_000;
+      if (w * h * dpr * dpr > maxPixels) {
+        dpr = Math.sqrt(maxPixels / (w * h));
+      }
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      baseY = [];
+      for (let i = 0; i <= SAMPLE; i++) {
+        baseY.push(hump(i / SAMPLE) * h);
+      }
+
+      strandGrad = ctx.createLinearGradient(0, 0, w, 0);
+      strandGrad.addColorStop(0, "rgba(30,109,255,0)");
+      strandGrad.addColorStop(0.22, "rgba(30,109,255,0.16)");
+      strandGrad.addColorStop(0.72, "rgba(74,139,255,0.18)");
+      strandGrad.addColorStop(1, "rgba(169,199,255,0.12)");
+
+      mainGrad = ctx.createLinearGradient(0, 0, w, 0);
+      mainGrad.addColorStop(0, "rgba(30,109,255,0.12)");
+      mainGrad.addColorStop(0.34, "rgba(74,139,255,0.95)");
+      mainGrad.addColorStop(0.72, "rgba(190,214,255,1)");
+      mainGrad.addColorStop(1, "rgba(169,199,255,0.85)");
+    };
+
     const draw = (time: number) => {
+      if (!w || !h || !mainGrad || !strandGrad) return;
       const t = reduce ? 0 : time;
       ctx.clearRect(0, 0, w, h);
 
-      const sample = 220;
-      const pts: { x: number; y: number; xn: number }[] = [];
-      for (let i = 0; i <= sample; i++) {
-        const xn = i / sample;
-        const wobble =
-          Math.sin(xn * 7 + t * 0.0006) * 0.008 +
-          Math.sin(xn * 13 - t * 0.0004) * 0.004;
-        pts.push({ x: xn * w, y: (hump(xn) + wobble) * h, xn });
-      }
+      const wobbleAt = (xn: number) =>
+        Math.sin(xn * 7 + t * 0.0006) * 0.008 +
+        Math.sin(xn * 13 - t * 0.0004) * 0.004;
 
       // Secondary strands
       for (let b = 0; b < 3; b++) {
         const offset = (b - 1) * 20;
         ctx.beginPath();
-        pts.forEach((p, i) =>
-          i ? ctx.lineTo(p.x, p.y + offset) : ctx.moveTo(p.x, p.y + offset),
-        );
-        const g = ctx.createLinearGradient(0, 0, w, 0);
-        g.addColorStop(0, "rgba(30,109,255,0)");
-        g.addColorStop(0.22, "rgba(30,109,255,0.16)");
-        g.addColorStop(0.72, "rgba(74,139,255,0.16)");
-        g.addColorStop(1, "rgba(246,119,47,0.12)");
-        ctx.strokeStyle = g;
+        for (let i = 0; i <= SAMPLE; i++) {
+          const xn = i / SAMPLE;
+          const x = xn * w;
+          const y = baseY[i] + wobbleAt(xn) * h + offset;
+          if (i) ctx.lineTo(x, y);
+          else ctx.moveTo(x, y);
+        }
+        ctx.strokeStyle = strandGrad;
         ctx.lineWidth = 1;
         ctx.stroke();
       }
 
       // Main thread
-      const main = ctx.createLinearGradient(0, 0, w, 0);
-      main.addColorStop(0, "rgba(30,109,255,0.15)");
-      main.addColorStop(0.32, "rgba(74,139,255,0.95)");
-      main.addColorStop(0.7, "rgba(190,214,255,1)");
-      main.addColorStop(1, "rgba(246,119,47,0.85)");
       ctx.beginPath();
-      pts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
-      ctx.strokeStyle = main;
+      for (let i = 0; i <= SAMPLE; i++) {
+        const xn = i / SAMPLE;
+        const x = xn * w;
+        const y = baseY[i] + wobbleAt(xn) * h;
+        if (i) ctx.lineTo(x, y);
+        else ctx.moveTo(x, y);
+      }
+      ctx.strokeStyle = mainGrad;
       ctx.lineWidth = 2;
       ctx.lineCap = "round";
       ctx.stroke();
 
-      // Travelling pulse
+      // Travelling pulse — wide translucent pass plus a narrow bright pass.
       if (!reduce) {
         const prog = (t * 0.00006) % 1;
-        const seg = pts.filter((p) => Math.abs(p.xn - prog) < 0.1);
-        if (seg.length > 1) {
-          ctx.save();
+        const half = 0.09;
+        const from = Math.max(1, Math.floor((prog - half) * SAMPLE));
+        const to = Math.min(SAMPLE, Math.ceil((prog + half) * SAMPLE));
+        if (to > from + 1) {
+          const x0 = (from / SAMPLE) * w;
+          const x1 = (to / SAMPLE) * w;
+          const pg = ctx.createLinearGradient(x0, 0, x1, 0);
+          pg.addColorStop(0, "rgba(140,184,255,0)");
+          pg.addColorStop(0.5, "rgba(190,220,255,0.55)");
+          pg.addColorStop(1, "rgba(169,199,255,0)");
+
           ctx.beginPath();
-          seg.forEach((p, i) =>
-            i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y),
-          );
-          const pg = ctx.createLinearGradient(
-            seg[0].x,
-            0,
-            seg[seg.length - 1].x,
-            0,
-          );
-          pg.addColorStop(0, "rgba(170,210,255,0)");
-          pg.addColorStop(0.5, "rgba(200,225,255,0.95)");
-          pg.addColorStop(1, "rgba(246,119,47,0)");
+          for (let i = from; i <= to; i++) {
+            const xn = i / SAMPLE;
+            const x = xn * w;
+            const y = baseY[i] + wobbleAt(xn) * h;
+            if (i > from) ctx.lineTo(x, y);
+            else ctx.moveTo(x, y);
+          }
           ctx.strokeStyle = pg;
-          ctx.lineWidth = 3;
-          ctx.shadowColor = "rgba(30,109,255,0.9)";
-          ctx.shadowBlur = 24;
+          ctx.lineWidth = 9;
           ctx.stroke();
-          ctx.restore();
+          ctx.lineWidth = 2.5;
+          ctx.strokeStyle = "rgba(210,230,255,0.9)";
+          ctx.stroke();
         }
       }
 
       // Data motes
-      for (let i = 0; i < 28; i++) {
-        const speed = 0.000008 + (i % 5) * 0.000004;
-        const xn = (i / 28 + t * speed) % 1;
-        const p = pts[Math.min(sample, Math.floor(xn * sample))];
-        if (!p) continue;
-        const drift = Math.sin(t * 0.001 + i) * 6;
-        const y = p.y + drift + (i % 2 ? -1 : 1) * (6 + (i % 4) * 4);
-        const base =
-          xn < 0.55 ? "rgba(130,175,255," : "rgba(255,170,129,";
-        const alpha = Math.max(0.15, 0.35 + 0.5 * Math.sin(t * 0.002 + i));
+      ctx.fillStyle = "rgba(150,190,255,0.6)";
+      for (let i = 0; i < 20; i++) {
+        const speed = 0.00001 + (i % 5) * 0.000004;
+        const xn = (i / 20 + t * speed) % 1;
+        const idx = Math.min(SAMPLE, Math.floor(xn * SAMPLE));
+        const x = xn * w;
+        const y =
+          baseY[idx] +
+          wobbleAt(xn) * h +
+          Math.sin(t * 0.001 + i) * 6 +
+          (i % 2 ? -1 : 1) * (6 + (i % 4) * 4);
+        const alpha = Math.max(0.15, 0.32 + 0.45 * Math.sin(t * 0.002 + i));
+        ctx.globalAlpha = alpha;
         ctx.beginPath();
-        ctx.arc(p.x, y, i % 7 === 0 ? 1.8 : 1.1, 0, Math.PI * 2);
-        ctx.fillStyle = base + alpha + ")";
+        ctx.arc(x, y, i % 7 === 0 ? 1.7 : 1, 0, Math.PI * 2);
         ctx.fill();
       }
-
-      if (!reduce) raf = requestAnimationFrame(draw);
+      ctx.globalAlpha = 1;
     };
 
-    resize();
+    const frame = (time: number) => {
+      raf = requestAnimationFrame(frame);
+      if (!visible || document.hidden) return;
+      if (time - last < 33) return; // ~30 fps
+      last = time;
+      draw(time);
+    };
+
+    build();
     draw(0);
+
+    if (!reduce) raf = requestAnimationFrame(frame);
+
+    let resizeTimer: ReturnType<typeof setTimeout> | null = null;
     const onResize = () => {
-      resize();
-      if (reduce) draw(0);
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        build();
+        if (reduce) draw(0);
+      }, 150);
     };
     window.addEventListener("resize", onResize);
+
+    const observer =
+      typeof IntersectionObserver !== "undefined"
+        ? new IntersectionObserver(
+            ([entry]) => {
+              visible = entry.isIntersecting;
+            },
+            { rootMargin: "120px" },
+          )
+        : null;
+    observer?.observe(canvas);
+
     return () => {
       cancelAnimationFrame(raf);
+      if (resizeTimer) clearTimeout(resizeTimer);
       window.removeEventListener("resize", onResize);
+      observer?.disconnect();
     };
   }, []);
 

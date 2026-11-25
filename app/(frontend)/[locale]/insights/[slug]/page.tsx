@@ -160,13 +160,13 @@ export default async function InsightPage({
         </div>
       </header>
 
-      <Section tone="white">
+      <Section tone="void">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-14">
           <div className="min-w-0">
             <ArticleBody data={post.body} />
 
-            <div className="mt-12 border-t border-void/10 pt-8">
-              <p className="text-sm text-body-light">
+            <div className="mt-12 border-t border-white/10 pt-8">
+              <p className="text-sm text-ash">
                 {l(
                   locale,
                   "Have a question about this topic? Our practice team can walk through your environment.",
@@ -191,11 +191,11 @@ export default async function InsightPage({
               products={post.products}
               topics={post.topics}
             />
-            <div className="rounded-card border border-void/10 bg-linen p-6">
+            <div className="rounded-card border border-white/10 bg-charcoal p-6">
               <p className="text-[10px] uppercase tracking-[0.16em] text-iron">
                 {l(locale, "Share", "Partager")}
               </p>
-              <p className="mt-3 text-sm leading-relaxed text-body-light">
+              <p className="mt-3 text-sm leading-relaxed text-ash">
                 {l(
                   locale,
                   "Send this analysis to a colleague who is scoping a similar project.",
@@ -204,7 +204,7 @@ export default async function InsightPage({
               </p>
               <a
                 href={`mailto:?subject=${encodeURIComponent(post.title)}&body=${encodeURIComponent(url)}`}
-                className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-iris hover:text-iris-deep"
+                className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-iris-bright hover:text-white"
               >
                 {l(locale, "Email this article", "Envoyer par email")}
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -219,7 +219,7 @@ export default async function InsightPage({
         eyebrow={l(locale, "Keep reading", "Poursuivre la lecture")}
         title={l(locale, "Related insights", "Analyses associées")}
         items={fallback.map((item) => blogPostCard(item, locale))}
-        tone="linen"
+        tone="obsidian"
       />
 
       <CtaBand

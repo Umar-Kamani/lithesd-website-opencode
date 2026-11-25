@@ -62,7 +62,7 @@ export default async function ResourcesPage({ params }: { params: Promise<{ loca
         )}
       />
 
-      <Section tone="white">
+      <Section tone="void">
         <Reveal>
           <SectionHeading
             eyebrow={l(locale, "Downloads", "Téléchargements")}
@@ -72,6 +72,7 @@ export default async function ResourcesPage({ params }: { params: Promise<{ loca
               "The download experience is built and ready. Branded PDFs will appear here once uploaded to the CMS.",
               "L'expérience de téléchargement est prête. Les PDF de marque apparaîtront ici dès leur ajout au CMS.",
             )}
+            dark
           />
         </Reveal>
         {brochures.length > 0 ? (
@@ -82,14 +83,14 @@ export default async function ResourcesPage({ params }: { params: Promise<{ loca
           </Reveal>
         ) : (
           <Reveal delay={120} className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            <BrochureSlot locale={locale} />
-            <BrochureSlot locale={locale} />
-            <BrochureSlot locale={locale} />
+            <BrochureSlot locale={locale} tone="dark" />
+            <BrochureSlot locale={locale} tone="dark" />
+            <BrochureSlot locale={locale} tone="dark" />
           </Reveal>
         )}
       </Section>
 
-      <Section tone="linen">
+      <Section tone="obsidian">
         <Reveal>
           <SectionHeading
             eyebrow={l(locale, "Videos", "Vidéos")}
@@ -99,11 +100,12 @@ export default async function ResourcesPage({ params }: { params: Promise<{ loca
               "Product walkthroughs and event highlights will live here, managed from the CMS.",
               "Les présentations produits et temps forts d'événements seront gérés depuis le CMS.",
             )}
+            dark
           />
         </Reveal>
         <Reveal delay={120} className="mt-10 grid gap-5 md:grid-cols-2">
-          <VideoSlot locale={locale} tone="light" />
-          <VideoSlot locale={locale} tone="light" />
+          <VideoSlot locale={locale} tone="dark" />
+          <VideoSlot locale={locale} tone="dark" />
         </Reveal>
       </Section>
 
@@ -139,7 +141,7 @@ export default async function ResourcesPage({ params }: { params: Promise<{ loca
         </div>
       </Section>
 
-      <Section tone="white">
+      <Section tone="void">
         <Reveal>
           <SectionHeading
             eyebrow={l(locale, "Editorial", "Éditorial")}
@@ -149,6 +151,7 @@ export default async function ResourcesPage({ params }: { params: Promise<{ loca
               "Case studies show what changed in the field. Insights explain the design decisions behind it.",
               "Les études de cas montrent ce qui a changé sur le terrain. Les analyses expliquent les choix de conception.",
             )}
+            dark
           />
         </Reveal>
         <Reveal delay={120} className="mt-10 grid gap-5 md:grid-cols-2">
@@ -177,13 +180,13 @@ export default async function ResourcesPage({ params }: { params: Promise<{ loca
             <Link
               key={item.to}
               href={localeHref(locale, item.to)}
-              className="group flex flex-col rounded-card border border-void/10 bg-white p-7 transition-colors hover:border-iris/40"
+              className="group flex flex-col rounded-card border border-white/10 bg-charcoal p-7 transition-colors hover:border-iris/50"
             >
               <span className="text-[10px] uppercase tracking-[0.14em] text-iris">
                 {item.eyebrow}
               </span>
-              <h3 className="mt-3 text-heading-sm font-medium text-void">{item.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-body-light">{item.body}</p>
+              <h3 className="mt-3 text-heading-sm font-medium text-white">{item.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-ash">{item.body}</p>
               <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-iris">
                 {l(locale, "Explore", "Explorer")}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

@@ -1,22 +1,18 @@
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, MapPin, Phone } from "lucide-react";
 import { Container } from "./container";
 import { Button } from "./button";
 import { ThreadCanvas } from "./thread-canvas";
-import { BrandLogo } from "./brand-logo";
-import { brands as staticBrands, type Brand } from "@/lib/brands";
-import { l, type Locale } from "@/lib/i18n";
+import { href as localeHref, l, type Locale } from "@/lib/i18n";
+import type { SiteOffice } from "@/lib/cms";
 
 export function HomeHero({
   locale,
-  panelBrands: supplied,
+  offices,
 }: {
   locale: Locale;
-  panelBrands?: Brand[];
+  offices: SiteOffice[];
 }) {
-  const source = supplied && supplied.length > 0 ? supplied : staticBrands;
-  const panelBrands = ["sangfor", "fujitsu", "accops"]
-    .map((slug) => source.find((brand) => brand.slug === slug))
-    .filter((brand): brand is Brand => Boolean(brand));
+  const regions = offices.slice(0, 3);
 
   return (
     <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-void pb-20 pt-36 sm:pt-40 lg:pb-24 lg:pt-44">
@@ -58,18 +54,18 @@ export function HomeHero({
                 {l(locale, "Explore brands", "Découvrir les marques")}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-0.5" />
               </Button>
-              <Button locale={locale} to="/contact" variant="ghost" size="lg">
-                {l(locale, "Talk to us", "Parlons-en")}
+              <Button locale={locale} to="/partners" variant="ghost" size="lg">
+                {l(locale, "Partner with us", "Devenir partenaire")}
               </Button>
             </div>
 
             <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3">
               {[
-                { value: "24", en: "brands", fr: "marques" },
+                { value: "6", en: "pillars", fr: "piliers" },
                 { value: "100+", en: "channel partners", fr: "partenaires" },
                 { value: "20+", en: "countries", fr: "pays" },
               ].map((stat) => (
-                <div key={stat.value} className="flex items-baseline gap-2">
+                <div key={stat.en} className="flex items-baseline gap-2">
                   <span className="font-display text-2xl font-medium text-white">
                     {stat.value}
                   </span>
@@ -81,68 +77,68 @@ export function HomeHero({
             </div>
           </div>
 
-          {/* Catalogue panel */}
+          {/* Regional coverage */}
           <div className="relative hidden lg:block">
-            <div className="animate-float rounded-panel border border-white/12 bg-charcoal/80 p-1.5 shadow-card backdrop-blur-xl">
-              <div className="rounded-[26px] border border-white/8 bg-obsidian/90 p-6">
+            <div className="rounded-panel border border-white/12 bg-charcoal/90 p-1.5 shadow-card">
+              <div className="rounded-[26px] border border-white/8 bg-obsidian p-6">
                 <div className="flex items-center justify-between">
                   <span className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-smoke">
                     <span className="h-1.5 w-1.5 rounded-full bg-iris-bright" />
-                    {l(locale, "Live catalogue", "Catalogue en ligne")}
+                    {l(locale, "Regional coverage", "Couverture régionale")}
                   </span>
                   <span className="rounded-full border border-white/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-iron">
-                    Lithe SD
+                    IOC · Africa · ME
                   </span>
                 </div>
 
-                <div className="mt-6 grid grid-cols-3 gap-3">
-                  {[
-                    { value: "24", en: "Brands", fr: "Marques" },
-                    { value: "72", en: "Products", fr: "Produits" },
-                    { value: "6", en: "Pillars", fr: "Piliers" },
-                  ].map((m) => (
-                    <div key={m.en} className="rounded-card border border-white/8 bg-white/[0.03] p-3">
-                      <p className="font-display text-2xl font-medium text-white">{m.value}</p>
-                      <p className="mt-0.5 text-[10px] uppercase tracking-[0.12em] text-iron">
-                        {l(locale, m.en, m.fr)}
-                      </p>
+                <p className="mt-5 font-display text-xl font-medium leading-snug text-white">
+                  {l(locale, "Three regions. One accountable partner.", "Trois régions. Un partenaire responsable.")}
+                </p>
+
+                <div className="mt-5 flex flex-col gap-2.5">
+                  {(regions.length > 0
+                    ? regions
+                    : [
+                        { city: "Mauritius", role: l(locale, "IOC office", "Bureau COI"), phone: "+230 467 2006", email: "" },
+                        { city: "Kenya", role: l(locale, "East Africa office", "Bureau Afrique de l'Est"), phone: "+254 727 162 875", email: "" },
+                        { city: "Dubai", role: l(locale, "Middle East office", "Bureau Moyen-Orient"), phone: "+971 56 211 7015", email: "" },
+                      ]
+                  ).map((office) => (
+                    <div
+                      key={`${office.city}-${office.phone}`}
+                      className="flex items-start gap-3 rounded-card border border-white/8 bg-white/[0.03] px-4 py-3"
+                    >
+                      <span className="mt-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-iris/15 text-iris-bright">
+                        <MapPin className="h-3.5 w-3.5" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[13px] font-medium text-white">{office.city}</p>
+                        <p className="truncate text-[11px] text-smoke">{office.role}</p>
+                      </div>
+                      {office.phone ? (
+                        <a
+                          href={`tel:${office.phone.replace(/[^\d+]/g, "")}`}
+                          className="inline-flex items-center gap-1 text-[11px] text-ash transition-colors hover:text-white"
+                        >
+                          <Phone className="h-3 w-3" />
+                          {office.phone}
+                        </a>
+                      ) : null}
                     </div>
                   ))}
                 </div>
 
-                <div className="mt-5 flex flex-col divide-y divide-white/8">
-                  {panelBrands.map((brand) =>
-                    brand ? (
-                      <div key={brand.slug} className="flex items-center gap-3 py-3">
-                        <span className="flex h-10 w-20 items-center justify-center rounded-card bg-white px-2">
-                          <BrandLogo
-                            name={brand.name}
-                            logo={brand.logo}
-                            imageClassName="max-h-5 max-w-full"
-                          />
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13px] font-medium text-white">
-                            {brand.name}
-                          </p>
-                          <p className="truncate text-[11px] text-iron">
-                            {l(locale, brand.tagline.en, brand.tagline.fr)}
-                          </p>
-                        </div>
-                        <ArrowUpRight className="h-4 w-4 text-iron" />
-                      </div>
-                    ) : null,
-                  )}
-                </div>
-
-                <div className="mt-4 flex items-center justify-between rounded-card border border-white/8 bg-white/[0.02] px-4 py-3">
+                <a
+                  href={localeHref(locale, "/contact")}
+                  className="mt-4 flex items-center justify-between rounded-card border border-white/8 bg-white/[0.02] px-4 py-3 transition-colors hover:border-iris/50"
+                >
                   <span className="text-[11px] text-ash">
-                    {l(locale, "72 products, one partner", "72 produits, un partenaire")}
+                    {l(locale, "Talk to your regional team", "Parler à votre équipe régionale")}
                   </span>
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-iris text-white">
                     <ArrowRight className="h-3 w-3" />
                   </span>
-                </div>
+                </a>
               </div>
             </div>
             <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full border border-white/10" />

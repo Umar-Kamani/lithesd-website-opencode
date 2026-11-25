@@ -49,24 +49,25 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
         )}
       />
 
-      <Section tone="white">
+      <Section tone="void">
         <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14">
           <Reveal>
             <div className="flex flex-col gap-6">
               <SectionHeading
                 eyebrow={l(locale, "Send a message", "Envoyer un message")}
                 title={l(locale, "Start a conversation", "Démarrer la conversation")}
+                dark
               />
               <ContactForm locale={locale} />
             </div>
           </Reveal>
 
           <Reveal delay={120}>
-            <div className="flex flex-col gap-6 rounded-card border border-void/10 bg-linen p-7">
-              <h3 className="text-heading-sm font-medium text-void">
+            <div className="flex flex-col gap-6 rounded-card border border-white/10 bg-charcoal p-7">
+              <h3 className="text-heading-sm font-medium text-white">
                 {l(locale, "Reach us directly", "Nous joindre directement")}
               </h3>
-              <ul className="flex flex-col divide-y divide-void/10">
+              <ul className="flex flex-col divide-y divide-white/10">
                 {rows.map((row) => {
                   const Icon = row.icon;
                   return (
@@ -75,14 +76,14 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                         href={row.href}
                         target={row.href.startsWith("http") ? "_blank" : undefined}
                         rel={row.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                        className="flex items-center gap-4 py-4 transition-colors hover:text-iris"
+                        className="flex items-center gap-4 py-4 transition-colors hover:text-white"
                       >
-                        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-iris">
+                        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-iris-bright">
                           <Icon className="h-4 w-4" />
                         </span>
                         <span className="flex flex-col">
                           <span className="text-[10px] uppercase tracking-[0.12em] text-iron">{row.label}</span>
-                          <span className="text-[15px] text-void">{row.value}</span>
+                          <span className="text-[15px] text-white">{row.value}</span>
                         </span>
                       </a>
                     </li>
@@ -90,9 +91,9 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                 })}
               </ul>
 
-              <div className="flex items-center gap-3 rounded-card border border-void/10 bg-white p-4">
-                <Clock className="h-4 w-4 shrink-0 text-iris" />
-                <span className="text-sm text-body-light">{l(locale, site.hours.en, site.hours.fr)}</span>
+              <div className="flex items-center gap-3 rounded-card border border-white/10 bg-white/[0.03] p-4">
+                <Clock className="h-4 w-4 shrink-0 text-iris-bright" />
+                <span className="text-sm text-ash">{l(locale, site.hours.en, site.hours.fr)}</span>
               </div>
 
               <div className="flex items-center gap-3">
@@ -107,7 +108,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={label}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-void/10 bg-white text-void transition-colors hover:border-iris hover:text-iris"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-white/[0.03] text-ash transition-colors hover:border-iris-bright hover:text-white"
                   >
                     <Icon className="h-4 w-4" />
                   </a>
@@ -118,11 +119,12 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
         </div>
       </Section>
 
-      <Section tone="linen">
+      <Section tone="obsidian">
         <Reveal>
           <SectionHeading
             eyebrow={l(locale, "Our offices", "Nos bureaux")}
             title="IOC · East Africa · Middle East"
+            dark
           />
         </Reveal>
         <Reveal delay={120} className="mt-10">

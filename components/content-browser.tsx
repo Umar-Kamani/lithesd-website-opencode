@@ -20,8 +20,10 @@ export type BrowserFilters = {
   topics?: { value: string; label: string }[];
 };
 
-const selectClass =
+const selectLight =
   "h-10 w-full rounded-pill border border-void/15 bg-white px-4 text-[12px] text-void outline-none transition-colors focus:border-iris";
+const selectDark =
+  "h-10 w-full rounded-pill border border-white/15 bg-charcoal px-4 text-[12px] text-white outline-none transition-colors focus:border-iris-bright";
 
 export function ContentBrowser({
   items,
@@ -29,6 +31,7 @@ export function ContentBrowser({
   locale,
   labels,
   pageSize = 9,
+  tone = "dark",
 }: {
   items: BrowserItem[];
   filters: BrowserFilters;
@@ -44,6 +47,7 @@ export function ContentBrowser({
     more: string;
   };
   pageSize?: number;
+  tone?: "light" | "dark";
 }) {
   const [query, setQuery] = useState("");
   const [brand, setBrand] = useState("");
@@ -71,6 +75,8 @@ export function ContentBrowser({
     });
   }, [items, query, brand, pillar, industry, topic]);
 
+  const selectClass = tone === "light" ? selectLight : selectDark;
+
   function onFilter(setter: (value: string) => void, value: string) {
     setter(value);
     setVisible(pageSize);
@@ -78,7 +84,7 @@ export function ContentBrowser({
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-3 rounded-card border border-void/10 bg-white p-4">
+      <div className={cn("flex flex-col gap-3 rounded-card border p-4", tone === "light" ? "border-void/10 bg-white" : "border-white/10 bg-charcoal")}>
         <input
           type="search"
           value={query}
@@ -87,7 +93,12 @@ export function ContentBrowser({
             setVisible(pageSize);
           }}
           placeholder={labels.search}
-          className="h-10 w-full rounded-pill border border-void/15 bg-linen px-4 text-sm text-void outline-none transition-colors focus:border-iris"
+          className={cn(
+            "h-10 w-full rounded-pill border px-4 text-sm outline-none transition-colors",
+            tone === "light"
+              ? "border-void/15 bg-linen text-void focus:border-iris"
+              : "border-white/15 bg-obsidian text-white placeholder:text-iron focus:border-iris-bright",
+          )}
         />
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <label className="flex flex-col gap-1.5">
@@ -134,7 +145,7 @@ export function ContentBrowser({
       </div>
 
       {shown.length === 0 ? (
-        <p className="rounded-card border border-dashed border-void/20 p-8 text-center text-sm text-iron">
+        <p className={cn("rounded-card border border-dashed p-8 text-center text-sm text-iron", tone === "light" ? "border-void/20" : "border-white/20")}>
           {labels.empty}
         </p>
       ) : (
@@ -148,7 +159,12 @@ export function ContentBrowser({
             <button
               type="button"
               onClick={() => setVisible((value) => value + pageSize)}
-              className="mx-auto inline-flex h-11 items-center justify-center rounded-pill border border-void/15 px-6 text-sm font-medium text-void transition-colors hover:border-iris hover:text-iris"
+              className={cn(
+                "mx-auto inline-flex h-11 items-center justify-center rounded-pill border px-6 text-sm font-medium transition-colors",
+                tone === "light"
+                  ? "border-void/15 text-void hover:border-iris hover:text-iris"
+                  : "border-white/15 text-white hover:border-iris-bright hover:text-iris-bright",
+              )}
             >
               {labels.more}
             </button>

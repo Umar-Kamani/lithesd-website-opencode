@@ -41,7 +41,7 @@ export default async function CustomersPage({ params }: { params: Promise<{ loca
         )}
       />
 
-      <Section tone="white">
+      <Section tone="void">
         <Reveal>
           <SectionHeading
             eyebrow={l(locale, "By the numbers", "En chiffres")}
@@ -51,28 +51,30 @@ export default async function CustomersPage({ params }: { params: Promise<{ loca
               "Deep regional knowledge, a growing channel network and a track record of successful delivery.",
               "Une connaissance approfondie de la région, un réseau en croissance et une expérience éprouvée.",
             )}
+            dark
           />
         </Reveal>
         <Reveal delay={120} className="mt-10">
-          <StatBand locale={locale} />
+          <StatBand locale={locale} tone="dark" />
         </Reveal>
       </Section>
 
-      <Section tone="linen">
+      <Section tone="obsidian">
         <Reveal>
           <SectionHeading
             eyebrow={l(locale, "Who we serve", "Qui nous servons")}
             title={l(locale, "Every major sector, one standard of service", "Tous les grands secteurs, un même niveau de service")}
+            dark
           />
         </Reveal>
         <Reveal delay={120} className="mt-10">
-          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-panel border border-void/10 bg-void/10 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-panel border border-white/10 bg-white/5 sm:grid-cols-3 lg:grid-cols-5">
             {verticals.map((vertical) => (
-              <div key={vertical.title.en} className="group flex flex-col items-center gap-4 bg-white px-4 py-8 text-center transition-colors hover:bg-linen">
-                <span className="text-iris transition-transform group-hover:-translate-y-0.5">
+              <div key={vertical.title.en} className="group flex flex-col items-center gap-4 bg-charcoal px-4 py-8 text-center transition-colors hover:bg-white/[0.06]">
+                <span className="text-iris-bright transition-transform group-hover:-translate-y-0.5">
                   <Icon name={vertical.icon} className="h-7 w-7" />
                 </span>
-                <span className="text-sm font-medium text-void">
+                <span className="text-sm font-medium text-white">
                   {l(locale, vertical.title.en, vertical.title.fr)}
                 </span>
               </div>

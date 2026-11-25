@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
-import { getBrands } from "@/lib/cms";
+import { getBrands, getEvents } from "@/lib/cms";
 import { getBlogPosts, getCaseStudies } from "@/lib/cms-content";
+import { getPolicies } from "@/lib/cms-policies";
 import { siteUrl } from "@/lib/site";
 
 export const revalidate = 300;
@@ -8,7 +9,6 @@ export const revalidate = 300;
 const pages = [
   { path: "", priority: 1 },
   { path: "/about", priority: 0.8 },
-  { path: "/solutions", priority: 0.9 },
   { path: "/services", priority: 0.9 },
   { path: "/brands", priority: 0.9 },
   { path: "/insights", priority: 0.8 },
@@ -16,6 +16,7 @@ const pages = [
   { path: "/partners", priority: 0.8 },
   { path: "/customers", priority: 0.7 },
   { path: "/resources", priority: 0.7 },
+  { path: "/policies", priority: 0.4 },
   { path: "/events", priority: 0.6 },
   { path: "/contact", priority: 0.8 },
 ];
@@ -28,10 +29,12 @@ type SitemapEntry = {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  const [allBrands, posts, studies] = await Promise.all([
+  const [allBrands, posts, studies, policies, events] = await Promise.all([
     getBrands(),
     getBlogPosts("en"),
     getCaseStudies("en"),
+    getPolicies("en"),
+    getEvents("en"),
   ]);
 
   const brandPages: SitemapEntry[] = allBrands.flatMap((brand) => [
@@ -52,6 +55,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       path: `/case-studies/${study.slug}`,
       priority: 0.7,
       lastModified: study.publishedAt ? new Date(study.publishedAt) : now,
+    })),
+    ...policies.map((policy) => ({
+      path: `/policies/${policy.slug}`,
+      priority: 0.3,
+      lastModified: policy.updatedAt ? new Date(policy.updatedAt) : now,
+    })),
+    ...events.map((event) => ({
+      path: `/events/${event.slug}`,
+      priority: 0.6,
+      lastModified: event.startAt ? new Date(event.startAt) : now,
     })),
   ];
 

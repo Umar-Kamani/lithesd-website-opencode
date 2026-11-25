@@ -3,7 +3,9 @@ import { ArrowUpRight } from "lucide-react";
 import { Logo } from "./logo";
 import { FacebookIcon, LinkedInIcon, WhatsAppIcon } from "./social-icons";
 import { href as localeHref, l, type Locale } from "@/lib/i18n";
-import { offices, site } from "@/lib/site";
+import { offices as staticOffices, site } from "@/lib/site";
+import { getPolicies } from "@/lib/cms-policies";
+import { getSiteSettings } from "@/lib/cms";
 
 const company = [
   { path: "/about", en: "About", fr: "À propos" },
@@ -14,7 +16,6 @@ const company = [
 ];
 
 const explore = [
-  { path: "/solutions", en: "Solutions", fr: "Solutions" },
   { path: "/services", en: "Services", fr: "Services" },
   { path: "/insights", en: "Insights", fr: "Analyses" },
   { path: "/case-studies", en: "Case studies", fr: "Études de cas" },
@@ -22,7 +23,26 @@ const explore = [
   { path: "/contact", en: "Contact", fr: "Contact" },
 ];
 
-export function SiteFooter({ locale }: { locale: Locale }) {
+export async function SiteFooter({ locale }: { locale: Locale }) {
+  const [policies, settings] = await Promise.all([
+    getPolicies(locale),
+    getSiteSettings(locale),
+  ]);
+
+  const footerPolicies = policies.filter((policy) => policy.showInFooter);
+  const offices =
+    settings && settings.offices.length > 0
+      ? settings.offices
+      : staticOffices.map((office) => ({
+          city: l(locale, office.city.en, office.city.fr),
+          role: l(locale, office.role.en, office.role.fr),
+          phone: office.phone,
+          email: office.email,
+        }));
+  const email = settings?.email || site.email;
+  const phone = settings?.phone || site.phone;
+  const hours = settings?.hours || l(locale, site.hours.en, site.hours.fr);
+
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-obsidian">
       <div className="pointer-events-none absolute -right-40 -top-40 h-[420px] w-[420px] glow-iris opacity-60" />
@@ -77,20 +97,20 @@ export function SiteFooter({ locale }: { locale: Locale }) {
           </FooterColumn>
 
           <FooterColumn title={l(locale, "Get in touch", "Nous contacter")}>
-            <a href={`mailto:${site.email}`} className="text-sm text-ash transition-colors hover:text-white">
-              {site.email}
+            <a href={`mailto:${email}`} className="text-sm text-ash transition-colors hover:text-white">
+              {email}
             </a>
-            <a href={site.phoneHref} className="text-sm text-ash transition-colors hover:text-white">
-              {site.phone}
+            <a href={`tel:${phone.replace(/[^\d+]/g, "")}`} className="text-sm text-ash transition-colors hover:text-white">
+              {phone}
             </a>
             <a href={site.whatsappHref} target="_blank" rel="noopener noreferrer" className="text-sm text-ash transition-colors hover:text-white">
               {site.whatsapp}
             </a>
-            <p className="text-xs text-iron">{l(locale, site.hours.en, site.hours.fr)}</p>
+            <p className="text-xs text-iron">{hours}</p>
             <div className="mt-2 flex flex-col gap-1">
               {offices.map((office) => (
-                <p key={office.city.en} className="text-xs text-iron">
-                  {l(locale, office.city.en, office.city.fr)} · {office.phone}
+                <p key={`${office.city}-${office.phone}`} className="text-xs text-iron">
+                  {office.city} · {office.phone}
                 </p>
               ))}
             </div>
@@ -102,21 +122,24 @@ export function SiteFooter({ locale }: { locale: Locale }) {
             IOC · East Africa · Middle East · 100% Channel Driven
           </p>
           <div className="flex flex-wrap gap-x-5 gap-y-2">
-            {[
-              { href: site.legal.privacy, en: "Privacy policy", fr: "Politique de confidentialité" },
-              { href: site.legal.terms, en: "Terms & conditions", fr: "Conditions générales" },
-              { href: site.legal.antiCorruption, en: "Anti-corruption policy", fr: "Politique anticorruption" },
-            ].map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
+            {footerPolicies.length > 0 ? (
+              footerPolicies.map((policy) => (
+                <Link
+                  key={policy.id}
+                  href={localeHref(locale, `/policies/${policy.slug}`)}
+                  className="text-xs text-ash transition-colors hover:text-white"
+                >
+                  {policy.title}
+                </Link>
+              ))
+            ) : (
+              <Link
+                href={localeHref(locale, "/policies")}
                 className="text-xs text-ash transition-colors hover:text-white"
               >
-                {l(locale, item.en, item.fr)}
-              </a>
-            ))}
+                {l(locale, "Policies", "Politiques")}
+              </Link>
+            )}
           </div>
         </div>
         <p className="mt-5 text-xs text-iron">

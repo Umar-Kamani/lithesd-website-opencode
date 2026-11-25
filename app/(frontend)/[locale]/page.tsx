@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { HomeHero } from "@/components/home-hero";
 import { Section } from "@/components/section";
 import { SectionHeading } from "@/components/section-heading";
@@ -14,10 +15,10 @@ import { Button } from "@/components/button";
 import { ContentCard } from "@/components/content-card";
 import { Icon } from "@/lib/icons";
 import { about, whyChoose } from "@/lib/content";
-import { getBrands } from "@/lib/cms";
+import { getBrands, getSiteSettings } from "@/lib/cms";
 import { getBlogPosts, getCaseStudies } from "@/lib/cms-content";
 import { blogPostCard, caseStudyCard } from "@/lib/content-view";
-import { isLocale, l, type Locale } from "@/lib/i18n";
+import { href as localeHref, isLocale, l, type Locale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/metadata";
 
 export async function generateMetadata({
@@ -49,19 +50,66 @@ export default async function HomePage({
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : "en";
   const allBrands = await getBrands();
-  const [posts, studies] = await Promise.all([
+  const [posts, studies, settings] = await Promise.all([
     getBlogPosts(locale),
     getCaseStudies(locale),
+    getSiteSettings(locale),
   ]);
   const featuredStudy = studies.find((study) => study.featured) ?? studies[0] ?? null;
   const latestPosts = posts.slice(0, 3);
+  const stripStudies = studies.slice(0, 2);
   const featured = ["sangfor", "fujitsu", "asus", "watchguard", "seceon", "kioxia", "accops", "keepit"]
     .map((slug) => allBrands.find((brand) => brand.slug === slug))
     .filter((brand): brand is (typeof allBrands)[number] => Boolean(brand));
 
   return (
     <>
-      <HomeHero locale={locale} panelBrands={allBrands} />
+      <HomeHero locale={locale} offices={settings?.offices ?? []} />
+
+      {stripStudies.length > 0 ? (
+        <Section tone="obsidian" className="border-b border-white/8 py-12 sm:py-14 lg:py-16">
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span className="font-sans text-[11px] font-medium uppercase tracking-[0.16em] text-smoke">
+                {l(locale, "Proof from the field", "Preuves du terrain")}
+              </span>
+              <Link
+                href={localeHref(locale, "/case-studies")}
+                className="inline-flex items-center gap-1.5 text-sm text-ash transition-colors hover:text-white"
+              >
+                {l(locale, "All case studies", "Toutes les études de cas")}
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {stripStudies.map((study) => (
+                <Link
+                  key={study.id}
+                  href={localeHref(locale, `/case-studies/${study.slug}`)}
+                  className="group flex flex-col rounded-card border border-white/10 bg-white/[0.03] p-5 transition-colors hover:border-iris/50"
+                >
+                  <span className="text-[10px] uppercase tracking-[0.14em] text-iris-bright">
+                    {study.customerName || l(locale, "Case study", "Étude de cas")}
+                  </span>
+                  <h3 className="mt-2 line-clamp-2 font-display text-[17px] font-medium leading-snug text-white">
+                    {study.title}
+                  </h3>
+                  {study.results[0] ? (
+                    <p className="mt-4 flex items-baseline gap-2">
+                      <span className="font-display text-2xl font-medium text-white">{study.results[0].value}</span>
+                      <span className="text-[11px] uppercase tracking-[0.1em] text-smoke">{study.results[0].label}</span>
+                    </p>
+                  ) : null}
+                  <span className="mt-4 inline-flex items-center gap-1.5 border-t border-white/8 pt-3 text-xs text-ash">
+                    {l(locale, "Read the story", "Lire l'histoire")}
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </Section>
+      ) : null}
 
       {/* Ecosystem strip */}
       <Section tone="obsidian" className="border-y border-white/8 py-14 sm:py-16">
@@ -72,7 +120,7 @@ export default async function HomePage({
                 {l(locale, "The ecosystem", "L'écosystème")}
               </span>
               <h2 className="mt-3 text-heading-sm font-medium text-white">
-                {l(locale, "24 brands. One accountable partner.", "24 marques. Un partenaire responsable.")}
+                {l(locale, "A specialist portfolio. One accountable partner.", "Un portefeuille spécialisé. Un partenaire responsable.")}
               </h2>
             </div>
             <Button locale={locale} to="/brands" variant="ghost" size="sm">
@@ -87,7 +135,7 @@ export default async function HomePage({
       </Section>
 
       {/* Who we are */}
-      <Section tone="white">
+      <Section tone="void">
         <div className="grid gap-12 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
           <Reveal>
             <SectionHeading
@@ -98,21 +146,22 @@ export default async function HomePage({
                 "We go beyond traditional distribution — partnering with System Integrators across the entire sales, design, implementation and support lifecycle.",
                 "Nous allons au-delà de la distribution traditionnelle — aux côtés des intégrateurs sur tout le cycle de vente, de conception, de mise en œuvre et de support.",
               )}
+              dark
             />
           </Reveal>
           <Reveal delay={120}>
             <div className="flex flex-col gap-5">
               {about.intro.slice(0, 3).map((paragraph) => (
-                <p key={paragraph.en} className="text-body leading-relaxed text-body-light">
+                <p key={paragraph.en} className="text-body leading-relaxed text-ash">
                   {l(locale, paragraph.en, paragraph.fr)}
                 </p>
               ))}
-              <StatBand locale={locale} className="mt-2" />
+              <StatBand locale={locale} tone="dark" className="mt-2" />
             </div>
           </Reveal>
         </div>
         <div className="mt-9">
-          <Button locale={locale} to="/about" variant="outline">
+          <Button locale={locale} to="/about" variant="ghost">
             {l(locale, "Our story", "Notre histoire")}
             <ArrowRight className="h-4 w-4" />
           </Button>
@@ -120,7 +169,7 @@ export default async function HomePage({
       </Section>
 
       {/* Pillars */}
-      <Section tone="linen">
+      <Section tone="obsidian">
         <Reveal>
           <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
             <SectionHeading
@@ -131,21 +180,22 @@ export default async function HomePage({
                 "Six pillars of technology, each backed by certified expertise and full lifecycle support.",
                 "Six piliers technologiques, chacun soutenu par une expertise certifiée et un support complet.",
               )}
+              dark
               className="lg:max-w-2xl"
             />
-            <Button locale={locale} to="/solutions" variant="outline" className="shrink-0">
-              {l(locale, "All solutions", "Toutes les solutions")}
+            <Button locale={locale} to="/partners" variant="ghost" className="shrink-0">
+              {l(locale, "Why partner with us", "Pourquoi nous rejoindre")}
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
         </Reveal>
         <Reveal delay={120} className="mt-12">
-          <PillarGrid locale={locale} />
+          <PillarGrid locale={locale} tone="dark" />
         </Reveal>
       </Section>
 
       {/* Services preview */}
-      <Section tone="white">
+      <Section tone="void">
         <Reveal>
           <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
             <SectionHeading
@@ -156,16 +206,17 @@ export default async function HomePage({
                 "From assessment and response to deployment, compliance and audit — our services extend what your team can deliver.",
                 "De l'évaluation à la réponse, du déploiement à la conformité et à l'audit — nos services étendent ce que votre équipe peut livrer.",
               )}
+              dark
               className="lg:max-w-2xl"
             />
-            <Button locale={locale} to="/services" variant="outline" className="shrink-0">
+            <Button locale={locale} to="/services" variant="ghost" className="shrink-0">
               {l(locale, "All services", "Tous les services")}
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
         </Reveal>
         <Reveal delay={120} className="mt-12">
-          <ServiceGrid locale={locale} limit={4} />
+          <ServiceGrid locale={locale} tone="dark" limit={4} />
         </Reveal>
       </Section>
 
@@ -206,7 +257,7 @@ export default async function HomePage({
       </Section>
 
       {/* Why choose */}
-      <Section tone="linen">
+      <Section tone="obsidian">
         <Reveal>
           <SectionHeading
             eyebrow={l(locale, "Why Lithe SD", "Pourquoi Lithe SD")}
@@ -216,19 +267,20 @@ export default async function HomePage({
               "We differentiate ourselves by working closely with partners throughout the full engagement lifecycle.",
               "Nous nous différencions par un accompagnement étroit des partenaires sur tout le cycle d'engagement.",
             )}
+            dark
           />
         </Reveal>
         <Reveal delay={120} className="mt-12">
           <div className="grid gap-5 lg:grid-cols-3">
             {whyChoose.map((item) => (
-              <article key={item.title.en} className="flex flex-col rounded-card border border-void/10 bg-white p-7">
+              <article key={item.title.en} className="flex flex-col rounded-card border border-white/10 bg-charcoal p-7">
                 <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-iris text-white">
                   <Icon name={item.icon} className="h-5 w-5" />
                 </span>
-                <h3 className="mt-6 text-heading-sm font-medium text-void">
+                <h3 className="mt-6 text-heading-sm font-medium text-white">
                   {l(locale, item.title.en, item.title.fr)}
                 </h3>
-                <p className="mt-3 text-sm leading-relaxed text-body-light">
+                <p className="mt-3 text-sm leading-relaxed text-ash">
                   {l(locale, item.summary.en, item.summary.fr)}
                 </p>
               </article>
@@ -238,7 +290,7 @@ export default async function HomePage({
       </Section>
 
       {featuredStudy ? (
-        <Section tone="white">
+        <Section tone="obsidian">
           <Reveal>
             <SectionHeading
               eyebrow={l(locale, "Case studies", "Études de cas")}
@@ -249,16 +301,17 @@ export default async function HomePage({
                 "Un regard approfondi sur des déploiements dans la région — contraintes, conception et résultats mesurés.",
               )}
               titleClassName="max-w-2xl"
+              dark
             />
           </Reveal>
           <Reveal delay={120} className="mt-10 grid gap-5">
-            <ContentCard item={caseStudyCard(featuredStudy, locale)} locale={locale} featured />
+            <ContentCard item={caseStudyCard(featuredStudy, locale)} locale={locale} tone="dark" featured />
           </Reveal>
         </Section>
       ) : null}
 
       {latestPosts.length > 0 ? (
-        <Section tone="linen">
+        <Section tone="void">
           <Reveal className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
             <SectionHeading
               eyebrow={l(locale, "Insights", "Analyses")}
@@ -268,6 +321,7 @@ export default async function HomePage({
                 "Architecture guidance and threat analysis, written by the people who deploy the portfolio.",
                 "Conseils d'architecture et analyse des menaces, par ceux qui déploient le portefeuille.",
               )}
+              dark
             />
             <Button locale={locale} to="/insights" variant="ghost" className="shrink-0">
               {l(locale, "All insights", "Toutes les analyses")}
@@ -276,7 +330,7 @@ export default async function HomePage({
           </Reveal>
           <Reveal delay={120} className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {latestPosts.map((post) => (
-              <ContentCard key={post.id} item={blogPostCard(post, locale)} locale={locale} />
+              <ContentCard key={post.id} item={blogPostCard(post, locale)} locale={locale} tone="dark" />
             ))}
           </Reveal>
         </Section>

@@ -59,11 +59,14 @@ app/
     brands/                  Brand index, brand pages, product pages
     insights/                Blog index, article pages, RSS feed
     case-studies/            Case study index and detail pages
+    events/                  Upcoming/past events, registration, calendar invites
+    policies/                CMS-managed legal and policy pages
     solutions/ services/ partners/ customers/ resources/ events/ contact/
     template.tsx             Route-level view transition
   (payload)/                 Payload admin and API routes
   api/leads/                 Lead capture endpoint
   api/brochure-download/     Gated brochure delivery
+  api/event-registrations/   Event registration endpoint
   api/seed/                  Idempotent catalogue + editorial seed
   globals.css                Design tokens, prose styles, transitions
   sitemap.ts robots.ts       SEO
@@ -87,13 +90,18 @@ Everything customer-facing is managed in the CMS at **`/admin`**:
 | Group    | Collections                                                    |
 | -------- | -------------------------------------------------------------- |
 | Catalogue | Brands, Products, Brochures, Videos, Events                   |
-| Content   | Case studies, Blog posts, Topics                               |
+| Content   | Case studies, Blog posts, Topics, Policies                     |
 | Library   | Media                                                          |
+| Events    | Event registrations                                            |
 | Leads     | Enquiries and gated downloads                                  |
 
 - **Case studies** and **blog posts** can be attributed to multiple brands and products, a
   pillar, an industry (case studies) and topics. Those relationships drive the related-content
   sections on brand and product pages.
+- **Policies** are managed in the CMS and appear in the footer automatically. Add, reorder,
+  unpublish or delete them without a deploy.
+- **Events** support online registration with an email confirmation and a calendar invite.
+  Registrations are collected in the Events admin group and can be exported to CSV.
 - Roles: **Admin** (everything), **Editor** (content and leads), **Viewer** (read only).
 - Drafts and scheduled publishing are enabled on editorial content.
 - The site revalidates every 5 minutes, so publishing appears without a redeploy.

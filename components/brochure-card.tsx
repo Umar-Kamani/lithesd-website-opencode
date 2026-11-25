@@ -6,7 +6,7 @@ import type { BrochureRef } from "@/lib/brands";
 import { l, type Locale } from "@/lib/i18n";
 
 const inputClass =
-  "w-full rounded-input border border-void/15 bg-white px-3.5 py-2.5 text-sm text-void outline-none transition-colors focus:border-iris";
+  "w-full rounded-input border border-white/12 bg-obsidian px-3.5 py-2.5 text-sm text-white placeholder:text-iron outline-none transition-colors focus:border-iris-bright";
 
 export function BrochureCard({
   brochure,
@@ -52,13 +52,13 @@ export function BrochureCard({
 
   return (
     <>
-      <div className="flex items-center justify-between gap-4 rounded-card border border-void/10 bg-white p-5">
+      <div className="flex items-center justify-between gap-4 rounded-card border border-white/10 bg-charcoal p-5">
         <div className="flex items-center gap-4">
-          <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-linen text-iris">
+          <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-iris/15 text-iris-bright">
             <Download className="h-5 w-5" />
           </span>
           <div>
-            <p className="text-sm font-medium text-void">{brochure.title}</p>
+            <p className="text-sm font-medium text-white">{brochure.title}</p>
             <p className="text-[11px] uppercase tracking-[0.1em] text-iron">
               {l(locale, "PDF brochure", "Brochure PDF")}
             </p>
@@ -75,19 +75,19 @@ export function BrochureCard({
 
       {open ? (
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-void/70 p-4 backdrop-blur-sm">
-          <div className="relative w-full max-w-md rounded-card border border-void/10 bg-white p-6 shadow-xl">
+          <div className="relative w-full max-w-md rounded-card border border-white/10 bg-charcoal p-6 shadow-xl">
             <button
               type="button"
               onClick={() => setOpen(false)}
               aria-label={l(locale, "Close", "Fermer")}
-              className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full text-iron transition-colors hover:bg-linen hover:text-void"
+              className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full text-smoke transition-colors hover:bg-white/5 hover:text-white"
             >
               <X className="h-4 w-4" />
             </button>
-            <h3 className="text-heading-sm font-medium text-void">
+            <h3 className="text-heading-sm font-medium text-white">
               {l(locale, "Download the brochure", "Télécharger la brochure")}
             </h3>
-            <p className="mt-2 text-sm text-body-light">
+            <p className="mt-2 text-sm text-ash">
               {l(
                 locale,
                 "Tell us who you are and the download will start immediately.",
@@ -98,7 +98,7 @@ export function BrochureCard({
               <input name="name" required autoComplete="name" placeholder={l(locale, "Full name", "Nom complet")} className={inputClass} />
               <input name="email" type="email" required autoComplete="email" placeholder={l(locale, "Work email", "Email professionnel")} className={inputClass} />
               <input name="company" autoComplete="organization" placeholder={l(locale, "Company", "Entreprise")} className={inputClass} />
-              <label className="flex items-start gap-2 text-[11px] leading-relaxed text-body-light">
+              <label className="flex items-start gap-2 text-[11px] leading-relaxed text-ash">
                 <input type="checkbox" name="consent" required className="mt-0.5 h-3.5 w-3.5 accent-iris" />
                 {l(
                   locale,
@@ -106,7 +106,7 @@ export function BrochureCard({
                   "J'accepte d'être contacté par Lithe SD et j'ai lu la politique de confidentialité.",
                 )}
               </label>
-              {error ? <p className="text-xs text-red-600">{error}</p> : null}
+              {error ? <p className="text-xs text-alert-soft">{error}</p> : null}
               <button
                 type="submit"
                 disabled={sending}

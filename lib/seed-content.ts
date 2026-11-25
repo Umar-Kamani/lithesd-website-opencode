@@ -333,3 +333,95 @@ export const caseStudyRichText = (seed: CaseStudySeed) => ({
 });
 
 export const postRichText = (seed: PostSeed) => lexical(seed.body);
+
+export type PolicySeed = {
+  slug: string;
+  title: string;
+  summary: string;
+  category: string;
+  order: number;
+  effectiveDate: string;
+};
+
+const policyPlaceholder = (title: string, scope: string) =>
+  lexical([
+    {
+      type: "p",
+      text: "This policy is being prepared. The approved text will be published here and will take effect from the date shown above.",
+    },
+    { type: "h2", text: "Scope" },
+    { type: "p", text: scope },
+    { type: "h2", text: "Your rights and choices" },
+    {
+      type: "p",
+      text: `${title} sets out how Lithe SD handles personal information and business records, how long it keeps them, and how you can request access, correction or deletion where the law provides for it.`,
+    },
+    { type: "h2", text: "Contact" },
+    {
+      type: "p",
+      text: "Questions about this policy can be sent to info@lithesd.com. We aim to respond within five working days.",
+    },
+  ]);
+
+export const policySeeds: (PolicySeed & { body: ReturnType<typeof lexical> })[] = [
+  {
+    slug: "privacy-policy",
+    title: "Privacy Policy",
+    summary: "How Lithe SD collects, uses and protects personal information.",
+    category: "privacy",
+    order: 1,
+    effectiveDate: "2026-01-01T00:00:00.000Z",
+    body: policyPlaceholder(
+      "This Privacy Policy",
+      "This policy applies to personal information collected through the Lithe SD website, enquiries, event registrations, brochure downloads and partner communications.",
+    ),
+  },
+  {
+    slug: "terms-condition",
+    title: "Terms & Conditions",
+    summary: "The terms that govern use of this website and our partner services.",
+    category: "terms",
+    order: 2,
+    effectiveDate: "2026-01-01T00:00:00.000Z",
+    body: policyPlaceholder(
+      "These Terms & Conditions",
+      "These terms apply to your use of the Lithe SD website and to quotations, orders and partner services unless a separate signed agreement applies.",
+    ),
+  },
+  {
+    slug: "anti-corruption-and-bribery-policy",
+    title: "Anti-corruption & Bribery Policy",
+    summary: "Our zero-tolerance position on bribery and corruption.",
+    category: "anti-corruption",
+    order: 3,
+    effectiveDate: "2026-01-01T00:00:00.000Z",
+    body: policyPlaceholder(
+      "This Anti-corruption & Bribery Policy",
+      "This policy applies to all employees, directors, contractors, agents and partners acting on behalf of Lithe Solutions Distributor Ltd in every market we serve.",
+    ),
+  },
+];
+
+export const eventSeed = {
+  slug: "security-roundtable-mauritius",
+  title: "Security roundtable — Mauritius",
+  date: "2026-12-10T09:00:00.000Z",
+  startAt: "2026-12-10T09:00:00.000Z",
+  endAt: "2026-12-10T12:00:00.000Z",
+  timezone: "Indian/Mauritius",
+  type: "organised",
+  format: "in-person",
+  location: "Quatre Bornes, Mauritius",
+  venueName: "Lithe SD offices",
+  description:
+    "A working session for System Integrators on branch security, ransomware resilience and endpoint coverage — with Sangfor and WatchGuard practitioners.",
+  agenda: [
+    { time: "09:00", title: "Registration and coffee" },
+    { time: "09:30", title: "Branch security without the sprawl" },
+    { time: "10:30", title: "Ransomware recovery: what actually works" },
+    { time: "11:30", title: "Open discussion and next steps" },
+  ],
+  registrationDeadline: "2026-12-05T17:00:00.000Z",
+  confirmationMessage:
+    "You are on the list. We will send the venue details and a calendar invite shortly.",
+};

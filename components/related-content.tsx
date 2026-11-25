@@ -17,10 +17,10 @@ export function RelatedContent({
   title: string;
   intro?: string;
   items: ContentCardData[];
-  tone?: "void" | "white" | "linen";
+  tone?: "void" | "obsidian" | "charcoal" | "white" | "linen";
 }) {
   if (items.length === 0) return null;
-  const dark = tone === "void";
+  const dark = tone !== "white" && tone !== "linen";
 
   return (
     <Section tone={tone}>

@@ -33,23 +33,37 @@ export type NavItem = {
   path: string;
   en: string;
   fr: string;
+  children?: { path: string; en: string; fr: string }[];
 };
 
 export const nav: NavItem[] = [
   { key: "about", path: "/about", en: "About", fr: "À propos" },
-  { key: "solutions", path: "/solutions", en: "Solutions", fr: "Solutions" },
   { key: "services", path: "/services", en: "Services", fr: "Services" },
   { key: "brands", path: "/brands", en: "Brands", fr: "Marques" },
-  { key: "insights", path: "/insights", en: "Insights", fr: "Analyses" },
   { key: "partners", path: "/partners", en: "Partners", fr: "Partenaires" },
-  { key: "resources", path: "/resources", en: "Resources", fr: "Ressources" },
+  { key: "events", path: "/events", en: "Events", fr: "Événements" },
+  {
+    key: "resources",
+    path: "/resources",
+    en: "Resources",
+    fr: "Ressources",
+    children: [
+      { path: "/insights", en: "Insights", fr: "Analyses" },
+      { path: "/case-studies", en: "Case studies", fr: "Études de cas" },
+    ],
+  },
 ];
 
 export const footerNav = [
-  ...nav,
+  { key: "about", path: "/about", en: "About", fr: "À propos" },
+  { key: "services", path: "/services", en: "Services", fr: "Services" },
+  { key: "brands", path: "/brands", en: "Brands", fr: "Marques" },
+  { key: "partners", path: "/partners", en: "Partners", fr: "Partenaires" },
+  { key: "events", path: "/events", en: "Events", fr: "Événements" },
+  { key: "insights", path: "/insights", en: "Insights", fr: "Analyses" },
   { key: "case-studies", path: "/case-studies", en: "Case studies", fr: "Études de cas" },
   { key: "customers", path: "/customers", en: "Customers", fr: "Clients" },
-  { key: "events", path: "/events", en: "Events", fr: "Événements" },
+  { key: "resources", path: "/resources", en: "Resources", fr: "Ressources" },
   { key: "contact", path: "/contact", en: "Contact", fr: "Contact" },
 ];
 

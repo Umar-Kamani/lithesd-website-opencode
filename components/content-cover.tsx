@@ -29,7 +29,7 @@ export function ContentCover({
           className="h-full w-full object-cover"
         />
       ) : (
-        <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-[radial-gradient(120%_120%_at_20%_0%,rgba(30,109,255,0.45),transparent_55%),radial-gradient(100%_100%_at_100%_100%,rgba(246,119,47,0.35),transparent_55%)]">
+        <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-[radial-gradient(120%_120%_at_20%_0%,rgba(30,109,255,0.45),transparent_55%),radial-gradient(100%_100%_at_100%_100%,rgba(74,139,255,0.38),transparent_55%)]">
           <div className="pointer-events-none absolute inset-0 grid-dark opacity-40" />
           <span className="relative max-w-[80%] text-center font-mono text-[11px] uppercase tracking-[0.16em] text-white/80">
             {label}

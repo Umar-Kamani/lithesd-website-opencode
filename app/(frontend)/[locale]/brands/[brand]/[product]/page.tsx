@@ -145,18 +145,19 @@ export default async function ProductPage({
         </div>
       </section>
 
-      <Section tone="white">
+      <Section tone="void">
         <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
           <Reveal>
             <div className="flex flex-col gap-5">
               <SectionHeading
                 eyebrow={l(locale, "Overview", "Aperçu")}
                 title={l(locale, "Built for the way you work", "Conçu pour votre façon de travailler")}
+                dark
               />
-              <p className="text-body leading-relaxed text-body-light">
+              <p className="text-body leading-relaxed text-ash">
                 {l(locale, product.summary.en, product.summary.fr)}
               </p>
-              <p className="text-body leading-relaxed text-body-light">
+              <p className="text-body leading-relaxed text-ash">
                 {l(
                   locale,
                   `Delivered and supported in region by Lithe SD, ${product.name} is backed by certified technical expertise, presales support and lifecycle services.`,
@@ -164,7 +165,7 @@ export default async function ProductPage({
                 )}
               </p>
               <div className="mt-2 flex flex-wrap gap-3">
-                <Button locale={locale} to="/contact" variant="outline">
+                <Button locale={locale} to="/contact" variant="ghost">
                   {l(locale, "Talk to a specialist", "Parler à un spécialiste")}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
@@ -180,22 +181,23 @@ export default async function ProductPage({
                 ))}
               </div>
             ) : (
-              <BrochureSlot locale={locale} />
+              <BrochureSlot locale={locale} tone="dark" />
             )}
           </Reveal>
         </div>
       </Section>
 
       {product.videoUrl ? (
-        <Section tone="linen">
+        <Section tone="obsidian">
           <Reveal>
             <SectionHeading
               eyebrow={l(locale, "Video", "Vidéo")}
               title={l(locale, "See it in action", "Voir en action")}
+              dark
             />
           </Reveal>
           <Reveal delay={120} className="mt-10">
-            <div className="aspect-video overflow-hidden rounded-card border border-void/10 bg-black">
+            <div className="aspect-video overflow-hidden rounded-card border border-white/10 bg-black">
               <iframe
                 src={embedUrl(product.videoUrl, product.videoProvider)}
                 title={product.name}
@@ -207,7 +209,7 @@ export default async function ProductPage({
           </Reveal>
         </Section>
       ) : product.video ? (
-        <Section tone="linen">
+        <Section tone="obsidian">
           <Reveal>
             <SectionHeading
               eyebrow={l(locale, "Video", "Vidéo")}
@@ -217,10 +219,11 @@ export default async function ProductPage({
                 "A short walkthrough is being produced. It will appear here once published.",
                 "Une courte présentation est en préparation. Elle apparaîtra ici dès sa publication.",
               )}
+              dark
             />
           </Reveal>
           <Reveal delay={120} className="mt-10">
-            <VideoSlot locale={locale} />
+            <VideoSlot locale={locale} tone="dark" />
           </Reveal>
         </Section>
       ) : null}
@@ -235,7 +238,7 @@ export default async function ProductPage({
           "Études de cas et analyses mettant en avant ce produit.",
         )}
         items={relatedContent}
-        tone="white"
+        tone="void"
       />
 
       {related.length > 0 ? (

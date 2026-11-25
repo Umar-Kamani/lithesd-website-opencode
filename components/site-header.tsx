@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, ChevronDown, X } from "lucide-react";
 import { Logo } from "./logo";
 import { cn } from "@/lib/utils";
 import {
@@ -50,8 +50,8 @@ export function SiteHeader({
     bannerMessage ||
     l(
       locale,
-      "Now live: 24 brands across cybersecurity, cloud, infrastructure and data protection.",
-      "Désormais en ligne : 24 marques en cybersécurité, cloud, infrastructure et protection des données.",
+      "Now live: specialist brands across cybersecurity, cloud, infrastructure and data protection.",
+      "Désormais en ligne : des marques spécialisées en cybersécurité, cloud, infrastructure et protection des données.",
     );
   const activeLink = bannerLink || "/brands";
 
@@ -100,18 +100,57 @@ export function SiteHeader({
           <nav className="hidden items-center gap-1 lg:flex">
             {nav.map((item) => {
               const active =
-                routePath === item.path || routePath.startsWith(`${item.path}/`);
+                routePath === item.path ||
+                routePath.startsWith(`${item.path}/`) ||
+                Boolean(
+                  item.children?.some(
+                    (child) =>
+                      routePath === child.path ||
+                      routePath.startsWith(`${child.path}/`),
+                  ),
+                );
+
+              if (!item.children?.length) {
+                return (
+                  <Link
+                    key={item.key}
+                    href={localeHref(locale, item.path)}
+                    className={cn(
+                      "rounded-pill px-3.5 py-2 text-sm transition-colors",
+                      active ? "text-white" : "text-ash hover:text-white",
+                    )}
+                  >
+                    {l(locale, item.en, item.fr)}
+                  </Link>
+                );
+              }
+
               return (
-                <Link
-                  key={item.key}
-                  href={localeHref(locale, item.path)}
-                  className={cn(
-                    "rounded-pill px-3.5 py-2 text-sm transition-colors",
-                    active ? "text-white" : "text-ash hover:text-white",
-                  )}
-                >
-                  {l(locale, item.en, item.fr)}
-                </Link>
+                <div key={item.key} className="group relative">
+                  <Link
+                    href={localeHref(locale, item.path)}
+                    className={cn(
+                      "inline-flex items-center gap-1 rounded-pill px-3.5 py-2 text-sm transition-colors",
+                      active ? "text-white" : "text-ash hover:text-white",
+                    )}
+                  >
+                    {l(locale, item.en, item.fr)}
+                    <ChevronDown className="h-3 w-3 transition-transform duration-200 group-hover:rotate-180" />
+                  </Link>
+                  <div className="invisible absolute left-0 top-full pt-2 opacity-0 transition-[opacity,visibility] duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                    <div className="min-w-[200px] rounded-card border border-white/10 bg-obsidian/95 p-2 shadow-card backdrop-blur-xl">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.path}
+                          href={localeHref(locale, child.path)}
+                          className="block rounded-[8px] px-3 py-2 text-sm text-ash transition-colors hover:bg-white/5 hover:text-white"
+                        >
+                          {l(locale, child.en, child.fr)}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </nav>
@@ -157,14 +196,29 @@ export function SiteHeader({
         >
           <nav className="flex flex-col gap-1 px-5 py-5 sm:px-8">
             {[...nav, { key: "contact", path: "/contact", en: "Contact", fr: "Contact" }].map((item) => (
-              <Link
-                key={item.key}
-                href={localeHref(locale, item.path)}
-                onClick={() => setOpen(false)}
-                className="rounded-card px-3 py-3 font-display text-lg text-white/90 transition-colors hover:bg-white/5 hover:text-white"
-              >
-                {l(locale, item.en, item.fr)}
-              </Link>
+              <div key={item.key} className="flex flex-col">
+                <Link
+                  href={localeHref(locale, item.path)}
+                  onClick={() => setOpen(false)}
+                  className="rounded-card px-3 py-3 font-display text-lg text-white/90 transition-colors hover:bg-white/5 hover:text-white"
+                >
+                  {l(locale, item.en, item.fr)}
+                </Link>
+                {item.children?.length ? (
+                  <div className="mb-1 flex flex-col border-l border-white/10 pl-4">
+                    {item.children.map((child) => (
+                      <Link
+                        key={child.path}
+                        href={localeHref(locale, child.path)}
+                        onClick={() => setOpen(false)}
+                        className="rounded-card px-3 py-2 text-[15px] text-ash transition-colors hover:bg-white/5 hover:text-white"
+                      >
+                        {l(locale, child.en, child.fr)}
+                      </Link>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
             ))}
             <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-5">
               <a href={site.phoneHref} className="text-sm text-ash">

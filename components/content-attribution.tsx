@@ -20,7 +20,7 @@ function Chip({
   return (
     <Link
       href={localeHref(locale, to)}
-      className="inline-flex items-center gap-1.5 rounded-pill border border-void/12 bg-white px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-body-light transition-colors hover:border-iris hover:text-iris"
+      className="inline-flex items-center gap-1.5 rounded-pill border border-white/12 bg-white/[0.04] px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-ash transition-colors hover:border-iris-bright hover:text-white"
     >
       {children}
       <ArrowUpRight className="h-3 w-3" />
@@ -45,7 +45,7 @@ export function ContentAttribution({
   if (!hasAny) return null;
 
   return (
-    <div className="rounded-card border border-void/10 bg-white p-6 sm:p-7">
+    <div className="rounded-card border border-white/10 bg-charcoal p-6 sm:p-7">
       <p className="text-[10px] uppercase tracking-[0.16em] text-iron">{label}</p>
 
       <div className="mt-5 flex flex-col gap-6">
@@ -59,15 +59,15 @@ export function ContentAttribution({
                 <Link
                   key={brand.slug}
                   href={localeHref(locale, `/brands/${brand.slug}`)}
-                  className="group flex items-center gap-3 rounded-card border border-void/10 px-3 py-2.5 transition-colors hover:border-iris/50"
+                  className="group flex items-center gap-3 rounded-card border border-white/10 bg-white/[0.03] px-3 py-2.5 transition-colors hover:border-iris/50"
                 >
-                  <span className="flex h-9 w-16 shrink-0 items-center justify-center rounded-[6px] bg-linen px-2">
+                  <span className="flex h-9 w-16 shrink-0 items-center justify-center rounded-[6px] bg-white px-2">
                     <BrandLogo name={brand.name} logo={brand.logo} imageClassName="max-h-4" />
                   </span>
-                  <span className="min-w-0 flex-1 truncate text-xs font-medium text-void">
+                  <span className="min-w-0 flex-1 truncate text-xs font-medium text-white">
                     {brand.name}
                   </span>
-                  <ArrowUpRight className="h-3.5 w-3.5 text-iron transition-colors group-hover:text-iris" />
+                  <ArrowUpRight className="h-3.5 w-3.5 text-smoke transition-colors group-hover:text-iris-bright" />
                 </Link>
               ))}
             </div>
@@ -102,7 +102,7 @@ export function ContentAttribution({
               {topics.map((topic) => (
                 <span
                   key={topic.slug}
-                  className="rounded-pill bg-linen px-3 py-1.5 text-[11px] uppercase tracking-[0.08em] text-body-light"
+                  className="rounded-pill border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[11px] uppercase tracking-[0.08em] text-ash"
                 >
                   {topic.name}
                 </span>
