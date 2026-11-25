@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { isLocale, locales, type Locale } from "@/lib/i18n";
 import { site, siteUrl } from "@/lib/site";
+import { getBanner } from "@/lib/cms";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -18,6 +19,8 @@ const sora = Sora({
   variable: "--font-sora",
   display: "swap",
 });
+
+export const revalidate = 300;
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -118,6 +121,8 @@ export default async function LocaleLayout({
   if (!isLocale(raw)) notFound();
   const locale: Locale = raw;
 
+  const banner = await getBanner(locale);
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -154,7 +159,11 @@ export default async function LocaleLayout({
         >
           {locale === "fr" ? "Aller au contenu" : "Skip to content"}
         </a>
-        <SiteHeader locale={locale} />
+        <SiteHeader
+          locale={locale}
+          bannerMessage={banner?.message}
+          bannerLink={banner?.link}
+        />
         <main id="main">{children}</main>
         <SiteFooter locale={locale} />
       </body>

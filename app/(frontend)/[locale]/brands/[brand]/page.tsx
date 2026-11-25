@@ -5,18 +5,20 @@ import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
 import { ProductCard } from "@/components/product-card";
 import { BrochureSlot, VideoSlot } from "@/components/placeholders";
+import { BrochureCard } from "@/components/brochure-card";
 import { Section } from "@/components/section";
 import { SectionHeading } from "@/components/section-heading";
 import { Reveal } from "@/components/reveal";
 import { CtaBand } from "@/components/cta-band";
 import { Button } from "@/components/button";
-import { brandBySlug, brands } from "@/lib/brands";
+import { getBrand, getBrands } from "@/lib/cms";
 import { pillars } from "@/lib/content";
 import { href as localeHref, isLocale, l, locales, type Locale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/metadata";
 
-export function generateStaticParams() {
-  return locales.flatMap((locale) => brands.map((brand) => ({ locale, brand: brand.slug })));
+export async function generateStaticParams() {
+  const all = await getBrands();
+  return locales.flatMap((locale) => all.map((brand) => ({ locale, brand: brand.slug })));
 }
 
 export async function generateMetadata({
@@ -26,7 +28,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale: raw, brand: slug } = await params;
   const locale: Locale = isLocale(raw) ? raw : "en";
-  const brand = brandBySlug(slug);
+  const brand = await getBrand(slug);
   if (!brand) return {};
   return pageMetadata({
     locale,
@@ -43,11 +45,12 @@ export default async function BrandPage({
 }) {
   const { locale: raw, brand: slug } = await params;
   const locale: Locale = isLocale(raw) ? raw : "en";
-  const brand = brandBySlug(slug);
+  const brand = await getBrand(slug);
   if (!brand) notFound();
 
   const pillar = pillars.find((p) => p.id === brand.pillar);
-  const others = brands.filter((b) => b.slug !== brand.slug && b.pillar === brand.pillar).slice(0, 3);
+  const all = await getBrands();
+  const others = all.filter((b) => b.slug !== brand.slug && b.pillar === brand.pillar).slice(0, 3);
 
   return (
     <>
@@ -149,7 +152,15 @@ export default async function BrandPage({
           />
         </Reveal>
         <Reveal delay={120} className="mt-10 grid gap-5 lg:grid-cols-2">
-          <BrochureSlot locale={locale} />
+          {brand.brochures && brand.brochures.length > 0 ? (
+            <div className="flex flex-col gap-3">
+              {brand.brochures.map((brochure) => (
+                <BrochureCard key={brochure.id} brochure={brochure} locale={locale} />
+              ))}
+            </div>
+          ) : (
+            <BrochureSlot locale={locale} />
+          )}
           <VideoSlot locale={locale} />
         </Reveal>
       </Section>

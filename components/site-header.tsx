@@ -15,13 +15,16 @@ import {
 } from "@/lib/i18n";
 import { nav, site } from "@/lib/site";
 
-const banner = {
-  en: "Now live: 24 brands across cybersecurity, cloud, infrastructure and data protection.",
-  fr: "Désormais en ligne : 24 marques en cybersécurité, cloud, infrastructure et protection des données.",
-  href: "/brands",
-};
 
-export function SiteHeader({ locale }: { locale: Locale }) {
+export function SiteHeader({
+  locale,
+  bannerMessage,
+  bannerLink,
+}: {
+  locale: Locale;
+  bannerMessage?: string | null;
+  bannerLink?: string | null;
+}) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -43,6 +46,14 @@ export function SiteHeader({ locale }: { locale: Locale }) {
 
   const routePath = pathname.replace(/^\/(en|fr)(?=\/|$)/, "") || "/";
   const alternate = alternateHref(locale, routePath);
+  const activeMessage =
+    bannerMessage ||
+    l(
+      locale,
+      "Now live: 24 brands across cybersecurity, cloud, infrastructure and data protection.",
+      "Désormais en ligne : 24 marques en cybersécurité, cloud, infrastructure et protection des données.",
+    );
+  const activeLink = bannerLink || "/brands";
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
@@ -55,14 +66,11 @@ export function SiteHeader({ locale }: { locale: Locale }) {
       >
         <div className="mx-auto flex h-10 w-full max-w-page items-center justify-center gap-2 px-5 sm:px-8 lg:px-10">
           <Link
-            href={localeHref(locale, banner.href)}
+            href={localeHref(locale, activeLink)}
             className="flex items-center gap-2 text-center text-[12px] font-medium tracking-[-0.01em]"
           >
-            <span className="hidden sm:inline">{l(locale, banner.en, banner.fr)}</span>
-            <span className="sm:hidden">
-              {l(locale, "24 brands now live", "24 marques en ligne")}
-            </span>
-            <ArrowRight className="h-3.5 w-3.5" />
+            <span className="line-clamp-1">{activeMessage}</span>
+            <ArrowRight className="h-3.5 w-3.5 shrink-0" />
           </Link>
           <button
             type="button"

@@ -1,5 +1,12 @@
 export type Bi = { en: string; fr: string };
 
+export type BrochureRef = {
+  id: string;
+  title: string;
+  url: string | null;
+  gated: boolean;
+};
+
 export type Product = {
   slug: string;
   name: string;
@@ -7,6 +14,9 @@ export type Product = {
   summary: Bi;
   highlights: Bi[];
   video: boolean;
+  videoUrl?: string | null;
+  videoProvider?: string | null;
+  brochures?: BrochureRef[];
 };
 
 export type Brand = {
@@ -17,6 +27,7 @@ export type Brand = {
   tagline: Bi;
   description: Bi;
   featured?: boolean;
+  brochures?: BrochureRef[];
   products: Product[];
 };
 

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { brands } from "@/lib/brands";
+import { getBrands } from "@/lib/cms";
 import { siteUrl } from "@/lib/site";
 
 const pages = [
@@ -15,16 +15,16 @@ const pages = [
   { path: "/contact", priority: 0.8 },
 ];
 
-const brandPages = brands.flatMap((brand) => [
-  { path: `/brands/${brand.slug}`, priority: 0.8 },
-  ...brand.products.map((product) => ({
-    path: `/brands/${brand.slug}/${product.slug}`,
-    priority: 0.7,
-  })),
-]);
-
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+  const allBrands = await getBrands();
+  const brandPages = allBrands.flatMap((brand) => [
+    { path: `/brands/${brand.slug}`, priority: 0.8 },
+    ...brand.products.map((product) => ({
+      path: `/brands/${brand.slug}/${product.slug}`,
+      priority: 0.7,
+    })),
+  ]);
   const all = [...pages, ...brandPages];
 
   return all.flatMap(({ path, priority }) => {

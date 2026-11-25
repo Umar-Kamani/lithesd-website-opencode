@@ -4,19 +4,21 @@ import { notFound } from "next/navigation";
 import { ArrowRight, Check, ChevronRight } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
 import { BrochureSlot, VideoSlot } from "@/components/placeholders";
+import { BrochureCard } from "@/components/brochure-card";
 import { ProductCard } from "@/components/product-card";
 import { Section } from "@/components/section";
 import { SectionHeading } from "@/components/section-heading";
 import { Reveal } from "@/components/reveal";
 import { CtaBand } from "@/components/cta-band";
 import { Button } from "@/components/button";
-import { brandBySlug, brands } from "@/lib/brands";
+import { getBrands, getProduct } from "@/lib/cms";
 import { href as localeHref, isLocale, l, locales, type Locale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/metadata";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const all = await getBrands();
   return locales.flatMap((locale) =>
-    brands.flatMap((brand) =>
+    all.flatMap((brand) =>
       brand.products.map((product) => ({
         locale,
         brand: brand.slug,
@@ -33,8 +35,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale: raw, brand: brandSlug, product: productSlug } = await params;
   const locale: Locale = isLocale(raw) ? raw : "en";
-  const brand = brandBySlug(brandSlug);
-  const product = brand?.products.find((p) => p.slug === productSlug);
+  const result = await getProduct(brandSlug, productSlug);
+  const brand = result?.brand;
+  const product = result?.product;
   if (!brand || !product) return {};
   return pageMetadata({
     locale,
@@ -44,6 +47,19 @@ export async function generateMetadata({
   });
 }
 
+function embedUrl(url: string, provider?: string | null) {
+  if (!url) return url;
+  if (provider === "youtube" || url.includes("youtube.com") || url.includes("youtu.be")) {
+    const id = url.match(/(?:v=|youtu\.be\/|embed\/)([\w-]{6,})/)?.[1];
+    return id ? `https://www.youtube.com/embed/${id}` : url;
+  }
+  if (provider === "vimeo" || url.includes("vimeo.com")) {
+    const id = url.match(/vimeo\.com\/(\d+)/)?.[1];
+    return id ? `https://player.vimeo.com/video/${id}` : url;
+  }
+  return url;
+}
+
 export default async function ProductPage({
   params,
 }: {
@@ -51,8 +67,9 @@ export default async function ProductPage({
 }) {
   const { locale: raw, brand: brandSlug, product: productSlug } = await params;
   const locale: Locale = isLocale(raw) ? raw : "en";
-  const brand = brandBySlug(brandSlug);
-  const product = brand?.products.find((p) => p.slug === productSlug);
+  const result = await getProduct(brandSlug, productSlug);
+  const brand = result?.brand;
+  const product = result?.product;
   if (!brand || !product) notFound();
 
   const related = brand.products.filter((p) => p.slug !== product.slug);
@@ -141,12 +158,40 @@ export default async function ProductPage({
           </Reveal>
 
           <Reveal delay={120}>
-            <BrochureSlot locale={locale} />
+            {product.brochures && product.brochures.length > 0 ? (
+              <div className="flex flex-col gap-3">
+                {product.brochures.map((brochure) => (
+                  <BrochureCard key={brochure.id} brochure={brochure} locale={locale} />
+                ))}
+              </div>
+            ) : (
+              <BrochureSlot locale={locale} />
+            )}
           </Reveal>
         </div>
       </Section>
 
-      {product.video ? (
+      {product.videoUrl ? (
+        <Section tone="linen">
+          <Reveal>
+            <SectionHeading
+              eyebrow={l(locale, "Video", "Vidéo")}
+              title={l(locale, "See it in action", "Voir en action")}
+            />
+          </Reveal>
+          <Reveal delay={120} className="mt-10">
+            <div className="aspect-video overflow-hidden rounded-card border border-void/10 bg-black">
+              <iframe
+                src={embedUrl(product.videoUrl, product.videoProvider)}
+                title={product.name}
+                className="h-full w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </Reveal>
+        </Section>
+      ) : product.video ? (
         <Section tone="linen">
           <Reveal>
             <SectionHeading

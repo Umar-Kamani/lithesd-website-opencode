@@ -6,6 +6,8 @@ import { SectionHeading } from "@/components/section-heading";
 import { Reveal } from "@/components/reveal";
 import { BrochureSlot, VideoSlot } from "@/components/placeholders";
 import { CtaBand } from "@/components/cta-band";
+import { getBrochures } from "@/lib/cms";
+import { BrochureCard } from "@/components/brochure-card";
 import { isLocale, l, type Locale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -27,6 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function ResourcesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : "en";
+  const brochures = await getBrochures(locale);
 
   const steps = [
     {
@@ -70,11 +73,19 @@ export default async function ResourcesPage({ params }: { params: Promise<{ loca
             )}
           />
         </Reveal>
-        <Reveal delay={120} className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          <BrochureSlot locale={locale} />
-          <BrochureSlot locale={locale} />
-          <BrochureSlot locale={locale} />
-        </Reveal>
+        {brochures.length > 0 ? (
+          <Reveal delay={120} className="mt-10 grid gap-4 md:grid-cols-2">
+            {brochures.map((brochure) => (
+              <BrochureCard key={brochure.id} brochure={brochure} locale={locale} />
+            ))}
+          </Reveal>
+        ) : (
+          <Reveal delay={120} className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <BrochureSlot locale={locale} />
+            <BrochureSlot locale={locale} />
+            <BrochureSlot locale={locale} />
+          </Reveal>
+        )}
       </Section>
 
       <Section tone="linen">

@@ -5,7 +5,7 @@ import { SectionHeading } from "@/components/section-heading";
 import { Reveal } from "@/components/reveal";
 import { BrandBrowser } from "@/components/brand-browser";
 import { CtaBand } from "@/components/cta-band";
-import { brands } from "@/lib/brands";
+import { getBrands } from "@/lib/cms";
 import { pillars } from "@/lib/content";
 import { isLocale, l, type Locale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/metadata";
@@ -29,7 +29,8 @@ export default async function BrandsPage({ params }: { params: Promise<{ locale:
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : "en";
 
-  const items = brands.map((brand) => ({
+  const allBrands = await getBrands();
+  const items = allBrands.map((brand) => ({
     slug: brand.slug,
     name: brand.name,
     logo: brand.logo,

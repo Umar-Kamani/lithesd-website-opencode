@@ -3,14 +3,21 @@ import { Container } from "./container";
 import { Button } from "./button";
 import { ThreadCanvas } from "./thread-canvas";
 import { BrandLogo } from "./brand-logo";
-import { brands } from "@/lib/brands";
+import { brands as staticBrands, type Brand } from "@/lib/brands";
 import { l, type Locale } from "@/lib/i18n";
 
-const panelBrands = ["sangfor", "fujitsu", "accops"]
-  .map((slug) => brands.find((brand) => brand.slug === slug))
-  .filter(Boolean);
+export function HomeHero({
+  locale,
+  panelBrands: supplied,
+}: {
+  locale: Locale;
+  panelBrands?: Brand[];
+}) {
+  const source = supplied && supplied.length > 0 ? supplied : staticBrands;
+  const panelBrands = ["sangfor", "fujitsu", "accops"]
+    .map((slug) => source.find((brand) => brand.slug === slug))
+    .filter((brand): brand is Brand => Boolean(brand));
 
-export function HomeHero({ locale }: { locale: Locale }) {
   return (
     <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-void pb-20 pt-36 sm:pt-40 lg:pb-24 lg:pt-44">
       <div className="pointer-events-none absolute inset-0 grid-dark opacity-40" />

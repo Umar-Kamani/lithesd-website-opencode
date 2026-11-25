@@ -13,7 +13,7 @@ import { CtaBand } from "@/components/cta-band";
 import { Button } from "@/components/button";
 import { Icon } from "@/lib/icons";
 import { about, whyChoose } from "@/lib/content";
-import { brands } from "@/lib/brands";
+import { getBrands } from "@/lib/cms";
 import { isLocale, l, type Locale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -38,10 +38,6 @@ export async function generateMetadata({
   });
 }
 
-const featured = ["sangfor", "fujitsu", "asus", "watchguard", "seceon", "kioxia", "accops", "keepit"]
-  .map((slug) => brands.find((b) => b.slug === slug))
-  .filter(Boolean);
-
 export default async function HomePage({
   params,
 }: {
@@ -49,10 +45,14 @@ export default async function HomePage({
 }) {
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : "en";
+  const allBrands = await getBrands();
+  const featured = ["sangfor", "fujitsu", "asus", "watchguard", "seceon", "kioxia", "accops", "keepit"]
+    .map((slug) => allBrands.find((brand) => brand.slug === slug))
+    .filter((brand): brand is (typeof allBrands)[number] => Boolean(brand));
 
   return (
     <>
-      <HomeHero locale={locale} />
+      <HomeHero locale={locale} panelBrands={allBrands} />
 
       {/* Ecosystem strip */}
       <Section tone="obsidian" className="border-y border-white/8 py-14 sm:py-16">
@@ -72,7 +72,7 @@ export default async function HomePage({
             </Button>
           </Reveal>
           <Reveal delay={100}>
-            <BrandMarquee tone="dark" />
+            <BrandMarquee items={allBrands} tone="dark" />
           </Reveal>
         </div>
       </Section>
@@ -184,7 +184,7 @@ export default async function HomePage({
             </div>
           </Reveal>
           <Reveal delay={120} className="mt-10">
-            <BrandMarquee tone="dark" />
+            <BrandMarquee items={allBrands} tone="dark" />
           </Reveal>
           <Reveal delay={160} className="mt-10">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
