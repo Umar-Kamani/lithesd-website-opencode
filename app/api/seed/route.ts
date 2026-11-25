@@ -165,13 +165,16 @@ export async function GET(request: Request) {
     }
 
     const banner = await payload.find({ collection: "banner-messages", limit: 1, depth: 0 });
+    const bannerEn =
+      "Now live: specialist brands across cybersecurity, cloud, infrastructure and data protection.";
+    const bannerFr =
+      "Désormais en ligne : des marques spécialisées en cybersécurité, cloud, infrastructure et protection des données.";
     if (banner.docs.length === 0) {
-      const bannerEn = await payload.create({
+      const created = await payload.create({
         collection: "banner-messages",
         locale: "en",
         data: {
-          message:
-            "Now live: specialist brands across cybersecurity, cloud, infrastructure and data protection.",
+          message: bannerEn,
           link: "/brands",
           active: true,
           order: 1,
@@ -179,12 +182,22 @@ export async function GET(request: Request) {
       });
       await payload.update({
         collection: "banner-messages",
-        id: bannerEn.id,
+        id: created.id,
         locale: "fr",
-        data: {
-          message:
-            "Désormais en ligne : des marques spécialisées en cybersécurité, cloud, infrastructure et protection des données.",
-        } as Record<string, unknown>,
+        data: { message: bannerFr } as Record<string, unknown>,
+      });
+    } else if (/24 (brands|marques)/i.test(String(banner.docs[0].message ?? ""))) {
+      await payload.update({
+        collection: "banner-messages",
+        id: banner.docs[0].id,
+        locale: "en",
+        data: { message: bannerEn } as Record<string, unknown>,
+      });
+      await payload.update({
+        collection: "banner-messages",
+        id: banner.docs[0].id,
+        locale: "fr",
+        data: { message: bannerFr } as Record<string, unknown>,
       });
     }
 
