@@ -4,7 +4,8 @@ import { getBlogPosts, getCaseStudies } from "@/lib/cms-content";
 import { getPolicies } from "@/lib/cms-policies";
 import { siteUrl } from "@/lib/site";
 
-export const revalidate = 300;
+// Content changes often; always reflect the current CMS state.
+export const dynamic = "force-dynamic";
 
 const pages = [
   { path: "", priority: 1 },
