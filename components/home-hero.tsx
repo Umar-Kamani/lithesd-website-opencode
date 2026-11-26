@@ -8,18 +8,18 @@ export function HomeHero({ locale }: { locale: Locale }) {
   return (
     <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-void pb-20 pt-36 sm:pt-40 lg:pb-24 lg:pt-44">
       <div className="pointer-events-none absolute inset-0 grid-dark opacity-40" />
-      <div className="pointer-events-none absolute -left-40 top-10 h-[620px] w-[620px] glow-iris opacity-70" />
-      <div className="pointer-events-none absolute -right-32 bottom-0 h-[520px] w-[520px] glow-ember opacity-50" />
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[680px] w-[680px] -translate-x-1/2 -translate-y-1/2 glow-iris opacity-60" />
+      <div className="pointer-events-none absolute -right-32 bottom-0 h-[520px] w-[520px] glow-ember opacity-40" />
 
-      {/* The Thread — full width, behind the headline. */}
-      <div className="pointer-events-none absolute inset-x-0 top-[10%] h-[64%] opacity-80 sm:top-[12%] sm:h-[66%] lg:top-[16%] lg:h-[66%] lg:opacity-95">
-        <ThreadCanvas />
+      {/* Four threads converge behind the centred headline. */}
+      <div className="pointer-events-none absolute inset-x-0 top-[6%] h-[76%] opacity-90 lg:top-[8%] lg:h-[78%]">
+        <ThreadCanvas variant="converge" />
       </div>
-      {/* Reading scrim so the headline stays crisp over the thread. */}
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(5,7,15,0.92)_0%,rgba(5,7,15,0.6)_42%,rgba(5,7,15,0)_72%)] lg:bg-[linear-gradient(90deg,rgba(5,7,15,0.85)_0%,rgba(5,7,15,0.45)_38%,rgba(5,7,15,0)_68%)]" />
+      {/* Reading scrim behind the text. */}
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[760px] w-[1100px] max-w-[160vw] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(closest-side,rgba(5,7,15,0.9),rgba(5,7,15,0.55)_58%,rgba(5,7,15,0)_85%)]" />
 
       <Container className="relative">
-        <div className="flex max-w-3xl flex-col items-start">
+        <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
           <span className="inline-flex items-center gap-2.5 font-sans text-[11px] font-medium uppercase tracking-[0.16em] text-smoke">
             <span className="h-px w-8 bg-gradient-to-r from-iris to-ember" />
             {l(
@@ -27,6 +27,7 @@ export function HomeHero({ locale }: { locale: Locale }) {
               "Value-added distributor · IOC · East Africa · Middle East",
               "Distributeur à valeur ajoutée · COI · Afrique de l'Est · Moyen-Orient",
             )}
+            <span className="h-px w-8 bg-gradient-to-l from-iris to-ember" />
           </span>
 
           <h1 className="mt-7 font-display text-display font-medium text-white">
@@ -41,7 +42,7 @@ export function HomeHero({ locale }: { locale: Locale }) {
             )}
           </p>
 
-          <div className="mt-9 flex flex-wrap gap-3">
+          <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Button locale={locale} to="/brands" size="lg">
               {l(locale, "Explore brands", "Découvrir les marques")}
               <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-0.5" />
@@ -51,7 +52,7 @@ export function HomeHero({ locale }: { locale: Locale }) {
             </Button>
           </div>
 
-          <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3">
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
             {[
               { value: "6", en: "pillars", fr: "piliers" },
               { value: "100+", en: "channel partners", fr: "partenaires" },
