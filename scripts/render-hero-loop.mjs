@@ -62,61 +62,38 @@ const bezier = (p0, p1, p2, p3, samples = 120) => {
 };
 
 const tiers = [
-  { rgb: [90, 151, 255], alpha: 0.38, width: 1.4 },
-  { rgb: [190, 212, 255], alpha: 0.30, width: 1.0 },
-  { rgb: [40, 120, 255], alpha: 0.34, width: 1.8 },
+  { rgb: [74, 139, 255], alpha: 0.40, width: 1.4 },
+  { rgb: [169, 199, 255], alpha: 0.32, width: 1.0 },
+  { rgb: [30, 109, 255], alpha: 0.36, width: 1.8 },
 ];
 
-// Threads enter from all four sides, then curve toward a single centre point.
-const sides = [
-  { edge: "left", positions: [0.28, 0.5, 0.72] },
-  { edge: "right", positions: [0.28, 0.5, 0.72] },
-  { edge: "top", positions: [0.3, 0.5, 0.7] },
-  { edge: "bottom", positions: [0.3, 0.5, 0.7] },
+// Preview C composition: four bundles from the left and right, 5 strands each.
+const bundles = [
+  { p0: [-0.06, 0.3], p1: [0.18, 0.24], p2: [0.34, 0.46], spread: 0.05 },
+  { p0: [-0.06, 0.78], p1: [0.2, 0.86], p2: [0.36, 0.6], spread: 0.045 },
+  { p0: [1.06, 0.32], p1: [0.82, 0.25], p2: [0.66, 0.46], spread: 0.05 },
+  { p0: [1.06, 0.76], p1: [0.8, 0.85], p2: [0.64, 0.6], spread: 0.045 },
 ];
-const perEntry = 4; // 4 sides × 3 entries × 4 strands = 48
+const perBundle = 5;
 
 const threads = [];
-for (const { edge, positions } of sides) {
-  const horizontal = edge === "left" || edge === "right";
-  const flip = edge === "right" || edge === "bottom";
-  positions.forEach((pos, index) => {
-    for (let j = 0; j < perEntry; j++) {
-      const off = (j - (perEntry - 1) / 2) * 0.012;
-      const point = (x, y) => ({ x: x * W, y: y * H });
-
-      let p0;
-      let p1;
-      let p2;
-      const p3 = { x: CX + (j - 1.5) * 1.5, y: CY + (j - 1.5) * 1.5 };
-
-      if (horizontal) {
-        const y = pos + off;
-        const x0 = flip ? 1.1 : -0.1;
-        const x1 = flip ? 0.82 : 0.18;
-        const x2 = flip ? 0.62 : 0.38;
-        p0 = point(x0, y);
-        p1 = point(x1, y + (0.5 - pos) * 0.04);
-        p2 = point(x2, y + (0.5 - y) * 0.6);
-      } else {
-        const x = pos + off;
-        const y0 = flip ? 1.1 : -0.1;
-        const y1 = flip ? 0.82 : 0.18;
-        const y2 = flip ? 0.62 : 0.38;
-        p0 = point(x, y0);
-        p1 = point(x + (0.5 - pos) * 0.04, y1);
-        p2 = point(x + (0.5 - x) * 0.6, y2);
-      }
-
-      threads.push({
-        pts: bezier(p0, p1, p2, p3),
-        tier: tiers[(index + j + (flip ? 1 : 0)) % tiers.length],
-        alpha: 0.18 + ((j * 3 + index) % 4) * 0.05,
-        width: 0.75 + ((j + index) % 3) * 0.22,
-      });
-    }
-  });
-}
+bundles.forEach((bundle, bIndex) => {
+  for (let j = 0; j < perBundle; j++) {
+    const off = (j - (perBundle - 1) / 2) * bundle.spread;
+    const pts = bezier(
+      { x: bundle.p0[0] * W, y: (bundle.p0[1] + off * 1.4) * H },
+      { x: bundle.p1[0] * W, y: (bundle.p1[1] + off) * H },
+      { x: bundle.p2[0] * W, y: (bundle.p2[1] + off * 0.35) * H },
+      { x: CX + (j - 2) * 1.5, y: CY + (j - 2) * 1.5 },
+    );
+    threads.push({
+      pts,
+      tier: tiers[(bIndex + j) % tiers.length],
+      alpha: 0.2 + ((j * 3 + bIndex) % 4) * 0.05,
+      width: 0.75 + (j % 4) * 0.28,
+    });
+  }
+});
 
 /* ------------------------------------------------------------------ */
 /* Sprites                                                            */
@@ -186,7 +163,7 @@ const drawCentreBloom = () => {
   ctx.globalCompositeOperation = "source-over";
 };
 
-const pulseThreads = Array.from({ length: 8 }, (_, i) => i * 6); // eight evenly spread pulses
+const pulseThreads = [0, 4, 8, 11, 15, 19]; // six pulses, Preview C cadence
 
 const drawPulses = (t) => {
   let flare = 0;
@@ -228,7 +205,7 @@ const drawPulses = (t) => {
   ctx.globalCompositeOperation = "source-over";
 };
 
-const motes = Array.from({ length: 12 }, (_, i) => ({
+const motes = Array.from({ length: 8 }, (_, i) => ({
   thread: threads[(i * 7) % threads.length],
   offset: (i * 0.083) % 1,
   cycles: 1 + (i % 3),
