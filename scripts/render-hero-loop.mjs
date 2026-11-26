@@ -20,7 +20,7 @@ const ffmpeg = require("ffmpeg-static");
 
 const W = 1920;
 const H = 1080;
-const FPS = 30;
+const FPS = 60;
 const DURATION = 8;
 const FRAMES = FPS * DURATION;
 const CX = W / 2;
@@ -62,35 +62,57 @@ const bezier = (p0, p1, p2, p3, samples = 120) => {
 };
 
 const tiers = [
-  { rgb: [127, 174, 255], alpha: 0.38, width: 1.4 },
-  { rgb: [199, 219, 255], alpha: 0.30, width: 1.0 },
-  { rgb: [90, 151, 255], alpha: 0.34, width: 1.8 },
+  { rgb: [90, 151, 255], alpha: 0.38, width: 1.4 },
+  { rgb: [190, 212, 255], alpha: 0.30, width: 1.0 },
+  { rgb: [40, 120, 255], alpha: 0.34, width: 1.8 },
 ];
 
-// 16 entry heights per side × 5 tightly packed strands = 160 strands.
-// Each strand leaves the screen edge horizontally, then curves to the centre.
-const entryHeights = Array.from({ length: 16 }, (_, i) => 0.12 + (i * 0.76) / 15);
-const perEntry = 5;
+// Threads enter from all four sides, then curve toward a single centre point.
+const sides = [
+  { edge: "left", positions: [0.28, 0.5, 0.72] },
+  { edge: "right", positions: [0.28, 0.5, 0.72] },
+  { edge: "top", positions: [0.3, 0.5, 0.7] },
+  { edge: "bottom", positions: [0.3, 0.5, 0.7] },
+];
+const perEntry = 4; // 4 sides × 3 entries × 4 strands = 48
 
 const threads = [];
-for (const side of [-1, 1]) {
-  const left = side === -1;
-  entryHeights.forEach((yFrac, hIndex) => {
+for (const { edge, positions } of sides) {
+  const horizontal = edge === "left" || edge === "right";
+  const flip = edge === "right" || edge === "bottom";
+  positions.forEach((pos, index) => {
     for (let j = 0; j < perEntry; j++) {
-      const offset = (j - (perEntry - 1) / 2) * 0.006;
-      const y = yFrac + offset;
-      const p0 = { x: left ? -0.35 * W : 1.35 * W, y: y * H };
-      const p1 = { x: left ? 0.12 * W : 0.88 * W, y: y * H }; // horizontal at the edge
-      const p2 = {
-        x: left ? 0.42 * W : 0.58 * W,
-        y: (y + (0.5 - y) * 0.6) * H,
-      };
+      const off = (j - (perEntry - 1) / 2) * 0.012;
+      const point = (x, y) => ({ x: x * W, y: y * H });
+
+      let p0;
+      let p1;
+      let p2;
       const p3 = { x: CX + (j - 1.5) * 1.5, y: CY + (j - 1.5) * 1.5 };
+
+      if (horizontal) {
+        const y = pos + off;
+        const x0 = flip ? 1.1 : -0.1;
+        const x1 = flip ? 0.82 : 0.18;
+        const x2 = flip ? 0.62 : 0.38;
+        p0 = point(x0, y);
+        p1 = point(x1, y + (0.5 - pos) * 0.04);
+        p2 = point(x2, y + (0.5 - y) * 0.6);
+      } else {
+        const x = pos + off;
+        const y0 = flip ? 1.1 : -0.1;
+        const y1 = flip ? 0.82 : 0.18;
+        const y2 = flip ? 0.62 : 0.38;
+        p0 = point(x, y0);
+        p1 = point(x + (0.5 - pos) * 0.04, y1);
+        p2 = point(x + (0.5 - x) * 0.6, y2);
+      }
+
       threads.push({
         pts: bezier(p0, p1, p2, p3),
-        tier: tiers[(hIndex + j + (left ? 0 : 1)) % tiers.length],
-        alpha: 0.18 + ((j * 3 + hIndex) % 4) * 0.045,
-        width: 0.75 + ((j + hIndex) % 3) * 0.22,
+        tier: tiers[(index + j + (flip ? 1 : 0)) % tiers.length],
+        alpha: 0.18 + ((j * 3 + index) % 4) * 0.05,
+        width: 0.75 + ((j + index) % 3) * 0.22,
       });
     }
   });
@@ -164,7 +186,7 @@ const drawCentreBloom = () => {
   ctx.globalCompositeOperation = "source-over";
 };
 
-const pulseThreads = Array.from({ length: 8 }, (_, i) => i * 20); // eight evenly spread pulses
+const pulseThreads = Array.from({ length: 8 }, (_, i) => i * 6); // eight evenly spread pulses
 
 const drawPulses = (t) => {
   let flare = 0;
