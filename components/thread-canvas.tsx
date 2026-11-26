@@ -9,12 +9,13 @@ type Point = { x: number; y: number };
 
 /**
  * "The Thread" — a luminous thread draws the Lithe cloud silhouette and
- * dissolves into flowing data. The `converge` variant fans four threads in
- * from the edges toward a single centre point.
+ * dissolves into flowing data. The `converge` variant fans many fibre-optic
+ * strands in from the edges toward a single centre point.
  *
- * Performance: strands, threads, gradients and the centre glow are rendered
- * once per resize into an offscreen canvas. Each frame only blits that layer,
- * draws a few cached comet sprites and a handful of soft motes.
+ * Performance: all strands, gradients and the centre bloom are rendered once
+ * per resize into an offscreen canvas. Each frame only blits that layer, draws
+ * a handful of cached comet sprites and a few soft motes. Quality degrades
+ * automatically on slow devices.
  */
 export function ThreadCanvas({
   className,
@@ -33,10 +34,16 @@ export function ThreadCanvas({
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const SINGLE_SAMPLES = 180;
-    const CONVERGE_SAMPLES = 120;
+    const CONVERGE_SAMPLES = 110;
     const MOTES = 8;
     const COMET_LENGTH = 140;
     const COMET_HEIGHT = 18;
+    const CONVERGE_TRAIL = [0, 3, 6];
+    const SINGLE_TRAIL = [0, 4, 8];
+
+    const lowPower =
+      (navigator.hardwareConcurrency ?? 8) <= 4 ||
+      ((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8) <= 4;
 
     let w = 0;
     let h = 0;
@@ -44,8 +51,15 @@ export function ThreadCanvas({
     let last = 0;
     let visible = true;
     let flash = 0;
+    let staticMode = false;
+    let quality = lowPower ? 1 : 0;
+    let dprCap = lowPower ? 1.1 : 1.5;
+    let pulseCount = lowPower ? 3 : 6;
+    let ema = 0;
+    let over = 0;
     let baseY: number[] = [];
     let threads: Point[][] = [];
+    let activePulseIndexes: number[] = [];
     let layer: HTMLCanvasElement | null = null;
     let comet: HTMLCanvasElement | null = null;
     let dot: HTMLCanvasElement | null = null;
@@ -92,13 +106,7 @@ export function ThreadCanvas({
       return sprite;
     };
 
-    const bezier = (
-      p0: Point,
-      p1: Point,
-      p2: Point,
-      p3: Point,
-      samples: number,
-    ) => {
+    const bezier = (p0: Point, p1: Point, p2: Point, p3: Point, samples: number) => {
       const pts: Point[] = [];
       for (let i = 0; i <= samples; i++) {
         const t = i / samples;
@@ -119,14 +127,60 @@ export function ThreadCanvas({
       return pts;
     };
 
+    const computePulseIndexes = (n: number) => {
+      if (!n) return [];
+      const count = Math.min(pulseCount, n);
+      if (count <= 1) return [0];
+      return Array.from({ length: count }, (_, i) =>
+        Math.min(n - 1, Math.round((i * (n - 1)) / (count - 1))),
+      );
+    };
+
+    const buildConvergeThreads = () => {
+      const cx = w * 0.5;
+      const cy = h * 0.5;
+      const bundles = [
+        { p0: { x: -0.08, y: 0.26 }, p1: { x: 0.16, y: 0.18 }, p2: { x: 0.34, y: 0.42 }, count: 4, spread: 0.055 },
+        { p0: { x: -0.08, y: 0.44 }, p1: { x: 0.18, y: 0.54 }, p2: { x: 0.35, y: 0.5 }, count: 4, spread: 0.045 },
+        { p0: { x: 1.08, y: 0.28 }, p1: { x: 0.84, y: 0.18 }, p2: { x: 0.66, y: 0.42 }, count: 4, spread: 0.055 },
+        { p0: { x: 1.08, y: 0.46 }, p1: { x: 0.82, y: 0.56 }, p2: { x: 0.65, y: 0.5 }, count: 4, spread: 0.045 },
+      ];
+
+      const next: Point[][] = [];
+      for (const bundle of bundles) {
+        for (let j = 0; j < bundle.count; j++) {
+          const off = (j - (bundle.count - 1) / 2) * bundle.spread * h;
+          next.push(
+            bezier(
+              {
+                x: bundle.p0.x * w,
+                y: bundle.p0.y * h + off * 1.4,
+              },
+              {
+                x: bundle.p1.x * w,
+                y: bundle.p1.y * h + off,
+              },
+              {
+                x: bundle.p2.x * w,
+                y: bundle.p2.y * h + off * 0.35,
+              },
+              { x: cx, y: cy },
+              CONVERGE_SAMPLES,
+            ),
+          );
+        }
+      }
+      return next;
+    };
+
     const build = () => {
       const rect = canvas.getBoundingClientRect();
       w = rect.width;
       h = rect.height;
       if (!w || !h) return;
 
-      let dpr = Math.min(window.devicePixelRatio || 1, w > 1000 ? 1.25 : 1.5);
-      const maxPixels = 1_600_000;
+      let dpr = Math.min(window.devicePixelRatio || 1, dprCap);
+      const maxPixels = quality > 0 ? 1_100_000 : 1_600_000;
       if (w * h * dpr * dpr > maxPixels) {
         dpr = Math.sqrt(maxPixels / (w * h));
       }
@@ -146,58 +200,49 @@ export function ThreadCanvas({
       threads = [];
 
       if (variant === "converge") {
-        const cx = w * 0.5;
-        const cy = h * 0.5;
-        threads = [
-          bezier(
-            { x: -w * 0.06, y: h * 0.3 },
-            { x: w * 0.18, y: h * 0.24 },
-            { x: w * 0.34, y: h * 0.46 },
-            { x: cx, y: cy },
-            CONVERGE_SAMPLES,
-          ),
-          bezier(
-            { x: -w * 0.06, y: h * 0.78 },
-            { x: w * 0.2, y: h * 0.86 },
-            { x: w * 0.36, y: h * 0.6 },
-            { x: cx, y: cy },
-            CONVERGE_SAMPLES,
-          ),
-          bezier(
-            { x: w * 1.06, y: h * 0.32 },
-            { x: w * 0.82, y: h * 0.25 },
-            { x: w * 0.66, y: h * 0.46 },
-            { x: cx, y: cy },
-            CONVERGE_SAMPLES,
-          ),
-          bezier(
-            { x: w * 1.06, y: h * 0.76 },
-            { x: w * 0.8, y: h * 0.85 },
-            { x: w * 0.64, y: h * 0.6 },
-            { x: cx, y: cy },
-            CONVERGE_SAMPLES,
-          ),
+        threads = buildConvergeThreads();
+        activePulseIndexes = computePulseIndexes(threads.length);
+
+        const grads = [
+          cctx.createLinearGradient(0, 0, w, 0),
+          cctx.createLinearGradient(0, 0, w, 0),
+          cctx.createLinearGradient(0, 0, w, 0),
         ];
+        grads[0].addColorStop(0, "rgba(74,139,255,0)");
+        grads[0].addColorStop(0.25, "rgba(74,139,255,0.35)");
+        grads[0].addColorStop(0.5, "rgba(190,214,255,0.9)");
+        grads[0].addColorStop(0.75, "rgba(74,139,255,0.35)");
+        grads[0].addColorStop(1, "rgba(74,139,255,0)");
 
-        const lineGrad = cctx.createLinearGradient(0, 0, w, 0);
-        lineGrad.addColorStop(0, "rgba(74,139,255,0)");
-        lineGrad.addColorStop(0.22, "rgba(74,139,255,0.28)");
-        lineGrad.addColorStop(0.5, "rgba(190,214,255,0.85)");
-        lineGrad.addColorStop(0.78, "rgba(74,139,255,0.28)");
-        lineGrad.addColorStop(1, "rgba(74,139,255,0)");
+        grads[1].addColorStop(0, "rgba(169,199,255,0)");
+        grads[1].addColorStop(0.25, "rgba(169,199,255,0.3)");
+        grads[1].addColorStop(0.5, "rgba(225,238,255,0.85)");
+        grads[1].addColorStop(0.75, "rgba(169,199,255,0.3)");
+        grads[1].addColorStop(1, "rgba(169,199,255,0)");
 
-        for (const pts of threads) {
+        grads[2].addColorStop(0, "rgba(30,109,255,0)");
+        grads[2].addColorStop(0.25, "rgba(30,109,255,0.32)");
+        grads[2].addColorStop(0.5, "rgba(150,195,255,0.8)");
+        grads[2].addColorStop(0.75, "rgba(30,109,255,0.32)");
+        grads[2].addColorStop(1, "rgba(30,109,255,0)");
+
+        threads.forEach((pts, index) => {
+          const tier = index % 3;
+          const width = 0.7 + (index % 4) * 0.28;
+          const alpha = 0.35 + ((index * 7) % 5) * 0.11;
+          cctx.globalAlpha = alpha;
           cctx.beginPath();
           pts.forEach((p, i) => (i ? cctx.lineTo(p.x, p.y) : cctx.moveTo(p.x, p.y)));
-          cctx.strokeStyle = lineGrad;
-          cctx.lineWidth = 1.6;
+          cctx.strokeStyle = grads[tier];
+          cctx.lineWidth = width;
           cctx.lineCap = "round";
           cctx.stroke();
-        }
+        });
+        cctx.globalAlpha = 1;
 
-        const glow = cctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(90, w * 0.12));
-        glow.addColorStop(0, "rgba(210,230,255,0.5)");
-        glow.addColorStop(0.35, "rgba(74,139,255,0.18)");
+        const glow = cctx.createRadialGradient(cx(0), cy(0), 0, cx(0), cy(0), Math.max(100, w * 0.13));
+        glow.addColorStop(0, "rgba(215,233,255,0.55)");
+        glow.addColorStop(0.35, "rgba(74,139,255,0.16)");
         glow.addColorStop(1, "rgba(74,139,255,0)");
         cctx.fillStyle = glow;
         cctx.fillRect(0, 0, w, h);
@@ -256,19 +301,20 @@ export function ThreadCanvas({
       dot = dot ?? buildDot();
     };
 
+    function cx(offset: number) {
+      return w * 0.5 + offset;
+    }
+    function cy(offset: number) {
+      return h * 0.5 + offset;
+    }
+
     const tangentAt = (pts: Point[], index: number) => {
       const prev = pts[Math.max(0, index - 1)];
       const next = pts[Math.min(pts.length - 1, index + 1)];
       return Math.atan2(next.y - prev.y, next.x - prev.x);
     };
 
-    const drawComet = (
-      x: number,
-      y: number,
-      angle: number,
-      alpha: number,
-      scale: number,
-    ) => {
+    const drawComet = (x: number, y: number, angle: number, alpha: number, scale: number) => {
       if (!comet) return;
       ctx.save();
       ctx.translate(x, y);
@@ -277,8 +323,8 @@ export function ThreadCanvas({
       ctx.globalCompositeOperation = "lighter";
       ctx.drawImage(
         comet,
-        -COMET_LENGTH * scale * 0.5,
-        -COMET_HEIGHT * scale * 0.5,
+        (-COMET_LENGTH * scale) / 2,
+        (-COMET_HEIGHT * scale) / 2,
         COMET_LENGTH * scale,
         COMET_HEIGHT * scale,
       );
@@ -327,37 +373,61 @@ export function ThreadCanvas({
 
       if (variant === "converge") {
         let arrival = 0;
-        threads.forEach((pts, i) => {
-          const progress = (t * 0.000045 + i * 0.25) % 1;
-          drawPulse(pts, progress, offsetY, [0, 3, 6]);
-          if (progress > 0.86) {
-            arrival = Math.max(arrival, (progress - 0.86) / 0.14);
+        activePulseIndexes.forEach((ti, i) => {
+          const pts = threads[ti];
+          if (!pts) return;
+          const progress = (t * 0.00006 + i / activePulseIndexes.length) % 1;
+          drawPulse(pts, progress, offsetY, CONVERGE_TRAIL);
+          if (progress > 0.87) {
+            arrival = Math.max(arrival, (progress - 0.87) / 0.13);
           }
         });
         flash = reduce ? 0 : Math.max(flash * 0.94, arrival);
         if (flash > 0.01 && comet) {
-          const cx = w * 0.5;
-          const cy = h * 0.5 + offsetY;
           ctx.save();
           ctx.globalAlpha = flash * 0.55;
           ctx.globalCompositeOperation = "lighter";
-          ctx.drawImage(comet, cx - 60, cy - 22, 120, 44);
+          ctx.drawImage(comet, cx(-60), cy(-22 + offsetY), 120, 44);
           ctx.restore();
         }
       } else {
-        drawPulse(threads[0], (t * 0.00006) % 1, offsetY, [0, 4, 8]);
+        drawPulse(threads[0], (t * 0.00007) % 1, offsetY, SINGLE_TRAIL);
         drawMotes(t, offsetY);
       }
 
       ctx.globalAlpha = 1;
     };
 
+    const degrade = () => {
+      if (quality === 0) {
+        quality = 1;
+        dprCap = 1;
+        pulseCount = Math.min(3, pulseCount);
+        build();
+        drawFrame(last);
+        ema = 0;
+        over = 0;
+        return;
+      }
+      staticMode = true;
+      cancelAnimationFrame(raf);
+      raf = 0;
+      drawFrame(last);
+    };
+
     const frame = (time: number) => {
+      if (staticMode) return;
       raf = requestAnimationFrame(frame);
       if (!visible || document.hidden) return;
       if (time - last < 33) return; // ~30 fps
       last = time;
+      const start = performance.now();
       drawFrame(time);
+      const cost = performance.now() - start;
+      ema = ema ? ema * 0.9 + cost * 0.1 : cost;
+      if (ema > 6) over += 1;
+      else over = Math.max(0, over - 1);
+      if (over > 40) degrade();
     };
 
     build();
