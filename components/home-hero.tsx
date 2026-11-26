@@ -12,7 +12,7 @@ export function HomeHero({ locale }: { locale: Locale }) {
       <div className="pointer-events-none absolute -right-32 bottom-0 h-[520px] w-[520px] glow-ember opacity-50" />
 
       {/* The Thread — sits behind the headline and opens out to the right. */}
-      <div className="pointer-events-none absolute inset-x-0 top-[10%] h-[56%] opacity-55 sm:top-[12%] sm:h-[60%] sm:opacity-70 lg:inset-y-0 lg:left-[28%] lg:right-[-6%] lg:top-[14%] lg:h-[72%] lg:opacity-95">
+      <div className="pointer-events-none absolute inset-x-0 top-[8%] h-[52%] opacity-40 sm:top-[12%] sm:h-[60%] sm:opacity-55 lg:inset-y-0 lg:left-[28%] lg:right-[-6%] lg:top-[14%] lg:h-[72%] lg:opacity-95">
         <ThreadCanvas />
       </div>
 
