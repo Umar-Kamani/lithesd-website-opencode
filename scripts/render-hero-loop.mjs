@@ -61,38 +61,40 @@ const bezier = (p0, p1, p2, p3, samples = 120) => {
   return pts;
 };
 
-const bundles = [
-  { p0: [-0.12, 0.2], p1: [0.16, 0.06], p2: [0.36, 0.38], spread: 0.055 },
-  { p0: [-0.12, 0.8], p1: [0.18, 0.94], p2: [0.36, 0.62], spread: 0.055 },
-  { p0: [1.12, 0.22], p1: [0.84, 0.07], p2: [0.64, 0.38], spread: 0.055 },
-  { p0: [1.12, 0.78], p1: [0.82, 0.93], p2: [0.64, 0.62], spread: 0.055 },
+const tiers = [
+  { rgb: [127, 174, 255], alpha: 0.38, width: 1.4 },
+  { rgb: [199, 219, 255], alpha: 0.30, width: 1.0 },
+  { rgb: [90, 151, 255], alpha: 0.34, width: 1.8 },
 ];
 
-const tiers = [
-  { rgb: [74, 139, 255], alpha: 0.42, width: 1.5 },
-  { rgb: [169, 199, 255], alpha: 0.32, width: 1.1 },
-  { rgb: [30, 109, 255], alpha: 0.38, width: 1.9 },
-];
+// 16 entry heights per side × 5 tightly packed strands = 160 strands.
+// Each strand leaves the screen edge horizontally, then curves to the centre.
+const entryHeights = Array.from({ length: 16 }, (_, i) => 0.12 + (i * 0.76) / 15);
+const perEntry = 5;
 
 const threads = [];
-bundles.forEach((bundle, bIndex) => {
-  const perBundle = 10; // 4 × 10 = 40
-  for (let j = 0; j < perBundle; j++) {
-    const off = (j - (perBundle - 1) / 2) * bundle.spread;
-    const pts = bezier(
-      { x: bundle.p0[0] * W, y: (bundle.p0[1] + off * 1.5) * H },
-      { x: bundle.p1[0] * W, y: (bundle.p1[1] + off) * H },
-      { x: bundle.p2[0] * W, y: (bundle.p2[1] + off * 0.4) * H },
-      { x: CX, y: CY },
-    );
-    threads.push({
-      pts,
-      tier: tiers[(bIndex + j) % tiers.length],
-      alpha: 0.16 + ((j * 3 + bIndex) % 5) * 0.05,
-      width: 0.75 + ((j + bIndex) % 4) * 0.22,
-    });
-  }
-});
+for (const side of [-1, 1]) {
+  const left = side === -1;
+  entryHeights.forEach((yFrac, hIndex) => {
+    for (let j = 0; j < perEntry; j++) {
+      const offset = (j - (perEntry - 1) / 2) * 0.006;
+      const y = yFrac + offset;
+      const p0 = { x: left ? -0.35 * W : 1.35 * W, y: y * H };
+      const p1 = { x: left ? 0.12 * W : 0.88 * W, y: y * H }; // horizontal at the edge
+      const p2 = {
+        x: left ? 0.42 * W : 0.58 * W,
+        y: (y + (0.5 - y) * 0.6) * H,
+      };
+      const p3 = { x: CX + (j - 1.5) * 1.5, y: CY + (j - 1.5) * 1.5 };
+      threads.push({
+        pts: bezier(p0, p1, p2, p3),
+        tier: tiers[(hIndex + j + (left ? 0 : 1)) % tiers.length],
+        alpha: 0.18 + ((j * 3 + hIndex) % 4) * 0.045,
+        width: 0.75 + ((j + hIndex) % 3) * 0.22,
+      });
+    }
+  });
+}
 
 /* ------------------------------------------------------------------ */
 /* Sprites                                                            */
@@ -162,7 +164,7 @@ const drawCentreBloom = () => {
   ctx.globalCompositeOperation = "source-over";
 };
 
-const pulseThreads = [0, 5, 10, 15, 20, 25, 30, 35]; // eight pulses
+const pulseThreads = Array.from({ length: 8 }, (_, i) => i * 20); // eight evenly spread pulses
 
 const drawPulses = (t) => {
   let flare = 0;

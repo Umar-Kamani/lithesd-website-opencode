@@ -12,7 +12,7 @@ export function HomeHero({ locale }: { locale: Locale }) {
       <div className="pointer-events-none absolute -right-32 bottom-0 h-[520px] w-[520px] glow-ember opacity-40" />
 
       {/* Four threads converge behind the centred headline. */}
-      <div className="pointer-events-none absolute inset-x-0 top-[6%] h-[76%] opacity-90 lg:top-[8%] lg:h-[78%]">
+      <div className="pointer-events-none absolute inset-x-0 top-[6%] h-[76%] opacity-90">
         <HeroThreadVideo />
       </div>
       {/* Reading scrim behind the text. */}
@@ -52,22 +52,6 @@ export function HomeHero({ locale }: { locale: Locale }) {
             </Button>
           </div>
 
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-            {[
-              { value: "6", en: "pillars", fr: "piliers" },
-              { value: "100+", en: "channel partners", fr: "partenaires" },
-              { value: "20+", en: "countries", fr: "pays" },
-            ].map((stat) => (
-              <div key={stat.en} className="flex items-baseline gap-2">
-                <span className="font-display text-2xl font-medium text-white">
-                  {stat.value}
-                </span>
-                <span className="text-xs uppercase tracking-[0.12em] text-iron">
-                  {l(locale, stat.en, stat.fr)}
-                </span>
-              </div>
-            ))}
-          </div>
         </div>
       </Container>
     </section>
