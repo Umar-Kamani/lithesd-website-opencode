@@ -11,10 +11,12 @@ export function HomeHero({ locale }: { locale: Locale }) {
       <div className="pointer-events-none absolute -left-40 top-10 h-[620px] w-[620px] glow-iris opacity-70" />
       <div className="pointer-events-none absolute -right-32 bottom-0 h-[520px] w-[520px] glow-ember opacity-50" />
 
-      {/* The Thread — sits behind the headline and opens out to the right. */}
-      <div className="pointer-events-none absolute inset-x-0 top-[8%] h-[52%] opacity-40 sm:top-[12%] sm:h-[60%] sm:opacity-55 lg:inset-y-0 lg:left-[28%] lg:right-[-6%] lg:top-[14%] lg:h-[72%] lg:opacity-95">
+      {/* The Thread — full width, behind the headline. */}
+      <div className="pointer-events-none absolute inset-x-0 top-[10%] h-[64%] opacity-80 sm:top-[12%] sm:h-[66%] lg:top-[16%] lg:h-[66%] lg:opacity-95">
         <ThreadCanvas />
       </div>
+      {/* Reading scrim so the headline stays crisp over the thread. */}
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(5,7,15,0.92)_0%,rgba(5,7,15,0.6)_42%,rgba(5,7,15,0)_72%)] lg:bg-[linear-gradient(90deg,rgba(5,7,15,0.85)_0%,rgba(5,7,15,0.45)_38%,rgba(5,7,15,0)_68%)]" />
 
       <Container className="relative">
         <div className="flex max-w-3xl flex-col items-start">
