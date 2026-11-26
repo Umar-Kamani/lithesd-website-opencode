@@ -140,10 +140,10 @@ export function ThreadCanvas({
       const cx = w * 0.5;
       const cy = h * 0.5;
       const bundles = [
-        { p0: { x: -0.08, y: 0.26 }, p1: { x: 0.16, y: 0.18 }, p2: { x: 0.34, y: 0.42 }, count: 4, spread: 0.055 },
-        { p0: { x: -0.08, y: 0.44 }, p1: { x: 0.18, y: 0.54 }, p2: { x: 0.35, y: 0.5 }, count: 4, spread: 0.045 },
-        { p0: { x: 1.08, y: 0.28 }, p1: { x: 0.84, y: 0.18 }, p2: { x: 0.66, y: 0.42 }, count: 4, spread: 0.055 },
-        { p0: { x: 1.08, y: 0.46 }, p1: { x: 0.82, y: 0.56 }, p2: { x: 0.65, y: 0.5 }, count: 4, spread: 0.045 },
+        { p0: { x: -0.08, y: 0.26 }, p1: { x: 0.16, y: 0.18 }, p2: { x: 0.34, y: 0.42 }, count: 5, spread: 0.06 },
+        { p0: { x: -0.08, y: 0.44 }, p1: { x: 0.18, y: 0.54 }, p2: { x: 0.35, y: 0.5 }, count: 5, spread: 0.05 },
+        { p0: { x: 1.08, y: 0.28 }, p1: { x: 0.84, y: 0.18 }, p2: { x: 0.66, y: 0.42 }, count: 5, spread: 0.06 },
+        { p0: { x: 1.08, y: 0.46 }, p1: { x: 0.82, y: 0.56 }, p2: { x: 0.65, y: 0.5 }, count: 5, spread: 0.05 },
       ];
 
       const next: Point[][] = [];
