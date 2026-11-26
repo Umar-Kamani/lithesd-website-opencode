@@ -1,7 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import { Container } from "./container";
 import { Button } from "./button";
-import { ThreadCanvas } from "./thread-canvas";
+import { HeroThreadVideo } from "./hero-thread-video";
 import { l, type Locale } from "@/lib/i18n";
 
 export function HomeHero({ locale }: { locale: Locale }) {
@@ -13,7 +13,7 @@ export function HomeHero({ locale }: { locale: Locale }) {
 
       {/* Four threads converge behind the centred headline. */}
       <div className="pointer-events-none absolute inset-x-0 top-[6%] h-[76%] opacity-90 lg:top-[8%] lg:h-[78%]">
-        <ThreadCanvas variant="converge" />
+        <HeroThreadVideo />
       </div>
       {/* Reading scrim behind the text. */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[760px] w-[1100px] max-w-[160vw] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(closest-side,rgba(5,7,15,0.9),rgba(5,7,15,0.55)_58%,rgba(5,7,15,0)_85%)]" />
