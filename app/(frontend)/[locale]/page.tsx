@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { HomeHero } from "@/components/home-hero";
 import { Section } from "@/components/section";
 import { SectionHeading } from "@/components/section-heading";
@@ -15,10 +14,10 @@ import { Button } from "@/components/button";
 import { ContentCard } from "@/components/content-card";
 import { Icon } from "@/lib/icons";
 import { about, whyChoose } from "@/lib/content";
-import { getBrands, getSiteSettings } from "@/lib/cms";
+import { getBrands } from "@/lib/cms";
 import { getBlogPosts, getCaseStudies } from "@/lib/cms-content";
 import { blogPostCard, caseStudyCard } from "@/lib/content-view";
-import { href as localeHref, isLocale, l, type Locale } from "@/lib/i18n";
+import { isLocale, l, type Locale } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/metadata";
 
 export async function generateMetadata({
@@ -50,66 +49,19 @@ export default async function HomePage({
   const { locale: raw } = await params;
   const locale: Locale = isLocale(raw) ? raw : "en";
   const allBrands = await getBrands();
-  const [posts, studies, settings] = await Promise.all([
+  const [posts, studies] = await Promise.all([
     getBlogPosts(locale),
     getCaseStudies(locale),
-    getSiteSettings(locale),
   ]);
   const featuredStudy = studies.find((study) => study.featured) ?? studies[0] ?? null;
   const latestPosts = posts.slice(0, 3);
-  const stripStudies = studies.slice(0, 2);
   const featured = ["sangfor", "fujitsu", "asus", "watchguard", "seceon", "kioxia", "accops", "keepit"]
     .map((slug) => allBrands.find((brand) => brand.slug === slug))
     .filter((brand): brand is (typeof allBrands)[number] => Boolean(brand));
 
   return (
     <>
-      <HomeHero locale={locale} offices={settings?.offices ?? []} />
-
-      {stripStudies.length > 0 ? (
-        <Section tone="obsidian" className="border-b border-white/8 py-12 sm:py-14 lg:py-16">
-          <div className="flex flex-col gap-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <span className="font-sans text-[11px] font-medium uppercase tracking-[0.16em] text-smoke">
-                {l(locale, "Proof from the field", "Preuves du terrain")}
-              </span>
-              <Link
-                href={localeHref(locale, "/case-studies")}
-                className="inline-flex items-center gap-1.5 text-sm text-ash transition-colors hover:text-white"
-              >
-                {l(locale, "All case studies", "Toutes les études de cas")}
-                <ArrowUpRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {stripStudies.map((study) => (
-                <Link
-                  key={study.id}
-                  href={localeHref(locale, `/case-studies/${study.slug}`)}
-                  className="group flex flex-col rounded-card border border-white/10 bg-white/[0.03] p-5 transition-colors hover:border-iris/50"
-                >
-                  <span className="text-[10px] uppercase tracking-[0.14em] text-iris-bright">
-                    {study.customerName || l(locale, "Case study", "Étude de cas")}
-                  </span>
-                  <h3 className="mt-2 line-clamp-2 font-display text-[17px] font-medium leading-snug text-white">
-                    {study.title}
-                  </h3>
-                  {study.results[0] ? (
-                    <p className="mt-4 flex items-baseline gap-2">
-                      <span className="font-display text-2xl font-medium text-white">{study.results[0].value}</span>
-                      <span className="text-[11px] uppercase tracking-[0.1em] text-smoke">{study.results[0].label}</span>
-                    </p>
-                  ) : null}
-                  <span className="mt-4 inline-flex items-center gap-1.5 border-t border-white/8 pt-3 text-xs text-ash">
-                    {l(locale, "Read the story", "Lire l'histoire")}
-                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </Section>
-      ) : null}
+      <HomeHero locale={locale} />
 
       {/* Ecosystem strip */}
       <Section tone="obsidian" className="border-y border-white/8 py-14 sm:py-16">

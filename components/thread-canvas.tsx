@@ -5,11 +5,12 @@ import { cn } from "@/lib/utils";
 
 /**
  * "The Thread" — a single luminous thread draws the Lithe cloud silhouette
- * and dissolves into flowing data. Unique to Lithe SD.
+ * and dissolves into flowing data.
  *
- * Performance notes: geometry and gradients are built once per resize, the
- * loop is capped at 30 fps, the canvas pauses when off-screen or hidden, and
- * the travelling pulse uses a two-stroke glow instead of `shadowBlur`.
+ * Performance model: the strands, main gradient thread and pulse sprite are
+ * rendered once per resize into offscreen canvases. Each frame only blits the
+ * cached layer, moves the pulse sprite and draws a handful of motes — no path
+ * rebuilding, no per-frame gradients, no shadow blur.
  */
 export function ThreadCanvas({ className }: { className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -22,19 +23,37 @@ export function ThreadCanvas({ className }: { className?: string }) {
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const SAMPLE = 180;
+    const MOTES = 10;
     let w = 0;
     let h = 0;
     let raf = 0;
     let last = 0;
     let visible = true;
     let baseY: number[] = [];
-    let mainGrad: CanvasGradient | null = null;
-    let strandGrad: CanvasGradient | null = null;
+    let layer: HTMLCanvasElement | null = null;
+    let pulse: HTMLCanvasElement | null = null;
 
     const hump = (x: number) => {
       const b1 = 0.3 * Math.exp(-Math.pow((x - 0.34) / 0.17, 2));
       const b2 = 0.21 * Math.exp(-Math.pow((x - 0.66) / 0.14, 2));
       return 0.62 - b1 - b2;
+    };
+
+    const buildPulse = () => {
+      const sprite = document.createElement("canvas");
+      sprite.width = 240;
+      sprite.height = 32;
+      const sctx = sprite.getContext("2d");
+      if (!sctx) return null;
+      const g = sctx.createLinearGradient(0, 0, 240, 0);
+      g.addColorStop(0, "rgba(120,170,255,0)");
+      g.addColorStop(0.34, "rgba(150,195,255,0.22)");
+      g.addColorStop(0.5, "rgba(220,238,255,0.95)");
+      g.addColorStop(0.66, "rgba(150,195,255,0.22)");
+      g.addColorStop(1, "rgba(120,170,255,0)");
+      sctx.fillStyle = g;
+      sctx.fillRect(0, 0, 240, 32);
+      return sprite;
     };
 
     const build = () => {
@@ -43,122 +62,109 @@ export function ThreadCanvas({ className }: { className?: string }) {
       h = rect.height;
       if (!w || !h) return;
 
-      let dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-      const maxPixels = 2_200_000;
+      let dpr = Math.min(window.devicePixelRatio || 1, w > 1000 ? 1.25 : 1.5);
+      const maxPixels = 1_600_000;
       if (w * h * dpr * dpr > maxPixels) {
         dpr = Math.sqrt(maxPixels / (w * h));
       }
+
       canvas.width = Math.floor(w * dpr);
       canvas.height = Math.floor(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
 
       baseY = [];
       for (let i = 0; i <= SAMPLE; i++) {
         baseY.push(hump(i / SAMPLE) * h);
       }
 
-      strandGrad = ctx.createLinearGradient(0, 0, w, 0);
+      // Cache the static thread once.
+      const cached = document.createElement("canvas");
+      cached.width = canvas.width;
+      cached.height = canvas.height;
+      const cctx = cached.getContext("2d");
+      if (!cctx) return;
+      cctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const strandGrad = cctx.createLinearGradient(0, 0, w, 0);
       strandGrad.addColorStop(0, "rgba(30,109,255,0)");
       strandGrad.addColorStop(0.22, "rgba(30,109,255,0.16)");
       strandGrad.addColorStop(0.72, "rgba(74,139,255,0.18)");
       strandGrad.addColorStop(1, "rgba(169,199,255,0.12)");
 
-      mainGrad = ctx.createLinearGradient(0, 0, w, 0);
+      for (let b = 0; b < 3; b++) {
+        const offset = (b - 1) * 20;
+        cctx.beginPath();
+        for (let i = 0; i <= SAMPLE; i++) {
+          const x = (i / SAMPLE) * w;
+          const y = baseY[i] + offset;
+          if (i) cctx.lineTo(x, y);
+          else cctx.moveTo(x, y);
+        }
+        cctx.strokeStyle = strandGrad;
+        cctx.lineWidth = 1;
+        cctx.stroke();
+      }
+
+      const mainGrad = cctx.createLinearGradient(0, 0, w, 0);
       mainGrad.addColorStop(0, "rgba(30,109,255,0.12)");
       mainGrad.addColorStop(0.34, "rgba(74,139,255,0.95)");
       mainGrad.addColorStop(0.72, "rgba(190,214,255,1)");
       mainGrad.addColorStop(1, "rgba(169,199,255,0.85)");
+
+      cctx.beginPath();
+      for (let i = 0; i <= SAMPLE; i++) {
+        const x = (i / SAMPLE) * w;
+        if (i) cctx.lineTo(x, baseY[i]);
+        else cctx.moveTo(x, baseY[i]);
+      }
+      cctx.strokeStyle = mainGrad;
+      cctx.lineWidth = 2;
+      cctx.lineCap = "round";
+      cctx.stroke();
+
+      layer = cached;
+      pulse = pulse ?? buildPulse();
     };
 
-    const draw = (time: number) => {
-      if (!w || !h || !mainGrad || !strandGrad) return;
-      const t = reduce ? 0 : time;
-      ctx.clearRect(0, 0, w, h);
-
-      const wobbleAt = (xn: number) =>
-        Math.sin(xn * 7 + t * 0.0006) * 0.008 +
-        Math.sin(xn * 13 - t * 0.0004) * 0.004;
-
-      // Secondary strands
-      for (let b = 0; b < 3; b++) {
-        const offset = (b - 1) * 20;
-        ctx.beginPath();
-        for (let i = 0; i <= SAMPLE; i++) {
-          const xn = i / SAMPLE;
-          const x = xn * w;
-          const y = baseY[i] + wobbleAt(xn) * h + offset;
-          if (i) ctx.lineTo(x, y);
-          else ctx.moveTo(x, y);
-        }
-        ctx.strokeStyle = strandGrad;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-
-      // Main thread
-      ctx.beginPath();
-      for (let i = 0; i <= SAMPLE; i++) {
-        const xn = i / SAMPLE;
-        const x = xn * w;
-        const y = baseY[i] + wobbleAt(xn) * h;
-        if (i) ctx.lineTo(x, y);
-        else ctx.moveTo(x, y);
-      }
-      ctx.strokeStyle = mainGrad;
-      ctx.lineWidth = 2;
-      ctx.lineCap = "round";
-      ctx.stroke();
-
-      // Travelling pulse — wide translucent pass plus a narrow bright pass.
-      if (!reduce) {
-        const prog = (t * 0.00006) % 1;
-        const half = 0.09;
-        const from = Math.max(1, Math.floor((prog - half) * SAMPLE));
-        const to = Math.min(SAMPLE, Math.ceil((prog + half) * SAMPLE));
-        if (to > from + 1) {
-          const x0 = (from / SAMPLE) * w;
-          const x1 = (to / SAMPLE) * w;
-          const pg = ctx.createLinearGradient(x0, 0, x1, 0);
-          pg.addColorStop(0, "rgba(140,184,255,0)");
-          pg.addColorStop(0.5, "rgba(190,220,255,0.55)");
-          pg.addColorStop(1, "rgba(169,199,255,0)");
-
-          ctx.beginPath();
-          for (let i = from; i <= to; i++) {
-            const xn = i / SAMPLE;
-            const x = xn * w;
-            const y = baseY[i] + wobbleAt(xn) * h;
-            if (i > from) ctx.lineTo(x, y);
-            else ctx.moveTo(x, y);
-          }
-          ctx.strokeStyle = pg;
-          ctx.lineWidth = 9;
-          ctx.stroke();
-          ctx.lineWidth = 2.5;
-          ctx.strokeStyle = "rgba(210,230,255,0.9)";
-          ctx.stroke();
-        }
-      }
-
-      // Data motes
+    const drawMotes = (t: number, offsetY: number) => {
       ctx.fillStyle = "rgba(150,190,255,0.6)";
-      for (let i = 0; i < 20; i++) {
+      for (let i = 0; i < MOTES; i++) {
         const speed = 0.00001 + (i % 5) * 0.000004;
-        const xn = (i / 20 + t * speed) % 1;
+        const xn = (i / MOTES + t * speed) % 1;
         const idx = Math.min(SAMPLE, Math.floor(xn * SAMPLE));
         const x = xn * w;
         const y =
           baseY[idx] +
-          wobbleAt(xn) * h +
           Math.sin(t * 0.001 + i) * 6 +
-          (i % 2 ? -1 : 1) * (6 + (i % 4) * 4);
+          (i % 2 ? -1 : 1) * (6 + (i % 4) * 4) +
+          offsetY;
         const alpha = Math.max(0.15, 0.32 + 0.45 * Math.sin(t * 0.002 + i));
         ctx.globalAlpha = alpha;
         ctx.beginPath();
-        ctx.arc(x, y, i % 7 === 0 ? 1.7 : 1, 0, Math.PI * 2);
+        ctx.arc(x, y, i % 5 === 0 ? 1.7 : 1, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.globalAlpha = 1;
+    };
+
+    const drawFrame = (time: number) => {
+      if (!w || !h || !layer) return;
+      const t = reduce ? 0 : time;
+      const offsetY = reduce ? 0 : Math.sin(t * 0.0004) * 3;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.drawImage(layer, 0, offsetY, w, h);
+
+      if (!reduce && pulse) {
+        const prog = (t * 0.00006) % 1;
+        const idx = Math.min(SAMPLE, Math.floor(prog * SAMPLE));
+        const x = prog * w;
+        const y = baseY[idx] + offsetY;
+        ctx.drawImage(pulse, x - 70, y - 7, 140, 14);
+      }
+
+      drawMotes(t, offsetY);
     };
 
     const frame = (time: number) => {
@@ -166,11 +172,11 @@ export function ThreadCanvas({ className }: { className?: string }) {
       if (!visible || document.hidden) return;
       if (time - last < 33) return; // ~30 fps
       last = time;
-      draw(time);
+      drawFrame(time);
     };
 
     build();
-    draw(0);
+    drawFrame(0);
 
     if (!reduce) raf = requestAnimationFrame(frame);
 
@@ -179,7 +185,7 @@ export function ThreadCanvas({ className }: { className?: string }) {
       if (resizeTimer) clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
         build();
-        if (reduce) draw(0);
+        drawFrame(0);
       }, 150);
     };
     window.addEventListener("resize", onResize);
