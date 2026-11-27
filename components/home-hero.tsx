@@ -1,7 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { Container } from "./container";
 import { Button } from "./button";
-import { HeroThreadVideo } from "./hero-thread-video";
 import { l, type Locale } from "@/lib/i18n";
 
 export function HomeHero({ locale }: { locale: Locale }) {
@@ -10,13 +9,6 @@ export function HomeHero({ locale }: { locale: Locale }) {
       <div className="pointer-events-none absolute inset-0 grid-dark opacity-40" />
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[680px] w-[680px] -translate-x-1/2 -translate-y-1/2 glow-iris opacity-60" />
       <div className="pointer-events-none absolute -right-32 bottom-0 h-[520px] w-[520px] glow-ember opacity-40" />
-
-      {/* Four threads converge behind the centred headline. */}
-      <div className="pointer-events-none absolute inset-x-0 top-[6%] h-[76%] opacity-90">
-        <HeroThreadVideo />
-      </div>
-      {/* Reading scrim behind the text. */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[760px] w-[1100px] max-w-[160vw] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(closest-side,rgba(5,7,15,0.9),rgba(5,7,15,0.55)_58%,rgba(5,7,15,0)_85%)]" />
 
       <Container className="relative">
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">

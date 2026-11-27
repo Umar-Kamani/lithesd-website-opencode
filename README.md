@@ -126,19 +126,6 @@ seeding on the first batch. Rotate or remove `SEED_SECRET` before launch.
 - **Company details, navigation, contact info, legal links** → `lib/site.ts`
 - **Colors, type scale, spacing, radii** → the `@theme` block in `app/globals.css`
 
-## Hero loop
-
-The homepage hero is a pre-rendered video (`public/hero/thread-loop.mp4`) with a
-poster fallback (`public/hero/thread-poster.jpg`), not a live canvas animation.
-Playback pauses off-screen, and reduced-motion visitors see the poster only.
-
-To regenerate the loop (40 fibre strands, 8 seconds, 30 fps):
-
-```bash
-npm i --no-save @napi-rs/canvas ffmpeg-static
-node scripts/render-hero-loop.mjs
-```
-
 ## Notes
 
 - **Contact form** is visual-only. Submission shows a friendly message; wire it to a
